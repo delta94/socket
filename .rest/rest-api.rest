@@ -22,7 +22,7 @@ POST http://localhost:8888/api/user
 Content-Type: application/json
 
 {
-    "name": "Trần Lê Trọng Nghĩa",
+    "name": "Đặng Thuyền Vương",
     "email": "nghia.tran@dna.vn"
 }
 
