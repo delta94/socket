@@ -1,0 +1,47 @@
+GET http://localhost:8888/api/test
+
+####
+
+GET http://localhost:8888/api/user?page=1&limit=100
+
+####
+
+GET http://localhost:8888/api/user/5fafadb8334ee92f442d7a3c
+
+###
+
+PUT http://localhost:8888/api/user/5fafadb8334ee92f442d7a3c
+Content-Type: application/json
+
+{
+    "name": "Đặng Thuyền Vương"
+}
+
+###
+POST http://localhost:8888/api/user
+Content-Type: application/json
+
+{
+    "name": "Trần Lê Trọng Nghĩa",
+    "email": "nghia.tran@dna.vn"
+}
+
+###
+DELETE http://localhost:8888/api/user
+Content-Type: application/json
+
+{
+    "token": ""
+}
+
+
+###
+
+POST http://localhost:8888/api/user
+Content-Type: application/json
+
+{
+    "username": "Vuong"
+}
+
+###

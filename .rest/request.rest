@@ -1,0 +1,29 @@
+GET http://localhost:8888/posts
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVnVvbmciLCJpYXQiOjE2MDUzNzc3MzgsImV4cCI6MTYwNTM3Nzc5OH0.VDky6x_bATHwsRbYrZjLmefnJZZBx8Hdun1ln_2ZL9Y
+
+###
+DELETE http://localhost:8888/logout
+Content-Type: application/json
+
+{
+    "token": ""
+}
+
+###
+POST http://localhost:8888/token
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVnVvbmciLCJpYXQiOjE2MDUzNzc2NTF9.QI_LPNvA_ghCSvhCkn3tYNkaSm4bdNEDJ5lgbk9MaPk"
+}
+
+###
+
+POST http://localhost:8888/login
+Content-Type: application/json
+
+{
+    "username": "Vuong"
+}
+
+###

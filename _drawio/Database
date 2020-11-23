@@ -1,0 +1,87 @@
+User
+Room
+Store
+Brand
+Supplier
+Category
+Taxonomy
+Attribute
+
+
+
+
+Promotion
+PromotionCode
+    -> Promotion
+
+PromotionGroup
+    -> Promotion
+    -> Product
+
+PromotionLoyalty
+    -> Promotion
+
+PromotionRelated
+    -> Promotion
+    -> Product
+
+PromotionAmount
+    -> Promotion
+    
+
+
+
+Message
+    -> Room
+    -> User
+
+
+
+Product
+    -> Brand
+    -> Supplier
+    -> User
+    -> Store
+    -> Category
+    -> Taxonomy
+
+
+
+Cart
+    -> User
+    -> Product
+
+
+Review
+    -> Product
+    -> Cart
+    -> User
+
+
+Blog
+
+
+
+-----------Elearning---------------
+Teacher
+User
+
+Course
+    -> Teacher
+
+CourseDetail
+    -> Course
+
+Register
+    -> User
+    -> Course
+
+Review
+    -> Register
+
+Project
+    -> User
+
+Payment
+    -> Register
+

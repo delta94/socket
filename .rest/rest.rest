@@ -1,0 +1,5 @@
+GET http://localhost:8888/api/user?page=10
+###
+
+
+GET http://localhost:8888/api/user/5fb0d4a06a9db7403c28be6a

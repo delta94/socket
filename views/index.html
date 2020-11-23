@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+     
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+     
+        <title>Firebase Chat Application</title>
+     
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+     
+     
+        
+        <style>
+            .container {
+                max-width: 700px;
+            }
+            
+            #comments-container {
+                border: 1px solid #d0d0d0;
+                height: 400px;
+                overflow-y: scroll;
+            }
+            
+            .comment-container {
+                padding: 10px;
+                margin:6px;
+                background: #f5f5f5;
+                font-size: 13px;
+                -moz-border-radius: 5px;
+                -webkit-border-radius: 5px;
+                border-radius: 5px;
+            }
+            
+            .comment-container .label {
+                margin-right: 20px;
+            }
+            
+            .comment-container:last-of-type {
+                border-bottom: none;
+            }
+        </style>
+    </head>
+</head>
+
+<body>
+    <div class="container">
+ 
+        <h1>Firebase Chat Application</h1>
+  
+        <div class="panel panel-default">
+  
+            <div class="panel-body">
+  
+                <div id="comments-container"></div>
+  
+            </div>
+  
+            <div class="panel-footer">
+  
+                <form role="form">
+  
+                    <div class="form-group">
+  
+                        <label for="comments">Please enter your comments here</label>
+  
+                        <input class="form-control" id="comments" name="comments">
+  
+                    </div>
+  
+                    <button type="submit" id="submit-btn" name="submit-btn"
+  
+                        class="btn btn-success">Send Comments</button>
+  
+                    <button type="reset" class="btn btn-danger">Clear Comments</button>
+  
+                </form>
+  
+            </div>
+  
+        </div>
+  
+    </div>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js">
+    </script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js">
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/socket.js"></script>
+    <!-- <script src='https://cdn.firebase.com/v0/firebase.js'></script> -->
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-analytics.js"></script> -->
+    <script>
+        var fireBaseRef = new SocketDB("https://pnj-project.firebaseio.com/");
+        var chatCollection = fireBaseRef.database('chat');
+
+        $("#submit-btn").bind("click", async function(e) {
+            e.preventDefault();
+            var comment = $("#comments");
+            var commentValue = $.trim(comment.val());
+            if (commentValue.length === 0) {
+                alert('Comments are required to continue!');
+            } else {
+
+                let [res, error] = await chatCollection.push({comment: commentValue});
+                if (error) {
+                    alert('Unable to push comments to Firebase!');
+                }
+
+                comment.val("");
+            }
+            return false;
+        });
+
+        chatCollection.on('child_added', function(snapshot) {
+            var uniqName = snapshot._id;
+            var comment = snapshot["comment"];
+            var commentsContainer = $('#comments-container');
+            $('<div/>', {class: 'comment-container'})
+                .html('<span class="label label-info">Comment ' + uniqName + '</span>' + comment)
+                .appendTo(commentsContainer);
+            commentsContainer.scrollTop(commentsContainer.prop('scrollHeight'));
+        });
+    </script>
+</body>
+
+</html>
