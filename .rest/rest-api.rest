@@ -6,7 +6,7 @@ GET http://localhost:8888/api/user?page=1&limit=100
 
 ####
 
-GET http://localhost:8888/api/user/5fafadb8334ee92f442d7a3c
+GET http://localhost:8888/api/user/aaaaaaaaaaaaaaa
 
 ###
 
