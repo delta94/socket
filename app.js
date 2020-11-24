@@ -6,10 +6,8 @@ import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
 import Authentication from './app/plugin/vn-cms-core/Authentication.js';
-import ConfigApp from './config/App.js';
-import { getFiles } from './app/plugin/vn-cms-core/helper/helper.js';
 import Hook from './app/plugin/vn-cms-core/Hook.js';
-import { loadModel, loadPlugin } from './app/plugin/vn-cms-core/helper/autoload.js';
+import { loadModel, loadPlugin, loadRoute } from './app/plugin/vn-cms-core/helper/autoload.js';
 
 // var log = console.log;
 // console.log = function() {
@@ -33,6 +31,7 @@ async function loadModule() {
 
     await loadPlugin();
     await loadModel();
+    await loadRoute();
     
     // socket(server);
 

@@ -3,19 +3,20 @@ import ModelClass, { TYPE } from "../../vn-cms-core/Model.js";
 
 class Course extends ModelClass{
     constructor(){
-        super('elearnig_course', {
+        super('elearning_course', {
             name: {
                 type: String,
                 required: true,
                 // unique: true
             },
             teacher: {
-                relation: 'elearnig_teacher',
+                relation: 'elearning_teacher',
                 required: true
             },
             price: Number,
             description: String,
             open_date: Date,
+            cover: String,
             type: {
                 enum: ['offline', 'online'],
                 default: 'offline'

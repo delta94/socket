@@ -3,7 +3,7 @@ import ModelClass from "../../vn-cms-core/Model.js";
 
 class Teacher extends ModelClass{
     constructor(){
-        super('elearnig_teacher', {
+        super('elearning_teacher', {
             name: {
                 type: String,
                 required: true,

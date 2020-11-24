@@ -27,7 +27,18 @@ export function getFiles(dir, files_) {
 }
 
 
+let config_store = {};
+
 export async function config(name = 'App' , slug = '') {
+
+    if(name in config_store) {
+        if(slug){
+            return config_store[name][slug]
+        }
+        return config_store[name];
+    }
+
+
     let absolutePath = path.resolve('config/'+ name + '.js');
     let rootPath = 'config/' + name + '.js';
 
@@ -37,7 +48,10 @@ export async function config(name = 'App' , slug = '') {
         if(fs.existsSync(rootPath)){
             let configObject = await import('file:' + absolutePath);
 
+            config_store[name] = configObject.default;
+
             if(slug){
+                
                 return configObject.default[slug]
             }
 

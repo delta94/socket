@@ -3,7 +3,7 @@ import Model from '../plugin/vn-cms-core/Model.js'
 
 // const { ObjectID } = mongodb;
 
-class Chat extends Model {
+class Message extends Model {
     // name = 'chat';
     // fields = {
     //     comment: String,
@@ -19,7 +19,7 @@ class Chat extends Model {
 
     constructor() {
 
-        super('chat', {
+        super('message', {
             comment: String,
             from: {
                 relation: 'user',
@@ -41,4 +41,4 @@ class Chat extends Model {
 }
 
 
-export default new Chat;
+export default new Message;

@@ -14,7 +14,7 @@ class Payment extends ModelClass{
                 required: true
             },
             course: {
-                relation: 'elearning_register',
+                relation: 'elearning_course',
                 required: true
             },
             money: Number,

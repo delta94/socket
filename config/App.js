@@ -10,6 +10,7 @@ export default {
         'vn-cms-redis',
         // 'vn-cms-ecommerce',
         'vn-cms-elearning',
+        'vn-cms-admin',
 
     ],
     redis_port: 6379

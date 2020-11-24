@@ -3,7 +3,7 @@ import ModelClass, { TYPE } from "../../vn-cms-core/Model.js";
 
 class Register extends ModelClass{
     constructor(){
-        super('elearnig_register', {
+        super('elearning_register', {
             user: {
                 relation: 'user',
                 required: true
