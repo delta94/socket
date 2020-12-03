@@ -7,7 +7,7 @@ export default {
         'vn-cms-socket',
         'vn-cms-graphql',
         'vn-cms-rest-api',
-        'vn-cms-redis',
+        // 'vn-cms-redis',
         // 'vn-cms-ecommerce',
         'vn-cms-elearning',
         'vn-cms-admin',
