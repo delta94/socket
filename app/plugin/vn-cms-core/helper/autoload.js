@@ -28,7 +28,7 @@ async function loadModelFolder(folder){
 export async function loadModel(){
     // let models = getFiles('app/Model');
 
-    await loadModelFolder('app/model')
+    await loadModelFolder('app/models')
     
 
     let App = await config('App');
