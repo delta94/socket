@@ -5,7 +5,6 @@ import { prepareField, _prepareDataField, renderPaginate } from '../helper/model
 import util from 'util'
 import Hook from '../Hook.js';
 import { objectIndex } from '../helper/helper.js';
-import { cache } from '../../vn-cms-redis/index.js';
 
 const { ObjectID } = mongodb;
 

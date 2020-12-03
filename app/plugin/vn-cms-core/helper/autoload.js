@@ -48,6 +48,7 @@ export async function loadPlugin(){
 
 
     for (let i in plugin) {
+
         if(fs.existsSync(__dirname + '/app/plugin/' + plugin[i] + '/index.js')){
             await import('file:' + __dirname + '/app/plugin/' + plugin[i] + '/index.js');
 

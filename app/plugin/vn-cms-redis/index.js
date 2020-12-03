@@ -7,7 +7,7 @@ const { _id } = dbConfig;
 
 const client = redis.createClient(appConfig.redis_port);
 
-
+console.log('REDISSSSSSSSSSSSSSS')
 export async function cache(name){
     return new Promise((resolve, reject) => {
         client.get(name, (err, data) => {
