@@ -200,7 +200,7 @@ export default class MongoDB {
 
                             let [key, value] = objectIndex(err.keyValue, 0);
                             resolve([null, {
-                                [key]: this._fields[key].validate?.unique || 'This field has exists, please use another value!'
+                                [key]: this._fields[key].validate.unique || 'This field has exists, please use another value!'
                             }]);
                         } else {
                             resolve([null, err]);
