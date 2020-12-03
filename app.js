@@ -5,9 +5,9 @@ import path from 'path';
 import dotenv from 'dotenv';
 import jwt from 'jsonwebtoken';
 
-import Authentication from './app/plugin/vn-cms-core/Authentication.js';
-import Hook from './app/plugin/vn-cms-core/Hook.js';
-import { loadModel, loadPlugin, loadRoute } from './app/plugin/vn-cms-core/helper/autoload.js';
+import Authentication from './core/Authentication.js';
+import Hook from './core/Hook.js';
+import { loadModel, loadPlugin, loadRoute } from './core/autoload.js';
 
 // var log = console.log;
 // console.log = function() {

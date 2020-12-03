@@ -1,4 +1,4 @@
-import ModelClass, { TYPE } from "../../vn-cms-core/Model.js";
+import ModelClass, { TYPE } from "../../../core/Model.js";
 
 
 class Register extends ModelClass{

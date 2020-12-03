@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import Model from './Model.js';
-import Hook from './Hook.js';
+import { getModel } from './model/MongoDB.js';
 
 
 
@@ -16,15 +16,18 @@ function generateAccessToken(user) {
 export default (app) => {
 
     let Token = new class extends Model {
-        graphql = false;
+        
         constructor() {
             super('token', {
                 accessToken: String,
                 refreshToken: String
             });
+            this.graphql = false;
             this.restAPI = false;
         }
     }
+
+    let User = getModel('user');
 
 
     app.post('/token', async (req, res) => {
@@ -51,20 +54,33 @@ export default (app) => {
     })
 
     app.post('/login', async (req, res) => {
-        const user = { name: req.body.username }
+        let {email, password} = req.body;
 
-        const accessToken = generateAccessToken(user);
+        let {data: user, error: userError} = await User.findOne({email});
 
-        const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
-        let [data, error] = await Token.insertOrUpdate({
-            accessToken, refreshToken
-        })
+        if(user.length > 0){
+            let { email, _id } = user;
 
-        if (data !== null) {
-            res.json({ accessToken, refreshToken })
-        } else {
+            const accessToken = generateAccessToken({ email, _id });
+
+            const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET)
+    
+    
+    
+            let [data, error] = await Token.insertOrUpdate({
+                accessToken, refreshToken
+            })
+    
+            if (data !== null) {
+                res.json({ accessToken, refreshToken })
+            } else {
+                return res.sendStatus(500)
+            }
+        }else{
             return res.sendStatus(500)
         }
+
+        
 
     })
 }

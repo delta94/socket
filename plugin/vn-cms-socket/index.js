@@ -2,8 +2,8 @@
 // import Room from '../../Model/Room.js';
 // import User from '../../Model/User.js';
 import Socket from 'socket.io';
-import Hook from '../vn-cms-core/Hook.js';
-import { getModel } from '../vn-cms-core/Model.js';
+import Hook from '../../core/Hook.js';
+import { getModel } from '../../core/Model.js';
 
 
 

@@ -143,29 +143,29 @@ export default class MongoDB {
 
     }
 
-    async findOne(data) {
+    async findOne(find) {
 
         let { cache } = await Hook.do_action('findOne-before', [...arguments]);
 
-        if (cache) return [cache, null];
+        if (cache) return {data: cache};
 
-        if (ObjectIDValid(data._id) || ObjectIDValid(data.id)) {
-            data._id = ObjectID(data._id || data.id);
-            delete data.id;
+        if (ObjectIDValid(find._id) || ObjectIDValid(find.id)) {
+            find._id = ObjectID(find._id || find.id);
+            delete find.id;
         }
 
-        if (typeof data === 'string' && ObjectIDValid(data)) {
-            data = {
-                _id: ObjectID(data)
+        if (typeof find === 'string' && ObjectIDValid(find)) {
+            find = {
+                _id: ObjectID(find)
             }
         }
 
         return new Promise((resolve, reject) => {
-            this.collection.findOne(data, function (err, res) {
-                if (err) resolve([null, err]);
+            this.collection.findOne(find, function (error, data) {
+                if (error) resolve({error});
                 else {
-                    Hook.do_action('findOne-after', [res]);
-                    resolve([res, null]);
+                    Hook.do_action('findOne-after', [data]);
+                    resolve({data});
                 }
             });
         })

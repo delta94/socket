@@ -1,4 +1,4 @@
-import Model, { TYPE } from '../plugin/vn-cms-core/Model.js'
+import Model, { TYPE } from '../../core/Model.js'
 
 class Room extends Model{
     // fields = {

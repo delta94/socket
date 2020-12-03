@@ -1,5 +1,4 @@
-import mongodb from 'mongodb';
-import Model from '../plugin/vn-cms-core/Model.js'
+import Model from '../../core/Model.js'
 
 // const { ObjectID } = mongodb;
 

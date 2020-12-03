@@ -1,9 +1,9 @@
 // import swaggerJSDoc from "swagger-jsdoc";
-import Hook from "../vn-cms-core/Hook.js";
+import Hook from "../../core/Hook.js";
 import swaggerUi from 'swagger-ui-express'
-import { config } from "../vn-cms-core/helper/helper.js";
-import { capitalizeFirstLetter } from "../vn-cms-core/helper/helper.js";
-import { getAllModel, getModel } from "../vn-cms-core/Model.js";
+import { config } from "../../core/helper/helper.js";
+import { capitalizeFirstLetter } from "../../core/helper/helper.js";
+import { getAllModel, getModel } from "../../core/Model.js";
 
 const type = {
     STATUS_SUCCESS: 200,
@@ -347,32 +347,32 @@ function generateApiDocs(model) {
                 //     required: false
                 // }
             ],
-            responses: {
-                '200': {
-                    description: 'Users were obtained',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Users'
-                            }
-                        }
-                    }
-                },
-                '400': {
-                    description: 'Missing parameters',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'companyId is missing',
-                                internal_code: 'missing_parameters'
-                            }
-                        }
-                    }
-                }
-            }
+            // responses: {
+            //     '200': {
+            //         description: 'Users were obtained',
+            //         content: {
+            //             'application/json': {
+            //                 schema: {
+            //                     $ref: '#/components/schemas/Users'
+            //                 }
+            //             }
+            //         }
+            //     },
+            //     '400': {
+            //         description: 'Missing parameters',
+            //         content: {
+            //             'application/json': {
+            //                 schema: {
+            //                     $ref: '#/components/schemas/Error'
+            //                 },
+            //                 example: {
+            //                     message: 'companyId is missing',
+            //                     internal_code: 'missing_parameters'
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
         },
         post: {
             tags: [model.restFulTagName || 'CRUD operations generator'],
@@ -433,112 +433,111 @@ function generateApiDocs(model) {
                     return object
                 })(),
             ],
-            requestBody: {
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/components/schemas/Users'
-                        }
-                    }
-                },
-                required: true
-            },
-            responses: {
-                [type.STATUS_SUCCESS]: {
-                    description: `New ${model.name} were created`
-                },
-                [type.STATUS_BAD_REQUEST]: {
-                    description: 'Invalid parameters',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'User identificationNumbers 10, 20 already exist',
-                                internal_code: 'invalid_parameters'
-                            }
-                        }
-                    }
-                }
-            }
+            // requestBody: {
+            //     content: {
+            //         'application/json': {
+            //             schema: {
+            //                 $ref: '#/components/schemas/Users'
+            //             }
+            //         }
+            //     },
+            //     required: true
+            // },
+            // responses: {
+            //     [type.STATUS_SUCCESS]: {
+            //         description: `New ${model.name} were created`
+            //     },
+            //     [type.STATUS_BAD_REQUEST]: {
+            //         description: 'Invalid parameters',
+            //         content: {
+            //             'application/json': {
+            //                 schema: {
+            //                     $ref: '#/components/schemas/Error'
+            //                 },
+            //                 example: {
+            //                     message: 'User identificationNumbers 10, 20 already exist',
+            //                     internal_code: 'invalid_parameters'
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
         },
         put: {
             tags: [model.restFulTagName || 'CRUD operations generator'],
             description: 'Update ' + model.name,
             operationId: 'update' + capitalName,
             parameters: [],
-            requestBody: {
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/components/schemas/user'
-                        }
-                    }
-                },
-                required: true
-            },
-            responses: {
-                [type.STATUS_SUCCESS]: {
-                    description: `New ${model.name} were created`
-                },
-                [type.STATUS_BAD_REQUEST]: {
-                    description: 'Invalid parameters',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'User identificationNumbers 10, 20 already exist',
-                                internal_code: 'invalid_parameters'
-                            }
-                        }
-                    }
-                }
-            }
+            // requestBody: {
+            //     content: {
+            //         'application/json': {
+            //             schema: {
+            //                 $ref: '#/components/schemas/user'
+            //             }
+            //         }
+            //     },
+            //     required: true
+            // },
+            // responses: {
+            //     [type.STATUS_SUCCESS]: {
+            //         description: `New ${model.name} were created`
+            //     },
+            //     [type.STATUS_BAD_REQUEST]: {
+            //         description: 'Invalid parameters',
+            //         content: {
+            //             'application/json': {
+            //                 schema: {
+            //                     $ref: '#/components/schemas/Error'
+            //                 },
+            //                 example: {
+            //                     message: 'User identificationNumbers 10, 20 already exist',
+            //                     internal_code: 'invalid_parameters'
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
         },
         delete: {
             tags: [model.restFulTagName || 'CRUD operations generator'],
             description: 'Delete ' + model.name,
             operationId: 'delete' + capitalName,
             parameters: [],
-            requestBody: {
-                content: {
-                    'application/json': {
-                        schema: {
-                            $ref: '#/components/schemas/Users'
-                        }
-                    }
-                },
-                required: true
-            },
-            responses: {
-                [type.STATUS_SUCCESS]: {
-                    description: `New ${model.name} were created`
-                },
-                [type.STATUS_BAD_REQUEST]: {
-                    description: 'Invalid parameters',
-                    content: {
-                        'application/json': {
-                            schema: {
-                                $ref: '#/components/schemas/Error'
-                            },
-                            example: {
-                                message: 'User identificationNumbers 10, 20 already exist',
-                                internal_code: 'invalid_parameters'
-                            }
-                        }
-                    }
-                }
-            }
+            // requestBody: {
+            //     content: {
+            //         'application/json': {
+            //             schema: {
+            //                 $ref: '#/components/schemas/Users'
+            //             }
+            //         }
+            //     },
+            //     required: true
+            // },
+            // responses: {
+            //     [type.STATUS_SUCCESS]: {
+            //         description: `New ${model.name} were created`
+            //     },
+            //     [type.STATUS_BAD_REQUEST]: {
+            //         description: 'Invalid parameters',
+            //         content: {
+            //             'application/json': {
+            //                 schema: {
+            //                     $ref: '#/components/schemas/Error'
+            //                 },
+            //                 example: {
+            //                     message: 'User identificationNumbers 10, 20 already exist',
+            //                     internal_code: 'invalid_parameters'
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }
         }
     }
 }
 
 function generateRouter(model, app) {
     let Model = getModel(model.name);
-    console.log(Model);
     app.get(prefix + '/' + model.name + '/:id?', async (req, res) => {
         if (req.params.id) {
             let [data, error] = await Model.findOne(req.params.id);

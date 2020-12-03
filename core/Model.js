@@ -1,10 +1,10 @@
 import crypto from 'crypto';
-import MongoDB, { getAllModel as getAllModelMongoDB, getModel as getModelMongoDB } from './Model/MongoDB.js';
-import MySQL, { getAllModel as getAllModelMySQL, getModel as getModelMySQL } from './Model/MySQL.js';
+import MongoDB, { getAllModel as getAllModelMongoDB, getModel as getModelMongoDB } from './model/MongoDB.js';
+import MySQL, { getAllModel as getAllModelMySQL, getModel as getModelMySQL } from './model/MySQL.js';
 // import { prepareField, _prepareDataField } from './helper/model.js';
 
 
-import configDatabase from '../../../config/Database.js';
+import configDatabase from '../config/Database.js';
 
 let ModelClass;
 if(configDatabase.default === 'MongoDB'){

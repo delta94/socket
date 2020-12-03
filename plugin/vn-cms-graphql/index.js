@@ -1,12 +1,12 @@
 import expressgraphql from 'express-graphql'
 import graphql from 'graphql';
 import mongodb from 'mongodb';
-import { copyObjectExcept, isEmptyObject } from '../vn-cms-core/helper/helper.js';
-import { ModelTypeList } from '../vn-cms-core/helper/model.js';
-import Hook from '../vn-cms-core/Hook.js';
+import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper.js';
+import { ModelTypeList } from '../../core/helper/model.js';
+import Hook from '../../core/Hook.js';
 
 
-import { getAllModel, getModel } from '../vn-cms-core/Model.js';
+import { getAllModel, getModel } from '../../core/Model.js';
 
 
 

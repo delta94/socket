@@ -1,7 +1,7 @@
-import { getFiles, config } from "./helper.js";
+import { getFiles, config } from "./helper/helper.js";
 import fs from 'fs';
 import path from 'path';
-import Hook from "../Hook.js";
+import Hook from "./Hook.js";
 
 // let __dirname = path.resolve();
 // let configFilename = path.join(__dirname, "../../../", "config.js");
@@ -34,7 +34,7 @@ export async function loadModel(){
     let App = await config('App');
 
     for(let i in App.plugin){
-        await loadModelFolder('app/plugin/' + App.plugin[i] + '/model')
+        await loadModelFolder('plugin/' + App.plugin[i] + '/model')
     }
 
 }
@@ -49,8 +49,8 @@ export async function loadPlugin(){
 
     for (let i in plugin) {
 
-        if(fs.existsSync(__dirname + '/app/plugin/' + plugin[i] + '/index.js')){
-            await import('file:' + __dirname + '/app/plugin/' + plugin[i] + '/index.js');
+        if(fs.existsSync(__dirname + '/plugin/' + plugin[i] + '/index.js')){
+            await import('file:' + __dirname + '/plugin/' + plugin[i] + '/index.js');
 
         }
         
@@ -81,7 +81,7 @@ export async function loadRoute(){
 
     for(let i in plugin){
 
-        await loadRouterFolder('app/plugin/' + App.plugin[i] + '/router')
+        await loadRouterFolder('plugin/' + App.plugin[i] + '/router')
     }
 
 

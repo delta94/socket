@@ -1,6 +1,5 @@
 import fs from 'fs'
-import util from 'util';
-import { getAllModel } from '../../vn-cms-core/Model.js';
+import { getAllModel } from '../../../core/Model.js';
 
 export default function (app, server){
     app.use(function(req, res, next){
