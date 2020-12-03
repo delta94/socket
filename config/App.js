@@ -9,7 +9,7 @@ export default {
         'vn-cms-rest-api',
         // 'vn-cms-redis',
         // 'vn-cms-ecommerce',
-        // 'vn-cms-elearning',
+        'vn-cms-elearning',
         'vn-cms-admin',
 
     ],

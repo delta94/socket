@@ -1,6 +1,4 @@
 import ModelClass, { TYPE } from "../../vn-cms-core/Model.js";
-
-
 class Course extends ModelClass{
     constructor(){
         super('elearning_course', {

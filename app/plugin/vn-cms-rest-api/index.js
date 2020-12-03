@@ -538,7 +538,7 @@ function generateApiDocs(model) {
 
 function generateRouter(model, app) {
     let Model = getModel(model.name);
-
+    console.log(Model);
     app.get(prefix + '/' + model.name + '/:id?', async (req, res) => {
         if (req.params.id) {
             let [data, error] = await Model.findOne(req.params.id);
