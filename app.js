@@ -3,9 +3,9 @@ import express from 'express';
 import http from 'http';
 import path from 'path';
 import dotenv from 'dotenv';
-import jwt from 'jsonwebtoken';
+import cors from 'cors'
 
-import Authentication from './core/Authentication.js';
+import Authentication, { authenticateToken } from './core/Authentication.js';
 import Hook from './core/Hook.js';
 import { loadModel, loadPlugin, loadRoute } from './core/autoload.js';
 
@@ -29,6 +29,8 @@ async function loadModule() {
     var app = express(),
         server = http.createServer(app);
 
+
+
     await loadPlugin();
     await loadModel();
     await loadRoute();
@@ -50,6 +52,8 @@ async function loadModule() {
         next();
     });
 
+    app.use(cors())
+
 
     app.use(express.static(__dirname + '/public'));
 
@@ -57,22 +61,24 @@ async function loadModule() {
 
     Authentication(app);
 
+    
+
 
     app.get('/posts', authenticateToken, (req, res) => {
         res.json({ post: req.user.name })
     })
 
-    function authenticateToken(req, res, next) {
-        const authHeader = req.headers['authorization']
-        const token = authHeader && authHeader.split(' ')[1]
-        if (token == null) return res.sendStatus(401)
+    // function authenticateToken(req, res, next) {
+    //     const authHeader = req.headers['authorization']
+    //     const token = authHeader && authHeader.split(' ')[1]
+    //     if (token == null) return res.sendStatus(401)
 
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) return res.sendStatus(403)
-            req.user = user
-            next()
-        })
-    }
+    //     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    //         if (err) return res.sendStatus(403)
+    //         req.user = user
+    //         next()
+    //     })
+    // }
 
     await Hook.do_action('before-router', [app, server]);
 

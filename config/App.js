@@ -4,13 +4,13 @@ export default {
     token_expired: '1m',
     plugin: [
         'vn-cms-core',
-        'vn-cms-socket',
+        // 'vn-cms-socket',
         'vn-cms-graphql',
         'vn-cms-rest-api',
         // 'vn-cms-redis',
         // 'vn-cms-ecommerce',
         'vn-cms-elearning',
-        'vn-cms-admin',
+        // 'vn-cms-admin',
 
     ],
     redis_port: 6379

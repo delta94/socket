@@ -1,10 +1,11 @@
-import {config} from '../helper/helper.js';
+import { config } from '../helper/helper.js';
 
 import mongodb from 'mongodb';
 import { prepareField, _prepareDataField, renderPaginate } from '../helper/model.js';
 import util from 'util'
 import Hook from '../Hook.js';
 import { objectIndex } from '../helper/helper.js';
+import { resolve } from 'path';
 
 const { ObjectID } = mongodb;
 
@@ -147,7 +148,7 @@ export default class MongoDB {
 
         let { cache } = await Hook.do_action('findOne-before', [...arguments]);
 
-        if (cache) return {data: cache};
+        if (cache) return { data: cache };
 
         if (ObjectIDValid(find._id) || ObjectIDValid(find.id)) {
             find._id = ObjectID(find._id || find.id);
@@ -162,10 +163,10 @@ export default class MongoDB {
 
         return new Promise((resolve, reject) => {
             this.collection.findOne(find, function (error, data) {
-                if (error) resolve({error});
+                if (error) resolve({ error });
                 else {
                     Hook.do_action('findOne-after', [data]);
-                    resolve({data});
+                    resolve({ data });
                 }
             });
         })
@@ -283,6 +284,28 @@ export default class MongoDB {
 
     update() { }
 
+
+    async findOneAndUpdate(find = {}, data) {
+        return new Promise((resolve, reject) => {
+            this.collection.findOneAndUpdate(find, [{ $set: data }], { new: false, returnOriginal: false }, (err, res) => {
+                if (err) {
+
+                    if (typeof err.keyValue === 'object') {
+                        let [key, value] = objectIndex(err.keyValue, 0);
+                        resolve({
+                            error: {
+                                [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
+                            }
+                        });
+                    } else {
+                        resolve({ error: err });
+                    }
+
+                }
+                else resolve({ data: res.value });
+            });
+        })
+    }
 
 
     async updateOne(find = {}, data) {

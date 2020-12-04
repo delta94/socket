@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express'
 import { config } from "../../core/helper/helper.js";
 import { capitalizeFirstLetter } from "../../core/helper/helper.js";
 import { getAllModel, getModel } from "../../core/Model.js";
+import { authenticateToken } from "../../core/Authentication.js";
 
 const type = {
     STATUS_SUCCESS: 200,
@@ -538,7 +539,7 @@ function generateApiDocs(model) {
 
 function generateRouter(model, app) {
     let Model = getModel(model.name);
-    app.get(prefix + '/' + model.name + '/:id?', async (req, res) => {
+    app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
         if (req.params.id) {
             let [data, error] = await Model.findOne(req.params.id);
             if (error) {
@@ -558,7 +559,7 @@ function generateRouter(model, app) {
 
     })
 
-    app.post(prefix + '/' + model.name, async (req, res) => {
+    app.post(prefix + '/' + model.name, authenticateToken, async (req, res) => {
         let [data, error] = await Model.insertOne(req.body);
         if (error) {
 
@@ -568,7 +569,7 @@ function generateRouter(model, app) {
 
     })
 
-    app.put(prefix + '/' + model.name + '/:id', async (req, res) => {
+    app.put(prefix + '/' + model.name + '/:id', authenticateToken, async (req, res) => {
 
         let [data, error] = await Model.updateOne({ id: req.params.id }, req.body);
         if (error) {
@@ -579,7 +580,7 @@ function generateRouter(model, app) {
 
     })
 
-    app.delete(prefix + '/' + model.name + '/:id', async (req, res) => {
+    app.delete(prefix + '/' + model.name + '/:id', authenticateToken, async (req, res) => {
         let [data, error] = await Model.delete({ id: req.params.id });
         if (error) {
             return res.status(type.STATUS_BAD_REQUEST).json({ error });
