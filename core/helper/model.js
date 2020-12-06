@@ -7,10 +7,32 @@ const defaultErrorMessage = {
     required: 'This field is require',
 }
 
+export const MODELTYPE = {
+    NORMAL: 'NORMAL', // String, Date, Number, function
+    RELATION: 'RELATION',
+
+    OBJECT: 'OBJECT', // {...}
+
+    OBJECT_WITH_STRUCT: 'OBJECT_WITH_STRUCT', // {name:..., title:....}
+
+    OBJECT_RELATION_KEY_ID: 'OBJECT_RELATION_KEY_ID', // {"[_id]": {name: ....}, "[_id]": {}}
+    OBJECT_RELATION_MULTI_WITH_KEY_ONLEY: 'OBJECT_RELATION_MULTI_WITH_KEY_ONLEY', // {"[_id]": 1, "[_id]": 0}
+    RELATION_WITH_ID: 'RELATION_WITH_ID', // only id
+    RELATION_WITH_STRUCT: 'RELATION_WITH_STRUCT', //{"[_id]": {name: ....}, "[_id]": {}},
+
+    LIST: 'LIST', // [1,'asdfasdf']
+    LIST_TYPE: 'LIST_TYPE', // [1,2,3,4,5]
+    LIST_OBJECT: 'LIST_OBJECT', // [{name: 1}, {title: 2}]
+    LIST_OBJECT_STRUCT: 'LIST_OBJECT_STRUCT', // [{name: 1}, {name: 2}]
+    LIST_RELATION: 'LIST_RELATION', // [{_id: 234234, name: 'adsfasdf'}, {_id: 43253452345, name: 'eeeeeeeee'}]
+    // LIST sort
+}
+
 
 export async function _prepareDataField(data, field, update = false) {
     // let valueType, valueDefault
     let errorObject = {};
+
 
     for (let i in field) {
         if (i == '_id' ||
@@ -49,7 +71,6 @@ export async function _prepareDataField(data, field, update = false) {
     if (!isEmptyObject(errorObject)) {
         return [data, errorObject];
     }
-
     return [data];
 }
 
@@ -63,7 +84,7 @@ export function prepareField(fields) {
         if (typeof fields[i] === 'function' ||
             (!Array.isArray(fields[i]) && typeof fields[i] === 'object') ||
             Array.isArray(fields[i].enum)
-            ) {
+        ) {
 
             object[i] = Type_1(fields[i]);
         }
@@ -86,7 +107,7 @@ export function prepareField(fields) {
 
 }
 
-function Enum (value){
+function Enum(value) {
 
     if ([].includes.bind(this.enum)(value)) return value;
     return this.default || null;
@@ -100,7 +121,7 @@ function Type_1(fields) {
         }
     }
 
-    if(Array.isArray(fields.enum)){
+    if (Array.isArray(fields.enum)) {
 
         return {
             ...fields,
@@ -117,7 +138,6 @@ function Type_1(fields) {
     }
 
     if (fields.relation) {
-
 
         return {
             type: MODELTYPE.RELATION,
@@ -205,9 +225,8 @@ function Type_2(fields) {
 }
 function ModelTypeNormal(data) {
     // console.log(data)
-
     if (this.required && (!data && data != 0)) {
-        return [null, this.validate.required || defaultErrorMessage.required];
+        return [null, this?.validate?.required || defaultErrorMessage.required];
     }
 
     if (typeof data === 'undefined' && this.default) {
@@ -222,7 +241,7 @@ function ModelTypeNormal(data) {
 }
 
 export function ModelTypeObject(data) {
-
+    return [data];
 }
 export function ModelTypeList(data) {
     if (data) {
@@ -231,11 +250,10 @@ export function ModelTypeList(data) {
             data = [data]
         }
 
-        console.log(data);
     }
 
 
-    return [[]];
+    return [data];
 }
 
 export async function ModelTypeRelation(data) {
@@ -244,7 +262,7 @@ export async function ModelTypeRelation(data) {
     // object with _id key
 
     if (this.required && (!data && data != 0)) {
-        return [null, this.validate.required || defaultErrorMessage.required];
+        return [null, this.validate?.required || defaultErrorMessage.required];
     }
 
     if (data) {
@@ -261,7 +279,7 @@ export async function ModelTypeRelation(data) {
                 f = { _id: ObjectID(data) }
             }
 
-            let [res, error] = await getModel(this.relation).find(f)
+            let { data: res, error } = await getModel(this.relation).find(f)
 
 
             if (this.multi) {
@@ -296,26 +314,7 @@ export async function ModelTypeRelation(data) {
     return [null];
 }
 
-export const MODELTYPE = {
-    NORMAL: 'NORMAL', // String, Date, Number, function
-    RELATION: 'RELATION',
 
-    OBJECT: 'OBJECT', // {...}
-
-    OBJECT_WITH_STRUCT: 'OBJECT_WITH_STRUCT', // {name:..., title:....}
-
-    OBJECT_RELATION_KEY_ID: 'OBJECT_RELATION_KEY_ID', // {"[_id]": {name: ....}, "[_id]": {}}
-    OBJECT_RELATION_MULTI_WITH_KEY_ONLEY: 'OBJECT_RELATION_MULTI_WITH_KEY_ONLEY', // {"[_id]": 1, "[_id]": 0}
-    RELATION_WITH_ID: 'RELATION_WITH_ID', // only id
-    RELATION_WITH_STRUCT: 'RELATION_WITH_STRUCT', //{"[_id]": {name: ....}, "[_id]": {}},
-
-    LIST: 'LIST', // [1,'asdfasdf']
-    LIST_TYPE: 'LIST_TYPE', // [1,2,3,4,5]
-    LIST_OBJECT: 'LIST_OBJECT', // [{name: 1}, {title: 2}]
-    LIST_OBJECT_STRUCT: 'LIST_OBJECT_STRUCT', // [{name: 1}, {name: 2}]
-    LIST_RELATION: 'LIST_RELATION', // [{_id: 234234, name: 'adsfasdf'}, {_id: 43253452345, name: 'eeeeeeeee'}]
-    // LIST sort
-}
 
 
 

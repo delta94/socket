@@ -12,9 +12,14 @@ class Course extends ModelClass{
                 required: true
             },
             price: Number,
+            short_content: String,
             description: String,
-            open_date: Date,
-            cover: String,
+            open_date: Number,
+            close_date: Number,
+            status: {
+                enum: ['publish' , 'ready', 'finish'],
+                default: 'publish'
+            },
             type: {
                 enum: ['offline', 'online'],
                 default: 'offline'
@@ -37,7 +42,7 @@ class Course extends ModelClass{
             ],
             schedule: {
                 struct: {
-                    start: Date,
+                    start: Number,
                     time: String
                 }
             },
