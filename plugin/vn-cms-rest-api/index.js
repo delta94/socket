@@ -684,7 +684,15 @@ function generateRouter(model, app) {
 
         delete query.page;
         delete query.limit;
-        console.log(query)
+
+        for(let i in query){
+            if(i in model._fields){
+                if(model._fields[i].resolve.name === 'Number'){
+                    query[i] = parseInt(query[i])
+                }
+            }
+        }
+        
 
         let { data, error, paginate } = await Model.find(query, { page: parseInt(page), limit: parseInt(limit) });
 
