@@ -536,6 +536,8 @@ function generateApiDocs(model) {
                                                 // item.in = field.relation;
                                                 break;
                                             case 'ModelTypeList':
+                                                schema.type = 'number'
+
                                                 break;
                                             case 'Enum':
                                                 schema.type = 'string'
@@ -668,30 +670,28 @@ function generateApiDocs(model) {
 function generateRouter(model, app) {
     let Model = getModel(model.name);
     app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
-        // if (req.params.id) {
-        //     let { data, error } = await Model.findOne(req.params.id);
-        //     if (error) {
-        //         return res.status(type.STATUS_SERVER_ERROR).json({ error })
-        //     }
-        //     return res.json(data);
-        // }
+        if (req.params.id) {
+            let { data, error } = await Model.findOne(req.params.id);
+            if (error) {
+                return res.status(type.STATUS_SERVER_ERROR).json({ error })
+            }
+            return res.json(data);
+        }
 
 
-        // let { page = 1, limit = defaultConfig.limit } = req.query,
-        //     query = req.query;
+        let { page = 1, limit = defaultConfig.limit } = req.query,
+            query = req.query;
 
-        // delete query.page;
-        // delete query.limit;
-        // console.log(query)
+        delete query.page;
+        delete query.limit;
+        console.log(query)
 
-        // let { data, error, paginate } = await Model.find(query, { page: parseInt(page), limit: parseInt(limit) });
+        let { data, error, paginate } = await Model.find(query, { page: parseInt(page), limit: parseInt(limit) });
 
-        // if (error) {
-        //     return res.status(type.STATUS_SERVER_ERROR).json({ error })
-        // }
-        // res.json({ data, paginate });
-
-
+        if (error) {
+            return res.status(type.STATUS_SERVER_ERROR).json({ error })
+        }
+        res.json({ data, paginate });
 
 
     })

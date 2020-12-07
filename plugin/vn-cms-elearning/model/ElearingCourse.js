@@ -5,6 +5,35 @@ class Course extends ModelClass{
             id: {
                 unique: true,
             },
+            benefits: [],
+            cfd_teacher: {
+                relation: 'elearning_teacher'
+            },
+            close_time: String,
+            content: [],
+            count_video: Number,
+            course_status: {
+                enum: ['sap-khai-giang'],
+                default: 'sap-khai-giang'
+            },
+            khoa: Number,
+            money: Number,
+            course_type:{
+                enum: ['offline','online'],
+                default: 'offline'
+            },
+            benefits: [],
+            opening_time: String,
+            schedule: String,
+            required: [],
+            content: [],
+            short_description: String,
+            slug: String,
+            title: String,
+            visibility: {
+                enum: ['publish','trash'],
+                default: 'offline'
+            },
             // title: {
             //     type: String,
             //     required: true,
