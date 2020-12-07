@@ -2,12 +2,12 @@
 // dotenv.config()
 
 export default {
-    prefix: 'api',
+    prefix: 'rest',
     openapi: '3.0.1',
     info: {
         version: '1.0.0',
         title: 'RestFul API Documents',
-        description: 'Management All API genenerator by Model, maked by vn-cms-rest-api',
+        description: 'Management All API genenerator by Model, maked by vn-cms-rest-api, <br/> accessToken: <b>eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwiaWF0IjoxNjA3MzE1MDg2LCJleHAiOjIwODA2NzkwODZ9.cDPTTv6nN8z5PwBQh4EeYGGvO0rFxb_TR9wReFedtHo</b>',
         termsOfService: 'http://api_url/terms/',
         contact: {
             name: 'Đặng Thuyền Vương',
@@ -23,17 +23,13 @@ export default {
 
     servers: [
         {
-            url: 'http://localhost:' + process.env.PORT + '/api' ,
+            url: 'http://localhost:' + process.env.PORT + '/rest' ,
             description: 'Local server'
         },
         {
-            url: 'https://api_url_testing/api',
-            description: 'Testing server'
-        },
-        {
-            url: 'https://api_url_production/api',
+            url: 'https://cfd-reactjs.herokuapp.com/rest',
             description: 'Production server'
-        }
+        },
     ],
 
     // tags: [],

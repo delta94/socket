@@ -5,6 +5,7 @@ import { config } from "../../core/helper/helper.js";
 import { capitalizeFirstLetter } from "../../core/helper/helper.js";
 import { getAllModel, getModel } from "../../core/Model.js";
 import { authenticateToken } from "../../core/Authentication.js";
+import fetch from 'node-fetch'
 
 const type = {
     STATUS_SUCCESS: 200,
@@ -17,7 +18,7 @@ const type = {
     STATUS_SERVER_ERROR: 500,
 }
 
-let prefix = '/api';
+let prefix = '/rest';
 
 const defaultConfig = {
     // openapi: '3.0.1',
@@ -61,6 +62,97 @@ let swaggerOptions = {
     }
 }
 
+function selectSomeProperties(object, keys) {
+    return Object.keys(object).reduce(function (obj, k) {
+        if (keys.includes(k)) {
+            obj[k] = object[k];
+        }
+        return obj;
+    }, {});
+}
+
+async function getCourse() {
+    let coins = await fetch('https://www.cfdtraining.vn/api/rest/cfd_course').then(res => res.json());
+
+    return coins.map(e => {
+        try {
+            e.benefits = JSON.parse(e.benefits)
+            e.mentor = JSON.parse(e.mentor)
+            e.required = JSON.parse(e.required)
+            e.thumbnail = JSON.parse(e.thubnail)
+            e.content = JSON.parse(e.content)
+            e.cfd_teacher = JSON.parse(e.cfd_teacher)
+        } catch (err) {
+
+        }
+        // return e
+        return selectSomeProperties(e, ['benefits', 'cfd_teacher', 'close_time', 'content', 'count_video', 'course_status', 'course_type', 'created_at', 'created_time', 'id', 'khoa', 'long_description', 'mentor', 'money', 'money_affiliate_1', 'money_affiliate_2', 'number_student_default', 'opening_time', 'required', 'schedule', 'short_description', 'slug', 'thumbnail', 'title', 'visibility'])
+    })
+}
+
+async function getStudent() {
+    let users = await fetch('https://www.cfdtraining.vn/api/rest/cfd_student').then(res => res.json());
+    return users.map(e => {
+        let avatar = null;
+        try {
+            avatar = JSON.parse(e.avatar)
+            if (avatar.thumbnail) {
+                if (avatar.thumbnail?.['thumbnail-1']) {
+                    avatar.thumbnail['thumbnail-1'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-1']
+                }
+                if (avatar.thumbnail?.['thumbnail-2']) {
+                    avatar.thumbnail['thumbnail-2'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-2']
+                }
+            }
+        } catch (err) {
+
+        }
+
+        e = selectSomeProperties(e, ['title', 'avatar','id','email','phone','review','skype','student_type','total_coin_current']);
+        e.password = e.email;
+        return e;
+    })
+}
+
+async function getTeacher() {
+    let teacher = await fetch('https://www.cfdtraining.vn/api/rest/cfd_teacher').then(res => res.json());
+    return teacher.map(e => {
+        let avatar = null;
+        try {
+            avatar = JSON.parse(e.avatar)
+            if (avatar.thumbnail) {
+                if (avatar.thumbnail?.['thumbnail-1']) {
+                    avatar.thumbnail['thumbnail-1'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-1']
+                }
+                if (avatar.thumbnail?.['thumbnail-2']) {
+                    avatar.thumbnail['thumbnail-2'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-2']
+                }
+            }
+            e.avatar = avatar;
+        } catch (err) {
+
+        }
+
+        // return e;
+
+        return selectSomeProperties(e, ['avatar','description', 'id', 'position' , 'slug', 'title', 'website']);
+    })
+}
+
+async function getRegister(params) {
+    let data = await fetch('https://www.cfdtraining.vn/api/rest/cfd_course_register').then(res => res.json());
+    return data.map(e => {
+        try {
+           e.attendance = JSON.parse(e.attendance)
+           e.payment = JSON.parse(e.payment)
+        } catch (err) {
+
+        }
+
+        return selectSomeProperties(e, ['id','cfd_course', 'cfd_student', 'coin_use' , 'payment', 'payment_method', 'title', 'trang_thai']);
+    })
+}
+
 async function init(app, server) {
 
 
@@ -80,20 +172,42 @@ async function init(app, server) {
     }
 
 
-    app.get('/api/test', async (req, res) => {
-        let User = getModel('user');
-        let [users, error] = await User.find(undefined, { limit: 10000 });
-        for (let i in users) {
-            User.updateOne({
-                id: users[i]._id + ''
-            }, {
-                // updated_at: Date.now(),
-                // created_at: Date.now()
-            })
+    app.get('/rest/generator', async (req, res) => {
+        
+        // Step 1
+        // getModel('elearning_student').insertMany(await getStudent())
+        // getModel('elearning_teacher').insertMany(await getTeacher())
 
-        }
 
-        res.json({ success: true })
+        // Step 2
+        // let teacher = await getTeacher();
+        // let course = await getCourse();
+
+        // course = course.map(e => {
+        //     e.cfd_teacher = e.cfd_teacher.map(e => teacher.find(e1 => e.id === e1.id))
+        //     e.mentor = e.mentor.map(e => teacher.find(e1 => e.id === e1.id))
+
+        //     return e;
+        // })
+
+
+        // getModel('elearning_course').insertMany(course);
+
+
+        // Step 3
+
+        let register = await getRegister();
+        let course = await getCourse();
+
+        register = register.map(e => {
+            e.cfd_course =  parseInt(e.cfd_course)
+            e.cfd_student = parseInt(e.cfd_student)
+            return e;
+        })
+        getModel('elearning_register').insertMany(register);
+
+
+        res.json({cuss: 1});
     })
 
 
@@ -235,17 +349,19 @@ async function init(app, server) {
             },
             /* ... */
             securitySchemes: {
-                ApiKeyAuth: {
-                    type: 'apiKey',
-                    in: 'header',
-                    name: 'x-api-key'
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT'
+                    // name: 'Authorization'
+
                 }
             }
         },
         /* ... */
         security: [
             {
-                ApiKeyAuth: []
+                bearerAuth: ['eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwiaWF0IjoxNjA3MzE1MDg2LCJleHAiOjIwODA2NzkwODZ9.cDPTTv6nN8z5PwBQh4EeYGGvO0rFxb_TR9wReFedtHo']
             }
         ],
         /* ... */
@@ -254,7 +370,7 @@ async function init(app, server) {
     }
 
     // const swaggerDocs = swaggerJSDoc(swaggerOptions)
-    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
+    app.use('/rest-docs', swaggerUi.serve, swaggerUi.setup(swaggerOptions));
 
 }
 
@@ -379,61 +495,72 @@ function generateApiDocs(model) {
             tags: [model.restFulTagName || 'CRUD operations generator'],
             description: 'Create ' + model.name,
             operationId: 'create' + capitalName,
-            parameters: [
-                ...(() => {
+            requestBody: {
+                content: {
+                    'application/json': {
+                        schema: {
+                            type: 'object',
+                            properties: {
+                                ...(() => {
 
-                    let object = [];
+                                    let object = {};
 
-                    for (let i in model._fields) {
+                                    for (let i in model._fields) {
+                                        if (['_id', 'created_at', 'updated_at'].includes(i)) continue;
 
+                                        let field = model._fields[i];
 
-                        let field = model._fields[i];
+                                        let item = {
+                                            // name: i,
+                                            // in: 'body'
+                                        }
+                                        let schema = {
+                                            type: 'string',
+                                        }
 
-                        let item = {
-                            name: i,
-                            // in: 'body'
+                                        switch (field.resolve.name) {
+                                            case 'String':
+                                                schema.type = 'string'
+                                                break;
+                                            case 'Number':
+                                                schema.type = 'number'
+
+                                                break;
+                                            case 'Date':
+                                                schema.type = 'number'
+
+                                                break;
+                                            case 'ModelTypeRelation':
+                                                schema.type = field.relation
+                                                // item.in = field.relation;
+                                                break;
+                                            case 'ModelTypeList':
+                                                break;
+                                            case 'Enum':
+                                                schema.type = 'string'
+                                                schema.enum = field.enum
+                                                schema.default = field.default || field.enum[0]
+                                                break;
+                                            case 'ObjectID':
+                                                schema.type = 'string'
+                                            default:
+                                                break;
+                                        }
+
+                                        // item.required = field.required || false;
+
+                                        object[i] = schema;
+                                    }
+
+                                    return object
+                                })(),
+                            },
                         }
-                        let schema = {
-                            type: 'string'
-                        }
-
-                        switch (field.resolve.name) {
-                            case 'String':
-                                schema.type = 'string'
-                                break;
-                            case 'Number':
-                                schema.type = 'number'
-
-                                break;
-                            case 'Date':
-                                schema.type = 'number'
-
-                                break;
-                            case 'ModelTypeRelation':
-                                item.in = field.relation;
-                                break;
-                            case 'ModelTypeList':
-                                break;
-                            case 'Enum':
-                                schema.type = 'string'
-                                schema.enum = field.enum
-                                schema.default = field.default || field.enum[0]
-                                break;
-                            case 'ObjectID':
-                                schema.type = 'string'
-                            default:
-                                break;
-                        }
-
-
-                        item.required = field.required || false;
-
-                        object.push(item);
                     }
+                },
+                required: true
+            },
 
-                    return object
-                })(),
-            ],
             // requestBody: {
             //     content: {
             //         'application/json': {
@@ -540,22 +667,31 @@ function generateApiDocs(model) {
 function generateRouter(model, app) {
     let Model = getModel(model.name);
     app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
-        if (req.params.id) {
-            let {data, error} = await Model.findOne(req.params.id);
-            if (error) {
-                return res.status(type.STATUS_SERVER_ERROR).json({ error })
-            }
-            return res.json(data);
-        }
+        // if (req.params.id) {
+        //     let { data, error } = await Model.findOne(req.params.id);
+        //     if (error) {
+        //         return res.status(type.STATUS_SERVER_ERROR).json({ error })
+        //     }
+        //     return res.json(data);
+        // }
 
-        let { page = 1, limit = defaultConfig.limit } = req.query;
 
-        let { data, error, paginate } = await Model.find(undefined, { page: parseInt(page), limit: parseInt(limit) });
+        // let { page = 1, limit = defaultConfig.limit } = req.query,
+        //     query = req.query;
 
-        if (error) {
-            return res.status(type.STATUS_SERVER_ERROR).json({ error })
-        }
-        res.json({ data, paginate });
+        // delete query.page;
+        // delete query.limit;
+        // console.log(query)
+
+        // let { data, error, paginate } = await Model.find(query, { page: parseInt(page), limit: parseInt(limit) });
+
+        // if (error) {
+        //     return res.status(type.STATUS_SERVER_ERROR).json({ error })
+        // }
+        // res.json({ data, paginate });
+
+
+
 
     })
 

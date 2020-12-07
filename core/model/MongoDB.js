@@ -178,7 +178,21 @@ export default class MongoDB {
 
     insert() { }
 
-    insertMany() { }
+    insertMany(data) { 
+        if(!Array.isArray(data)){
+            data = [data];
+        }
+        return new Promise((resolve, reject) => {
+            this.collection.insertMany(data, (error, data) =>{
+                if(error){
+                    resolve({error})
+                }
+                else{
+                    resolve({insertedCount: data.insertedCount})
+                }
+            });
+        })
+    }
 
     async insertOne(data) {
         if (data._id) delete data._id;

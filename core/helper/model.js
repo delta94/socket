@@ -273,30 +273,43 @@ export async function ModelTypeRelation(data) {
                 if (!Array.isArray(data)) {
                     data = [data]
                 }
-                f = data.map(e => ObjectID(e))
-                f = { _id: { $in: f } }
+                if(data.length > 0){
+                    f = data.map(e => {
+                        if(ObjectID.isValid(e)) return ObjectID(e)
+                        return e;
+                    })
+                    f = { _id: { $in: f } }
+                }
+                
             } else {
-                f = { _id: ObjectID(data) }
+                if(ObjectID.isValid(data)){
+                    f = { _id: ObjectID(data) }
+                }
+                
             }
+            
+            let { data: res, error } = f ? await getModel(this.relation).find(f) : { data: null, error: null}
 
-            let { data: res, error } = await getModel(this.relation).find(f)
 
-
-            if (this.multi) {
-                res = res.map(e => ObjectID(e._id));
-
-            } else {
-                if (res[0]) {
-                    res = ObjectID(res[0]._id)
+            if(res){
+                if (this.multi) {
+                    res = res.map(e => ObjectID(e._id));
+    
                 } else {
-                    res = null
+                    if (res[0]) {
+                        res = ObjectID(res[0]._id)
+                    } else {
+                        res = null
+                    }
                 }
             }
+
+            
 
             if (this.required &&
                 (
                     (Array.isArray(res) && res.length === 0) ||
-                    res === null
+                    !res
                 )
             ) {
                 resolve([null, `Data not match with "${this.relation}" please check again`]);

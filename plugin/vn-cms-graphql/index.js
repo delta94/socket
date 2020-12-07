@@ -76,7 +76,7 @@ function generateRoot(){
                             delete args.id;
                         }
 
-                        let [data, err] = await getModel(i).findOne(args);
+                        let {data, error} = await getModel(i).findOne(args);
 
                         return data;
                     }
@@ -128,7 +128,7 @@ function generateRoot(){
                         if(isEmptyObject(args)){
                             args = undefined;
                         }
-                        let [data, err, paginate] = await getModel(i).find(args, paging);
+                        let {data, error, paginate} = await getModel(i).find(args, paging);
                         return {
                             data,
                             paginate
@@ -158,9 +158,9 @@ function generateMutation(){
                     args,
                     resolve: async (parent, args) => {
                         console.log(args)
-                        let [data, err] = await getModel(i).insertOrUpdate(args);
-                        if (err) {
-                            throw new GraphQLError(err);
+                        let {data, error} = await getModel(i).insertOrUpdate(args);
+                        if (error) {
+                            throw new GraphQLError(error);
                         }
                         return data;
                     }
@@ -174,9 +174,9 @@ function generateMutation(){
                     args: argsDelete,
                     resolve: async (parent, args) => {
                         console.log(args)
-                        let [data, err] = await getModel(i).delete(args);
-                        if (err) {
-                            throw new GraphQLError(err);
+                        let {data, error} = await getModel(i).delete(args);
+                        if (error) {
+                            throw new GraphQLError(error);
                         }
 
 
@@ -334,12 +334,12 @@ function generateOne(model) {
                                 f = { _id: ObjectID(parent[fieldName]) };
                             }
 
-                            let [res, error] = await getModel(field.relation).find(f);
+                            let {data, error} = await getModel(field.relation).find(f);
 
                             if (field.multi) {
-                                return res
+                                return data
                             } else {
-                                return res[0] || null;
+                                return data[0] || null;
                             }
                         }
                     }
