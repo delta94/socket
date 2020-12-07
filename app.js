@@ -89,6 +89,7 @@ async function loadModule() {
     server.listen(process.env.PORT || 8888);
 
     console.log('app listen on port: ' + process.env.PORT || 8888)
+    console.log('DEBUG', process.env.DEBUG);
 }
 
 loadModule();

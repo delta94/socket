@@ -23,13 +23,13 @@ export default {
 
     servers: [
         {
+            url: 'https://cfd-reactjs.herokuapp.com/rest',
+            description: 'Production server'
+        },
+        {
             url: process.env.DEBUG ? 'http://localhost:' + process.env.PORT + '/rest' : 'https://cfd-reactjs.herokuapp.com/rest',
             description: process.env.DEBUG ? 'Local server' :  'Production server'
         },
-        // {
-        //     url: 'https://cfd-reactjs.herokuapp.com/rest',
-        //     description: 'Production server'
-        // },
     ],
 
     // tags: [],
