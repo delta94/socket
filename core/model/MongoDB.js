@@ -130,9 +130,9 @@ export default class MongoDB {
                     delete data.id;
                 }
 
-                this.collection.find(data).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (err, res) {
-                    if (err) resolve([null, err]);
-                    else resolve([res, null]);
+                this.collection.find(data).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error, data) {
+                    if (error) resolve({ error });
+                    else resolve({ data });
                 });
             }),
             this.collection.countDocuments(data)])
@@ -140,7 +140,7 @@ export default class MongoDB {
         paginate = renderPaginate({ page, limit, countDocument });
 
 
-        return [...res1, paginate];
+        return { ...res1, paginate };
 
     }
 
@@ -190,25 +190,27 @@ export default class MongoDB {
             // console.log(res, error)
             //     return;
             if (error) {
-                resolve([null, error]);
+                resolve({ error });
             } else {
 
-                this.collection.insertOne(res, (err, res) => {
+                this.collection.insertOne(res, (error, res) => {
 
-                    if (err) {
-                        if (typeof err.keyValue === 'object') {
+                    if (error) {
+                        if (typeof error.keyValue === 'object') {
 
-                            let [key, value] = objectIndex(err.keyValue, 0);
-                            resolve([null, {
-                                [key]: this._fields[key].validate.unique || 'This field has exists, please use another value!'
-                            }]);
+                            let [key, value] = objectIndex(error.keyValue, 0);
+                            resolve({
+                                error: {
+                                    [key]: this._fields[key].validate.unique || 'This field has exists, please use another value!'
+                                }
+                            });
                         } else {
-                            resolve([null, err]);
+                            resolve({ error });
                         }
 
 
                     }
-                    else resolve([res.ops[0], null]);
+                    else resolve({ data: res.ops[0] });
                 });
             }
 
@@ -219,18 +221,14 @@ export default class MongoDB {
         return new Promise(async (resolve, reject) => {
 
 
-            let f = {}
-            let update = false;
-            if (ObjectIDValid(data._id) || ObjectIDValid(data.id)) {
-                f._id = ObjectID(data._id || data.id)
-                update = true;
-            }
+            let f = this._generateFind(data);
+            let update = Object.keys(f).length > 0;
 
             let [res, error] = await _prepareDataField(data, this._fields, update);
             // console.log(res, error)
             //     return;
             if (error) {
-                resolve([null, error]);
+                resolve({ error });
             } else {
 
 
@@ -238,40 +236,44 @@ export default class MongoDB {
                     delete res._id;
                     delete res.created_at;
 
-                    this.collection.findOneAndUpdate(f, [{ $set: res }], { new: true, returnOriginal: false }, (err, res) => {
-                        if (err) {
+                    this.collection.findOneAndUpdate(f, [{ $set: res }], { new: true, returnOriginal: false }, (error, res) => {
+                        if (error) {
 
-                            if (typeof err.keyValue === 'object') {
-                                let [key, value] = objectIndex(err.keyValue, 0);
-                                resolve([null, {
-                                    [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                                }]);
+                            if (typeof error.keyValue === 'object') {
+                                let [key, value] = objectIndex(error.keyValue, 0);
+                                resolve({
+                                    error: {
+                                        [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
+                                    }
+                                });
                             } else {
-                                resolve([null, err]);
+                                resolve({ error });
                             }
 
                         }
-                        else resolve([res.value, null]);
+                        else resolve({ data: res.value });
                     });
 
 
                 } else {
-                    this.collection.insertOne(res, (err, res) => {
-                        console.log(err, res)
-                        if (err) {
-                            if (typeof err.keyValue === 'object') {
+                    this.collection.insertOne(res, (error, res) => {
+                        console.log(error, res)
+                        if (error) {
+                            if (typeof error.keyValue === 'object') {
 
-                                let [key, value] = objectIndex(err.keyValue, 0);
-                                resolve([null, {
-                                    [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                                }]);
+                                let [key, value] = objectIndex(error.keyValue, 0);
+                                resolve({
+                                    error: {
+                                        [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
+                                    }
+                                });
                             } else {
-                                resolve([null, err]);
+                                resolve({ error });
                             }
 
 
                         }
-                        else resolve([res.ops[0], null]);
+                        else resolve({ data: res.ops[0] });
                     });
                 }
 
@@ -286,6 +288,8 @@ export default class MongoDB {
 
 
     async findOneAndUpdate(find = {}, data) {
+        this._generateFind(find, true);
+
         return new Promise((resolve, reject) => {
             this.collection.findOneAndUpdate(find, [{ $set: data }], { new: false, returnOriginal: false }, (err, res) => {
                 if (err) {
@@ -311,41 +315,37 @@ export default class MongoDB {
     async updateOne(find = {}, data) {
         return new Promise(async (resolve, reject) => {
 
-
-            if (ObjectIDValid(find._id) || ObjectIDValid(find.id)) {
-                find._id = ObjectID(find._id || find.id)
-
-                delete find.id;
-            }
-
+            this._generateFind(find, true)
 
             let [res, error] = await _prepareDataField(data, this._fields, true);
 
             if (error) {
-                resolve([null, error]);
+                resolve({ error });
             } else {
 
 
                 delete res._id;
                 delete res.created_at;
-                this.collection.findOneAndUpdate(find, { $set: res }, { returnOriginal: false }, (err, res) => {
+                this.collection.findOneAndUpdate(find, { $set: res }, { returnOriginal: false }, (error, res) => {
 
 
-                    if (err) {
+                    if (error) {
 
-                        if (typeof err.keyValue === 'object') {
-                            let [key, value] = objectIndex(err.keyValue, 0);
-                            resolve([null, {
-                                [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                            }]);
+                        if (typeof error.keyValue === 'object') {
+                            let [key, value] = objectIndex(error.keyValue, 0);
+                            resolve({
+                                error: {
+                                    [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
+                                }
+                            });
                         } else {
-                            resolve([null, err]);
+                            resolve({error});
                         }
 
                     }
                     else {
                         Hook.do_action('updateOne-after', [res.value]);
-                        resolve([res.value, null]);
+                        resolve({data: res.value});
 
                     }
                 });
@@ -370,11 +370,11 @@ export default class MongoDB {
                 delete find.id;
             }
 
-            this.collection.deleteOne(find, (err, obj) => {
-                if (err) {
-                    resolve([null, err]);
+            this.collection.deleteOne(find, (error, obj) => {
+                if (error) {
+                    resolve({error});
                 } else {
-                    resolve([{ deleteCount: obj.deletedCount }])
+                    resolve({ deleteCount: obj.deletedCount })
                 }
             });
 
@@ -419,6 +419,23 @@ export default class MongoDB {
         //     this.collection.createIndex(indexObject)
         // }
 
+    }
+
+
+
+    _generateFind(find, assign = false) {
+        let f = {}
+        if (ObjectIDValid(find._id) || ObjectIDValid(find.id)) {
+            f._id = ObjectID(find._id || find.id)
+            if (assign) {
+                delete find._id
+                delete find.id
+
+                find._id = f._id
+            }
+        }
+
+        return f;
     }
 }
 

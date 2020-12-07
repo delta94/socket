@@ -1,0 +1,57 @@
+POST http://localhost:8888/api/login
+Content-Type: application/json
+
+{
+    "email": "vuong.dang@dna.vn"
+}
+
+####
+
+GET http://localhost:8888/api/get-user-info
+Authorization: Bear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTMxLCJleHAiOjE2MDcxNTM1NDF9.cU4stNjfuiRJfrAS1jTaPKCl7l0iZyQ2AZTUUbBs-t4
+
+
+###
+
+GET http://localhost:8888/api/user?page=20&limit=20
+Authorization: Bear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwLCJleHAiOjE2MDcyMzk5NTB9.zEa1Zoy8MVazyyGm3kafqBeapUyE6HxCwAcyn8wx_TE
+
+###
+
+POST http://localhost:8888/api/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwfQ.fV8rHnccYt00PdHI4IFllRkD97bLI758Cu69HHacwj8",
+  "email": "vuong.dang@dna.vn"
+}
+
+
+
+################ Course ######################
+GET http://localhost:8888/api/elearning_course
+Authorization: Bear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwLCJleHAiOjE2MDcyMzk5NTB9.zEa1Zoy8MVazyyGm3kafqBeapUyE6HxCwAcyn8wx_TE
+
+
+
+###
+
+POST http://localhost:8888/api/elearning_course
+Authorization: Bear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwLCJleHAiOjE2MDcyMzk5NTB9.zEa1Zoy8MVazyyGm3kafqBeapUyE6HxCwAcyn8wx_TE
+
+{
+
+}
+
+################ Teacher ######################
+GET http://localhost:8888/api/elearning_teacher
+Authorization: Bear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwLCJleHAiOjE2MDcyMzk5NTB9.zEa1Zoy8MVazyyGm3kafqBeapUyE6HxCwAcyn8wx_TE
+
+
+###
+POST http://localhost:8888/api/elearning_teacher
+Authorization: Bear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwLCJleHAiOjE2MDcyMzk5NTB9.zEa1Zoy8MVazyyGm3kafqBeapUyE6HxCwAcyn8wx_TE
+
+{
+  
+}

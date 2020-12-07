@@ -1,0 +1,92 @@
+@HOST = http://localhost:8888
+@AUTH_TOKEN = Bear eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MjQzMTgxLCJleHAiOjE2MDczMjk1ODF9.ZZrr8P7ZOw7xcxyhx6c2mBgyR4AuKUwuoXz0ahAn2fA
+@REFRESH_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwfQ.fV8rHnccYt00PdHI4IFllRkD97bLI758Cu69HHacwj8
+
+POST {{HOST}}/api/login
+Content-Type: application/json
+
+{
+    "email": "vuong.dang@dna.vn"
+}
+
+####
+
+GET {{HOST}}/api/get-user-info
+Authorization: {{AUTH_TOKEN}}
+
+
+###
+
+GET {{HOST}}/api/user?page=20&limit=20
+Authorization: {{AUTH_TOKEN}}
+
+###
+
+POST {{HOST}}/api/refresh-token
+Content-Type: application/json
+
+{
+    "refreshToken": "{{REFRESH_TOKEN}}",
+  "email": "vuong.dang@dna.vn"
+}
+
+
+
+################ Course ######################
+GET {{HOST}}/api/elearning_course
+Authorization: {{AUTH_TOKEN}}
+
+###
+
+GET {{HOST}}/api/elearning_course/5fcb86fdaf182d279c23428e
+Authorization: {{AUTH_TOKEN}}
+
+
+###
+
+
+POST {{HOST}}/api/elearning_course
+Authorization: {{AUTH_TOKEN}}
+Content-Type: application/json
+
+{
+    "name" : "CFD2 Căn Bản",
+    "teacher": "5fbd0ddf72696c37ac1f0563",
+    "price": 4000000,
+    "short_content": "Khóa học thực chiến dự án gồm HTML, CSS, CSS3, SCSS, Responsive với Media Query, Boostrap 4, Grunt, JS, jQuery.",
+    "description": "Bạn đang là sinh viên, người đi làm hoặc từ ngành khác chuyển qua đang theo đuổi nghề Front-End Developer và đã từng học HTML, CSS, thậm chí là Javascript, nhưng chưa có cơ hội thực chiến dự án thực tế Website Responsive theo bảng thiết kế hoàn chỉnh, tư duy về animation, cấu trúc thư mục dự án, tối ưu tốc độ website, cũng như quy trình phân tích và triển khai dự án thực tế, thì khóa học CFD Căn Bản là sự lựa chọn phù hợp nhất dành cho bạn.",
+    "open_date": 1607163511177,
+    "close_date": 1607163511177,
+    "status": "publish",
+    "cover": "https://www.cfdtraining.vn/uploads/course/khoa-hoc-react-js-javascript-cfd3.jpg",
+    "type": "offline",
+    "required": [
+        "Có laptop cá nhân và từng học qua HTML, CSS.",
+        "Cài đặt phần mềm Photoshop, Adobe illustrator, Skype, VS Code hoặc Sublime Text",
+        "Hạn chế tối đa nghỉ học và hoàn thành bài tập được giao.",
+        "Thành viên CFD phải có tinh thần chiến đấu, trách nhiệm và chủ động cao trong việc học ở văn phòng, cũng như tự học và làm thêm tại nhà."
+    ],
+    "formula": [
+        "Học offline với sự hướng dẫn của 4 mentor tại văn phòng CFD.",
+        "Dạy và thực hành thêm bài tập online thông qua Skype.",
+        "Hỗ trợ thông qua Teamviewer hoặc Ultraview",
+        "Được các mentor và các thành viên team CFD hỗ trợ thông qua group CFD Facebook"
+    ],
+    "schedule": {
+        "start": 1607163511177,
+        "time": "Thứ 2, Thứ 4, Thứ 6 từ 18h45-21h45"
+    }
+}
+
+################ Teacher ######################
+GET {{HOST}}/api/elearning_teacher
+Authorization: {{AUTH_TOKEN}}
+
+
+###
+POST {{HOST}}/api/elearning_teacher
+Authorization: {{AUTH_TOKEN}}
+
+{
+  
+}
