@@ -104,6 +104,7 @@ async function getStudent() {
                     avatar.thumbnail['thumbnail-2'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-2']
                 }
             }
+            e.avatar = avatar;
         } catch (err) {
 
         }
@@ -175,7 +176,7 @@ async function init(app, server) {
     app.get('/rest/generator', async (req, res) => {
         
         // Step 1
-        // getModel('elearning_student').insertMany(await getStudent())
+        getModel('user').insertMany(await getStudent())
         // getModel('elearning_teacher').insertMany(await getTeacher())
 
 
@@ -196,15 +197,15 @@ async function init(app, server) {
 
         // Step 3
 
-        let register = await getRegister();
-        let course = await getCourse();
+        // let register = await getRegister();
+        // let course = await getCourse();
 
-        register = register.map(e => {
-            e.cfd_course =  parseInt(e.cfd_course)
-            e.cfd_student = parseInt(e.cfd_student)
-            return e;
-        })
-        getModel('elearning_register').insertMany(register);
+        // register = register.map(e => {
+        //     e.cfd_course =  parseInt(e.cfd_course)
+        //     e.cfd_student = parseInt(e.cfd_student)
+        //     return e;
+        // })
+        // getModel('elearning_register').insertMany(register);
 
 
         res.json({cuss: 1});

@@ -22,6 +22,17 @@ class ElearingUser extends ModelClass{
             id: {
                 unique: true,
             },
+            total_coin_current: Number,
+            student_type: String,
+            review: String,
+            avatar: {
+
+            },
+            skype: String,
+            email: String,
+            phone: String,
+            title: String,
+            password: String
             // name: {
             //     type: String,
             //     required: true,
