@@ -80,6 +80,19 @@ async function getCourse() {
             e.mentor = JSON.parse(e.mentor)
             e.required = JSON.parse(e.required)
             e.thumbnail = JSON.parse(e.thubnail)
+            if(e.course_status === 'sap-khai-gian'){
+                e.course_status = 'sap-khai-giang'
+            }
+            if (e.thumbnail) {
+                e.thumbnail.link = '//cfdtraining.vn/' + e.thumbnail.link
+                if (e.thumbnail.thumbnail?.['thubnail-1']) {
+                    e.thumbnail.thumbnail['thumbnail-1'] = '//cfdtraining.vn/' + e.thumbnail.thumbnail['thubnail-1']
+                    delete e.thumbnail.thumbnail['thubnail-1']
+                }
+                if (e.thumbnail.thumbnail?.['thumbnail-2']) {
+                    e.thumbnail.thumbnail['thumbnail-2'] = '//cfdtraining.vn/' + e.thumbnail.thumbnail['thumbnail-2']
+                }
+            }
             e.content = JSON.parse(e.content)
             e.cfd_teacher = JSON.parse(e.cfd_teacher)
         } catch (err) {
@@ -97,11 +110,18 @@ async function getStudent() {
         try {
             avatar = JSON.parse(e.avatar)
             if (avatar.thumbnail) {
+                if(avatar.type_link !== 'external') {
+                    avatar.link = '//cfdtraining.vn/' + avatar.link
+                }
+
                 if (avatar.thumbnail?.['thumbnail-1']) {
-                    avatar.thumbnail['thumbnail-1'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-1']
+                    avatar.thumbnail['thumbnail-1'] = '//cfdtraining.vn/' + avatar.thumbnail['thumbnail-1']
+                    // delete avatar.thumbnail['thumbnail-1']
                 }
                 if (avatar.thumbnail?.['thumbnail-2']) {
-                    avatar.thumbnail['thumbnail-2'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-2']
+                    avatar.thumbnail['thumbnail-2'] = '//cfdtraining.vn/' + avatar.thumbnail['thumbnail-2']
+                    // delete avatar.thumbnail['thumbnail-2']
+
                 }
             }
             e.avatar = avatar;
@@ -122,11 +142,15 @@ async function getTeacher() {
         try {
             avatar = JSON.parse(e.avatar)
             if (avatar.thumbnail) {
-                if (avatar.thumbnail?.['thumbnail-1']) {
-                    avatar.thumbnail['thumbnail-1'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-1']
+                avatar.link = '//cfdtraining.vn/' + avatar.link
+
+                if (avatar.thumbnail?.['thubnail-1']) {
+                    avatar.thumbnail['thumbnail-1'] = '//cfdtraining.vn/' + avatar.thumbnail['thubnail-1']
+                    delete avatar.thumbnail['thubnail-1']
                 }
-                if (avatar.thumbnail?.['thumbnail-2']) {
-                    avatar.thumbnail['thumbnail-2'] = 'https://cfdtraining.vn/' + avatar.thumbnail['thumbnail-2']
+                if (avatar.thumbnail?.['thubnail-2']) {
+                    avatar.thumbnail['thumbnail-2'] = '//cfdtraining.vn/' + avatar.thumbnail['thubnail-2']
+                    delete avatar.thumbnail['thubnail-2']
                 }
             }
             e.avatar = avatar;
@@ -180,7 +204,7 @@ async function init(app, server) {
         // getModel('elearning_teacher').insertMany(await getTeacher())
 
 
-        // Step 2
+        // // Step 2
         // let teacher = await getTeacher();
         // let course = await getCourse();
 

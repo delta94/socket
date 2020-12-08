@@ -67,4 +67,4 @@ class ElearingUser extends ModelClass{
     
 }
 
-export default new ElearingUser;
+// export default new ElearingUser;
