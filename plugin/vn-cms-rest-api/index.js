@@ -99,7 +99,7 @@ async function getCourse() {
 
         }
         // return e
-        return selectSomeProperties(e, ['benefits', 'cfd_teacher', 'close_time', 'content', 'count_video', 'course_status', 'course_type', 'created_at', 'created_time', 'id', 'khoa', 'long_description', 'mentor', 'money', 'money_affiliate_1', 'money_affiliate_2', 'number_student_default', 'opening_time', 'required', 'schedule', 'short_description', 'slug', 'thumbnail', 'title', 'visibility'])
+        return selectSomeProperties(e, ['benefits', 'cfd_teacher', 'close_time', 'content', 'count_video', 'course_status', 'course_type', 'created_at', 'created_time', 'id', 'khoa', 'long_description', 'mentor', 'money', 'money_affiliate_1', 'money_affiliate_2', 'number_student_default', 'opening_time', 'required', 'schedule', 'short_description', 'slug', 'thumbnail', 'title', 'visibility','template_color_btn', 'template_color_banner'])
     })
 }
 
@@ -200,23 +200,23 @@ async function init(app, server) {
     app.get('/rest/generator', async (req, res) => {
         
         // Step 1
-        getModel('user').insertMany(await getStudent())
+        // getModel('user').insertMany(await getStudent())
         // getModel('elearning_teacher').insertMany(await getTeacher())
 
 
-        // // Step 2
-        // let teacher = await getTeacher();
-        // let course = await getCourse();
+        // Step 2
+        let teacher = await getTeacher();
+        let course = await getCourse();
 
-        // course = course.map(e => {
-        //     e.cfd_teacher = e.cfd_teacher.map(e => teacher.find(e1 => e.id === e1.id))
-        //     e.mentor = e.mentor.map(e => teacher.find(e1 => e.id === e1.id))
+        course = course.map(e => {
+            e.cfd_teacher = e.cfd_teacher.map(e => teacher.find(e1 => e.id === e1.id))
+            e.mentor = e.mentor.map(e => teacher.find(e1 => e.id === e1.id))
 
-        //     return e;
-        // })
+            return e;
+        })
 
 
-        // getModel('elearning_course').insertMany(course);
+        getModel('elearning_course').insertMany(course);
 
 
         // Step 3
