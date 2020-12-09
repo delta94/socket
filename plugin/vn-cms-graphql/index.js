@@ -84,20 +84,6 @@ function generateRoot(){
                     }
                 }
 
-                let paginate = new GraphQLObjectType({
-                    name: `paginate${capFirstChild(i)}`,
-                    
-                    fields: () => ({
-
-                        nextPage: {type: GraphQLInt},
-                        previousPage: {type: GraphQLInt},
-                        currentPage: {type: GraphQLInt},
-                        totalPage: {type: GraphQLInt},
-                        count: {type: GraphQLInt},
-                        perPage: {type: GraphQLInt},
-                    })
-                })
-
                 object[i + 's'] = {
                     type: new GraphQLObjectType({
                         name: `data${capFirstChild(i)}`,

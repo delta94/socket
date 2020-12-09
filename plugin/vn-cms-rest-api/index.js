@@ -53,7 +53,7 @@ const defaultConfig = {
     //         description: 'Production server'
     //     }
     // ],
-    // limit: 10
+    limit: 15
 }
 
 let swaggerOptions = {
@@ -457,6 +457,15 @@ function generateApiDocs(model) {
 
                         object.push(item);
                     }
+
+                    object.push({
+                        name: 'page',
+                        in: 'query'
+                    })
+                    object.push({
+                        name: 'limit',
+                        in: 'query'
+                    })
 
                     return object
                 })(),

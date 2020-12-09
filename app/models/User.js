@@ -18,13 +18,12 @@ class User extends Model{
     // name = 'user'
     constructor(){
         super('user', {
-            name: {
-                type: String,
-                required: true,
-                // index: true
-                // unique: true
-
-            },
+            // id: Number,
+            total_coin_current: Number,
+            student_type: String,
+            review: String,
+            avatar:{},
+            skype: String,
             email: {
                 type: String,
                 required: true,
@@ -34,16 +33,18 @@ class User extends Model{
                 //     unique: 'Email has exists, please use another email'
                 // }
             },
-            gender: {
-                enum: ['male', 'female'],
+            phone: String,
+            title: {
+                type: String,
                 required: true,
+                // index: true
+                // unique: true
+
             },
-            password: {
-                Type: TYPE.Hash
-            },
-            avatar: {
-                
-            }
+            password: String,
+            // password: {
+            //     Type: TYPE.Hash
+            // },
         } )
     }
 }
