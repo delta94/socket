@@ -74,7 +74,9 @@ export default (app) => {
 
     app.get('/api/get-user-info', authenticateToken, async (req, res) => {
         let { user } = req;
+
         if (user) {
+
             let { data, error } = await User.findOne(user._id);
 
             if (data) {

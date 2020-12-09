@@ -125,9 +125,8 @@ export default class MongoDB {
 
         let [res1, countDocument] = await Promise.all([
             new Promise((resolve, reject) => {
-                if (ObjectIDValid(data._id) || ObjectIDValid(data.id)) {
-                    data._id = ObjectID(data._id || data.id);
-                    delete data.id;
+                if (ObjectIDValid(data._id)) {
+                    data._id = ObjectID(data._id);
                 }
 
                 this.collection.find(data).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error, data) {
@@ -144,22 +143,29 @@ export default class MongoDB {
 
     }
 
-    async findOne(find) {
+    async findOne(find = {}) {
 
         let { cache } = await Hook.do_action('findOne-before', [...arguments]);
 
         if (cache) return { data: cache };
 
-        if (ObjectIDValid(find._id) || ObjectIDValid(find.id)) {
-            find._id = ObjectID(find._id || find.id);
-            delete find.id;
-        }
-
-        if (typeof find === 'string' && ObjectIDValid(find)) {
+        if(typeof find === 'string'){
             find = {
-                _id: ObjectID(find)
+                _id: find
             }
         }
+
+        if (ObjectIDValid(find._id)) {
+            find._id = ObjectID(find._id);
+        }
+
+
+        // if (typeof find === 'string' && ObjectIDValid(find)) {
+        //     find = {
+        //         _id: ObjectID(find)
+        //     }
+        // }
+
 
         return new Promise((resolve, reject) => {
             this.collection.findOne(find, function (error, data) {
@@ -196,7 +202,6 @@ export default class MongoDB {
 
     async insertOne(data) {
         if (data._id) delete data._id;
-        if (data.id) delete data.id;
 
         return new Promise(async (resolve, reject) => {
 
@@ -379,9 +384,8 @@ export default class MongoDB {
 
         return new Promise((resolve, reject) => {
 
-            if (ObjectIDValid(find._id) || ObjectIDValid(find.id)) {
-                find._id = ObjectID(find._id || find.id)
-                delete find.id;
+            if (ObjectIDValid(find._id)) {
+                find._id = ObjectID(find._id)
             }
 
             this.collection.deleteOne(find, (error, obj) => {
@@ -439,11 +443,10 @@ export default class MongoDB {
 
     _generateFind(find, assign = false) {
         let f = {}
-        if (ObjectIDValid(find._id) || ObjectIDValid(find.id)) {
-            f._id = ObjectID(find._id || find.id)
+        if (ObjectIDValid(find._id)) {
+            f._id = ObjectID(find._id )
             if (assign) {
                 delete find._id
-                delete find.id
 
                 find._id = f._id
             }
