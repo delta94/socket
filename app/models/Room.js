@@ -42,4 +42,4 @@ class Room extends Model{
 }
 
 
-export default new Room;
+// export default new Room;

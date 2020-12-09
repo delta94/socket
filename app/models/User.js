@@ -42,7 +42,7 @@ class User extends Model{
                 Type: TYPE.Hash
             },
             avatar: {
-                Type: String
+                
             }
         } )
     }

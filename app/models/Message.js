@@ -40,4 +40,4 @@ class Message extends Model {
 }
 
 
-export default new Message;
+// export default new Message;

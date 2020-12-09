@@ -406,7 +406,7 @@ function generateApiDocs(model) {
 
     swaggerOptions.paths['/' + model.name] = {
         get: {
-            tags: [model.restFulTagName || 'CRUD operations generator'],
+            tags: [model.name],
             description: 'Get ' + model.name,
             operationId: 'get' + capitalName,
             parameters: [
@@ -517,7 +517,8 @@ function generateApiDocs(model) {
             // }
         },
         post: {
-            tags: [model.restFulTagName || 'CRUD operations generator'],
+            // tags: [model.restFulTagName || 'CRUD operations generator'],
+            tags: [model.name],
             description: 'Create ' + model.name,
             operationId: 'create' + capitalName,
             requestBody: {
@@ -619,7 +620,9 @@ function generateApiDocs(model) {
             // }
         },
         put: {
-            tags: [model.restFulTagName || 'CRUD operations generator'],
+            // tags: [model.restFulTagName || 'CRUD operations generator'],
+            tags: [model.name],
+
             description: 'Update ' + model.name,
             operationId: 'update' + capitalName,
             parameters: [],
@@ -654,7 +657,9 @@ function generateApiDocs(model) {
             // }
         },
         delete: {
-            tags: [model.restFulTagName || 'CRUD operations generator'],
+            // tags: [model.restFulTagName || 'CRUD operations generator'],
+            tags: [model.name],
+
             description: 'Delete ' + model.name,
             operationId: 'delete' + capitalName,
             parameters: [],

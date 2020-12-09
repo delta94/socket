@@ -1,5 +1,6 @@
 import expressgraphql from 'express-graphql'
 import graphql from 'graphql';
+import graphqlType from 'graphql-type-json';
 import mongodb from 'mongodb';
 import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper.js';
 import { ModelTypeList } from '../../core/helper/model.js';
@@ -8,6 +9,7 @@ import Hook from '../../core/Hook.js';
 
 import { getAllModel, getModel } from '../../core/Model.js';
 
+const {GraphQLJSON, GraphQLJSONObject } = graphqlType;
 
 
 let { ObjectID } = mongodb;
@@ -104,7 +106,7 @@ function generateRoot(){
                                 type: new GraphQLList(global_store[i])
                             },
                             paginate: {
-                                type: paginate
+                                type: GraphQLJSON
                             }
                         })
                     }),
@@ -310,13 +312,14 @@ function generateOne(model) {
                     fieldName = i,
                     field = _fields[i];
 
-
                 if (field.resolve === Number) {
                     FieldType = GraphQLFloat
                 } else if (field.resolve === Boolean) {
                     FieldType = GraphQLBoolean
                 } else if (field.resolve === Date) {
                     FieldType = GraphQLFloat
+                }else if(field.type === 'OBJECT'){
+                    FieldType = GraphQLJSON
                 }
 
 
