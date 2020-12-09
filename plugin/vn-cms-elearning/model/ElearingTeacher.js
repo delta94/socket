@@ -4,9 +4,12 @@ import ModelClass from "../../../core/Model.js";
 class Teacher extends ModelClass{
     constructor(){
         super('elearning_teacher', {
-            id: {
-                unique: true,
-            },
+            id: Number,
+            title: String,
+            email: String,
+            avatar: {},
+            position: String,
+            description: String
             // name: {
             //     type: String,
             //     required: true,

@@ -201,20 +201,25 @@ async function init(app, server) {
         
         // Step 1
         // getModel('user').insertMany(await getStudent())
-        // getModel('elearning_teacher').insertMany(await getTeacher())
+        //getModel('elearning_teacher').insertMany(await getTeacher())
 
 
         // Step 2
-        let teacher = await getTeacher();
+        //  let teacher = await getTeacher();
         let course = await getCourse();
 
-        course = course.map(e => {
-            e.cfd_teacher = e.cfd_teacher.map(e => teacher.find(e1 => e.id === e1.id))
-            e.mentor = e.mentor.map(e => teacher.find(e1 => e.id === e1.id))
-
-            return e;
-        })
-
+        for(let i in course){
+            let e = course[i]
+            // e.cfd_teacher = e.cfd_teacher.map(e => teacher.find(e1 => e.id === e1.id))
+            let teacher = e.cfd_teacher[0]
+            // teacher = teacher[0]
+            let { data, error } =  await getModel('elearning_teacher').findOne({email: teacher.email})
+            // e.mentor = e.mentor.map(e => teacher.find(e1 => e.id === e1.id))
+            if(data){
+                e.cfd_teacher = data._id
+            }
+        }
+        
 
         getModel('elearning_course').insertMany(course);
 
@@ -232,7 +237,7 @@ async function init(app, server) {
         // getModel('elearning_register').insertMany(register);
 
 
-        res.json({cuss: 1});
+        res.json({course});
     })
 
 

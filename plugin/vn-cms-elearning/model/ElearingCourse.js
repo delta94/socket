@@ -1,3 +1,4 @@
+import { Multi } from "redis";
 import ModelClass, { TYPE } from "../../../core/Model.js";
 class Course extends ModelClass{
     constructor(){
