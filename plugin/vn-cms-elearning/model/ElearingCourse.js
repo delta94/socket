@@ -35,6 +35,10 @@ class Course extends ModelClass{
                 enum: ['publish','trash'],
                 default: 'offline'
             },
+            mentor: {
+                relation: 'elearning_teacher',
+                multi: true
+            }
             // title: {
             //     type: String,
             //     required: true,
@@ -81,10 +85,7 @@ class Course extends ModelClass{
             //         time: String
             //     }
             // },
-            // mentor: {
-            //     relation: 'elearning_teacher',
-            //     multi: true
-            // }
+            
         } )
 
         this.restFulTagName = 'Elearning API'
