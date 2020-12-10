@@ -5,11 +5,12 @@ import mongodb from 'mongodb';
 import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper.js';
 import { ModelTypeList } from '../../core/helper/model.js';
 import Hook from '../../core/Hook.js';
+import graphqlConfig from '../../config/graphql.js';
 
 
 import { getAllModel, getModel } from '../../core/Model.js';
 
-const {GraphQLJSON, GraphQLJSONObject } = graphqlType;
+const { GraphQLJSON, GraphQLJSONObject } = graphqlType;
 
 
 let { ObjectID } = mongodb;
@@ -30,6 +31,9 @@ function capFirstChild(str) {
 
 function createModelGraphQL(app, server) {
     let models = getAllModel();
+    models = models.filterFun(e => graphqlConfig.list.includes(e.name));
+
+
     for (let i in models) {
         if (models[i].graphql !== false) {
             // generateList(models[i])
@@ -57,7 +61,7 @@ function createModelGraphQL(app, server) {
     }))
 }
 
-function generateRoot(){
+function generateRoot() {
     return new GraphQLObjectType({
         name: 'Query',
         description: 'Root Query',
@@ -78,7 +82,7 @@ function generateRoot(){
                             delete args.id;
                         }
 
-                        let {data, error} = await getModel(i).findOne(args);
+                        let { data, error } = await getModel(i).findOne(args);
 
                         return data;
                     }
@@ -103,20 +107,20 @@ function generateRoot(){
                         page: { type: GraphQLInt },
                     },
                     resolve: async (parent, args) => {
-                        let {limit, page} = args;
+                        let { limit, page } = args;
                         delete args.limit;
                         delete args.page;
                         let paging = undefined;
-                        if(limit || page){
+                        if (limit || page) {
                             paging = {
                                 limit: limit || 10,
                                 page: page || 10
                             }
                         }
-                        if(isEmptyObject(args)){
+                        if (isEmptyObject(args)) {
                             args = undefined;
                         }
-                        let {data, error, paginate} = await getModel(i).find(args, paging);
+                        let { data, error, paginate } = await getModel(i).find(args, paging);
                         return {
                             data,
                             paginate
@@ -131,7 +135,7 @@ function generateRoot(){
     })
 }
 
-function generateMutation(){
+function generateMutation() {
     return new GraphQLObjectType({
         name: 'Mutation',
         description: 'Root Mutation',
@@ -146,7 +150,7 @@ function generateMutation(){
                     args,
                     resolve: async (parent, args) => {
                         console.log(args)
-                        let {data, error} = await getModel(i).insertOrUpdate(args);
+                        let { data, error } = await getModel(i).insertOrUpdate(args);
                         if (error) {
                             throw new GraphQLError(error);
                         }
@@ -162,7 +166,7 @@ function generateMutation(){
                     args: argsDelete,
                     resolve: async (parent, args) => {
                         console.log(args)
-                        let {data, error} = await getModel(i).delete(args);
+                        let { data, error } = await getModel(i).delete(args);
                         if (error) {
                             throw new GraphQLError(error);
                         }
@@ -179,7 +183,7 @@ function generateMutation(){
         }
     })
 }
-function generateArgsMutation(model){
+function generateArgsMutation(model) {
     let { _fields, name } = model;
     global_args_mutation[name] = {};
 
@@ -218,7 +222,7 @@ function generateArgsMutation(model){
 
 //     let { _fields, name } = model;
 
-    
+
 
 //     global_store_many[name] = new GraphQLObjectType({
 //         name: model.constructor.name,
@@ -304,7 +308,7 @@ function generateOne(model) {
                     FieldType = GraphQLBoolean
                 } else if (field.resolve === Date) {
                     FieldType = GraphQLFloat
-                }else if(field.type === 'OBJECT'){
+                } else if (field.type === 'OBJECT') {
                     FieldType = GraphQLJSON
                 }
 
@@ -323,7 +327,7 @@ function generateOne(model) {
                                 f = { _id: ObjectID(parent[fieldName]) };
                             }
 
-                            let {data, error} = await getModel(field.relation).find(f);
+                            let { data, error } = await getModel(field.relation).find(f);
 
                             if (field.multi) {
                                 return data
@@ -383,7 +387,7 @@ function generateFields(model) {
                 FieldType = GraphQLString
             }
         }
-        
+
 
         global_field_store[name][fieldName] = { type: FieldType }
     }

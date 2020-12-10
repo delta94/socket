@@ -10,8 +10,8 @@ const { TokenExpiredError, JsonWebTokenError } = jwt;
 dotenv.config();
 
 function generateAccessToken(user) {
-    let {email, _id} = user;
-    return jwt.sign({email, _id}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.EXPIRE_TOKEN });
+    let { email, _id } = user;
+    return jwt.sign({ email, _id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.EXPIRE_TOKEN });
 }
 
 function cacheError(err, res) {
@@ -58,7 +58,6 @@ export default (app) => {
                 }
             });
             this.graphql = false;
-            this.restAPI = false;
         }
     }
 
@@ -66,9 +65,9 @@ export default (app) => {
 
 
     app.get('/api/generate-token', async (req, res) => {
-        
 
-        let accessToken = jwt.sign({'email': 'admin'}, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15y' });
+
+        let accessToken = jwt.sign({ 'email': 'admin' }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15y' });
         return res.json({ accessToken: accessToken })
     })
 

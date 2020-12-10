@@ -6,6 +6,23 @@ import path from 'path';
 // let configs = getFiles('config');
 
 
+Object.defineProperty(Object.prototype, "filterFun", {
+    enumerable: false,
+    value: function (callback) {
+        if (this instanceof Array) {
+            return this.filter(callback);
+        }
+
+
+        let res = {};
+        for (let i in this) {
+            if (callback(this[i], i)) {
+                res[i] = this[i]
+            }
+        }
+        return res;
+    }
+});
 
 
 export function getFiles(dir, files_) {
@@ -29,40 +46,40 @@ export function getFiles(dir, files_) {
 
 let config_store = {};
 
-export async function config(name = 'App' , slug = '') {
+export async function config(name = 'App', slug = '') {
 
-    if(name in config_store) {
-        if(slug){
+    if (name in config_store) {
+        if (slug) {
             return config_store[name][slug]
         }
         return config_store[name];
     }
 
 
-    let absolutePath = path.resolve('config/'+ name + '.js');
+    let absolutePath = path.resolve('config/' + name + '.js');
     let rootPath = 'config/' + name + '.js';
 
 
-    try{
+    try {
 
-        if(fs.existsSync(rootPath)){
+        if (fs.existsSync(rootPath)) {
             let configObject = await import('file:' + absolutePath);
 
             config_store[name] = configObject.default;
 
-            if(slug){
-                
+            if (slug) {
+
                 return configObject.default[slug]
             }
 
-            return {...configObject.default};
+            return { ...configObject.default };
         }
-    }catch(e){
+    } catch (e) {
         console.log(e)
     }
 
     return {};
-    
+
 }
 
 export function copyObjectExcept(object, arr = []) {
@@ -108,6 +125,6 @@ export function capitalizeFirstLetter(string) {
 }
 
 
-export function isEmptyObject(obj){
+export function isEmptyObject(obj) {
     return Object.keys(obj).length === 0 && obj.constructor === Object
 }

@@ -1,7 +1,7 @@
 
 import ModelClass, { TYPE } from "../../../core/Model.js";
-class Course extends ModelClass{
-    constructor(){
+class Course extends ModelClass {
+    constructor() {
         super('elearning_course', {
             id: {
                 unique: true,
@@ -19,8 +19,8 @@ class Course extends ModelClass{
             },
             khoa: Number,
             money: Number,
-            course_type:{
-                enum: ['offline','online'],
+            course_type: {
+                enum: ['offline', 'online'],
                 default: 'offline'
             },
             benefits: [],
@@ -32,13 +32,14 @@ class Course extends ModelClass{
             slug: String,
             title: String,
             visibility: {
-                enum: ['publish','trash'],
+                enum: ['publish', 'trash'],
                 default: 'offline'
             },
             mentor: {
                 relation: 'elearning_teacher',
                 multi: true
-            }
+            },
+            thumbnail: {}
             // title: {
             //     type: String,
             //     required: true,
@@ -85,8 +86,8 @@ class Course extends ModelClass{
             //         time: String
             //     }
             // },
-            
-        } )
+
+        })
 
         this.restFulTagName = 'Elearning API'
     }

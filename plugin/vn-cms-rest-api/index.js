@@ -1,7 +1,8 @@
 // import swaggerJSDoc from "swagger-jsdoc";
 import Hook from "../../core/Hook.js";
 import swaggerUi from 'swagger-ui-express'
-import { config } from "../../core/helper/helper.js";
+// import { config } from "../../core/helper/helper.js";
+import restConfig from '../../config/rest.js';
 import { capitalizeFirstLetter } from "../../core/helper/helper.js";
 import { getAllModel, getModel } from "../../core/Model.js";
 import { authenticateToken } from "../../core/Authentication.js";
@@ -18,41 +19,9 @@ const type = {
     STATUS_SERVER_ERROR: 500,
 }
 
-let prefix = '/rest';
+let prefix = (restConfig.prefix ? ('/' + restConfig.prefix.replace(/^\//, '')) : null) || '/rest';
 
 const defaultConfig = {
-    // openapi: '3.0.1',
-    // info: {
-    //     version: '1.0.0',
-    //     title: 'RestFul API Documents',
-    //     description: 'Management All API genenerator by Model, maked by vn-cms-rest-api',
-    //     termsOfService: 'http://api_url/terms/',
-    //     contact: {
-    //         name: 'Dang Thuyen Vuong',
-    //         email: 'dangthuyenvuong@gmail.com',
-    //         url: 'https://dangthuyenvuong.com/'
-    //     },
-    //     license: {
-    //         name: 'Apache 2.0',
-    //         url: 'https://www.apache.org/licenses/LICENSE-2.0.html'
-    //     }
-    // },
-    // /* ... */
-
-    // servers: [
-    //     {
-    //         url: 'http://localhost:' + process.env.PORT,
-    //         description: 'Local server'
-    //     },
-    //     {
-    //         url: 'https://api_url_testing',
-    //         description: 'Testing server'
-    //     },
-    //     {
-    //         url: 'https://api_url_production',
-    //         description: 'Production server'
-    //     }
-    // ],
     limit: 15
 }
 
@@ -80,7 +49,7 @@ async function getCourse() {
             e.mentor = JSON.parse(e.mentor)
             e.required = JSON.parse(e.required)
             e.thumbnail = JSON.parse(e.thubnail)
-            if(e.course_status === 'sap-khai-gian'){
+            if (e.course_status === 'sap-khai-gian') {
                 e.course_status = 'sap-khai-giang'
             }
             if (e.thumbnail) {
@@ -99,7 +68,7 @@ async function getCourse() {
 
         }
         // return e
-        return selectSomeProperties(e, ['benefits', 'cfd_teacher', 'close_time', 'content', 'count_video', 'course_status', 'course_type', 'created_at', 'created_time', 'id', 'khoa', 'long_description', 'mentor', 'money', 'money_affiliate_1', 'money_affiliate_2', 'number_student_default', 'opening_time', 'required', 'schedule', 'short_description', 'slug', 'thumbnail', 'title', 'visibility','template_color_btn', 'template_color_banner'])
+        return selectSomeProperties(e, ['benefits', 'cfd_teacher', 'close_time', 'content', 'count_video', 'course_status', 'course_type', 'created_at', 'created_time', 'id', 'khoa', 'long_description', 'mentor', 'money', 'money_affiliate_1', 'money_affiliate_2', 'number_student_default', 'opening_time', 'required', 'schedule', 'short_description', 'slug', 'thumbnail', 'title', 'visibility', 'template_color_btn', 'template_color_banner'])
     })
 }
 
@@ -110,7 +79,7 @@ async function getStudent() {
         try {
             avatar = JSON.parse(e.avatar)
             if (avatar.thumbnail) {
-                if(avatar.type_link !== 'external') {
+                if (avatar.type_link !== 'external') {
                     avatar.link = '//cfdtraining.vn/' + avatar.link
                 }
 
@@ -129,7 +98,7 @@ async function getStudent() {
 
         }
 
-        e = selectSomeProperties(e, ['title', 'avatar','id','email','phone','review','skype','student_type','total_coin_current']);
+        e = selectSomeProperties(e, ['title', 'avatar', 'id', 'email', 'phone', 'review', 'skype', 'student_type', 'total_coin_current']);
         e.password = e.email;
         return e;
     })
@@ -160,7 +129,7 @@ async function getTeacher() {
 
         // return e;
 
-        return selectSomeProperties(e, ['avatar','description', 'id', 'position' , 'slug', 'title', 'website']);
+        return selectSomeProperties(e, ['avatar', 'description', 'id', 'position', 'slug', 'title', 'website']);
     })
 }
 
@@ -168,37 +137,34 @@ async function getRegister(params) {
     let data = await fetch('https://www.cfdtraining.vn/api/rest/cfd_course_register').then(res => res.json());
     return data.map(e => {
         try {
-           e.attendance = JSON.parse(e.attendance)
-           e.payment = JSON.parse(e.payment)
+            e.attendance = JSON.parse(e.attendance)
+            e.payment = JSON.parse(e.payment)
         } catch (err) {
 
         }
 
-        return selectSomeProperties(e, ['id','cfd_course', 'cfd_student', 'coin_use' , 'payment', 'payment_method', 'title', 'trang_thai']);
+        return selectSomeProperties(e, ['id', 'cfd_course', 'cfd_student', 'coin_use', 'payment', 'payment_method', 'title', 'trang_thai']);
     })
 }
+
+
+let models;
 
 async function init(app, server) {
 
 
-    let configRest = await config('RESTFulAPI');
-    if (configRest.prefix) {
-        prefix = '/' + configRest.prefix.replace(/^\//, '')
-
-    }
-
-
-    let models = getAllModel();
+    models = getAllModel();
+    models = models.filterFun(e => restConfig.list.includes(e.name))
     for (let i in models) {
 
-        if (models[i].restAPI === false) continue;
-        generateApiDocs(models[i])
-        generateRouter(models[i], app);
+        if (restConfig.list.includes(models[i].name)) {
+            generateApiDocs(models[i])
+            generateRouter(models[i], app);
+        }
     }
 
-
     app.get('/rest/generator', async (req, res) => {
-        
+
         // Step 1
         // getModel('user').insertMany(await getStudent())
         //getModel('elearning_teacher').insertMany(await getTeacher())
@@ -208,29 +174,29 @@ async function init(app, server) {
         //  let teacher = await getTeacher();
         let course = await getCourse();
 
-        for(let i in course){
+        for (let i in course) {
             let e = course[i]
             // e.cfd_teacher = e.cfd_teacher.map(e => teacher.find(e1 => e.id === e1.id))
             let teacher = e.cfd_teacher[0]
             // teacher = teacher[0]
-            let { data, error } =  await getModel('elearning_teacher').findOne({email: teacher.email})
+            let { data, error } = await getModel('elearning_teacher').findOne({ email: teacher.email })
 
 
             let mentors = e.mentor
             let mentor = [];
-            for(let j in mentors){
-                let {data, error} = await getModel('elearning_teacher').findOne({id: mentors[j].id});
-                if(data){
+            for (let j in mentors) {
+                let { data, error } = await getModel('elearning_teacher').findOne({ id: mentors[j].id });
+                if (data) {
                     mentor.push(data._id)
                 }
             }
             e.mentor = mentor;
             // e.mentor = e.mentor.map(e => teacher.find(e1 => e.id === e1.id))
-            if(data){
+            if (data) {
                 e.cfd_teacher = data._id
             }
         }
-        
+
 
         getModel('elearning_course').insertMany(course);
 
@@ -248,7 +214,7 @@ async function init(app, server) {
         // getModel('elearning_register').insertMany(register);
 
 
-        res.json({course});
+        res.json({ course });
     })
 
 
@@ -407,7 +373,7 @@ async function init(app, server) {
         ],
         /* ... */
         ...defaultConfig,
-        ...configRest
+        ...restConfig.rest
     }
 
     // const swaggerDocs = swaggerJSDoc(swaggerOptions)
@@ -723,7 +689,7 @@ function generateApiDocs(model) {
 
 function generateRouter(model, app) {
     let Model = getModel(model.name);
-    app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
+    app.get(prefix + '/' + model.name + '/:id?', async (req, res) => {
         if (req.params.id) {
             let { data, error } = await Model.findOne(req.params.id);
             if (error) {
@@ -739,14 +705,14 @@ function generateRouter(model, app) {
         delete query.page;
         delete query.limit;
 
-        for(let i in query){
-            if(i in model._fields){
-                if(model._fields[i].resolve.name === 'Number'){
+        for (let i in query) {
+            if (i in model._fields) {
+                if (model._fields[i].resolve.name === 'Number') {
                     query[i] = parseInt(query[i])
                 }
             }
         }
-        
+
 
         let { data, error, paginate } = await Model.find(query, { page: parseInt(page), limit: parseInt(limit) });
 
