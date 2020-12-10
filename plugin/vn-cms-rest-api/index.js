@@ -214,6 +214,17 @@ async function init(app, server) {
             let teacher = e.cfd_teacher[0]
             // teacher = teacher[0]
             let { data, error } =  await getModel('elearning_teacher').findOne({email: teacher.email})
+
+
+            let mentors = e.mentor
+            let mentor = [];
+            for(let j in mentors){
+                let {data, error} = await getModel('elearning_teacher').findOne({id: mentors[j].id});
+                if(data){
+                    mentor.push(data._id)
+                }
+            }
+            e.mentor = mentor;
             // e.mentor = e.mentor.map(e => teacher.find(e1 => e.id === e1.id))
             if(data){
                 e.cfd_teacher = data._id

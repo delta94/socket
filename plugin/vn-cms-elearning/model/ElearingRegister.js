@@ -5,8 +5,8 @@ class Register extends ModelClass{
     constructor(){
         super('elearning_register', {
             id: {
-                // unique: true,
-                type: Number
+                type: Number,
+                unique: true
             },
             coin_use: Number,
             payment_method: {
