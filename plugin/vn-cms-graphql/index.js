@@ -6,7 +6,10 @@ import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper.js';
 import { ModelTypeList } from '../../core/helper/model.js';
 import Hook from '../../core/Hook.js';
 import graphqlConfig from '../../config/graphql.js';
+import fs from 'fs';
 
+
+const generalConfig = JSON.parse(fs.readFileSync(__dirname + '/config/general.json'));
 
 import { getAllModel, getModel } from '../../core/Model.js';
 
@@ -113,14 +116,15 @@ function generateRoot() {
                         let paging = undefined;
                         if (limit || page) {
                             paging = {
-                                limit: limit || 10,
-                                page: page || 10
+                                limit: limit || generalConfig.limit,
+                                page: page || 0
                             }
                         }
                         if (isEmptyObject(args)) {
                             args = undefined;
                         }
                         let { data, error, paginate } = await getModel(i).find(args, paging);
+
                         return {
                             data,
                             paginate
