@@ -314,6 +314,8 @@ function generateOne(model) {
                     FieldType = GraphQLFloat
                 } else if (field.type === 'OBJECT') {
                     FieldType = GraphQLJSON
+                }else if(field.type === 'LIST'){
+                    FieldType = GraphQLJSON
                 }
 
 

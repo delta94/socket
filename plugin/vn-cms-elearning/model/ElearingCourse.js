@@ -29,7 +29,10 @@ class Course extends ModelClass {
             required: [],
             content: [],
             short_description: String,
-            slug: String,
+            slug: {
+                type: String,
+                unique: true
+            },
             title: String,
             visibility: {
                 enum: ['publish', 'trash'],
