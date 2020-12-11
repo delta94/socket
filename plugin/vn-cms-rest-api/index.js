@@ -689,7 +689,7 @@ function generateApiDocs(model) {
 
 function generateRouter(model, app) {
     let Model = getModel(model.name);
-    app.get(prefix + '/' + model.name + '/:id?', async (req, res) => {
+    app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
         if (req.params.id) {
             let { data, error } = await Model.findOne(req.params.id);
             if (error) {
