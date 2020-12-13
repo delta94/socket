@@ -1,42 +1,38 @@
-import { config } from '../helper/helper.js';
-
-import mongodb from 'mongodb';
+import crypto from 'crypto';
+import mongodb, { ObjectId } from 'mongodb';
 import { prepareField, _prepareDataField, renderPaginate } from '../helper/model.js';
 import util from 'util'
 import Hook from '../Hook.js';
 import { objectIndex } from '../helper/helper.js';
-import { resolve } from 'path';
+import dbConfig from '../../config/database.json';
 
-const { ObjectID } = mongodb;
-
-
+// const { ObjectID } = mongodb;
 
 
 let MongoClient = mongodb.MongoClient;
 
-let _database,
+let _database: any,
     _collection = {};
 
 let _ = {
-    await: [],
+    await: [] as any,
     times: 0,
     database: async function () {
         if (_database) return _database;
 
         this.times++;
 
-        let dbConfig = await config('Database', 'MongoDB');
 
         return new Promise((resolve, reject) => {
 
             this.await.push(resolve)
 
             if (this.times === 1) {
-                MongoClient.connect(dbConfig.stringConnect, { useUnifiedTopology: true }, (err, db) => {
+                MongoClient.connect(dbConfig.MongoDB.stringConnect, { useUnifiedTopology: true }, (err, db) => {
                     if (err) throw err;
                     console.log('database created!');
-                    _database = db.db(dbConfig.DATABASE);
-                    this.await.forEach(resolve => resolve(_database));
+                    _database = db.db(dbConfig.MongoDB.DATABASE);
+                    this.await.forEach((resolve: any) => resolve(_database));
 
                     // resolve(_database);
 
@@ -59,7 +55,7 @@ export default class MongoDB {
 
     defaultColumn = {
         _id: {
-            type: ObjectID
+            type: ObjectId
         },
         created_at: {
             type: Date,
@@ -71,8 +67,13 @@ export default class MongoDB {
         }
     }
 
+    name
+    collection
+    _fields
 
-    constructor(name, fields = {}) {
+
+
+    constructor(name: string, fields = {}) {
 
         this.name = name;
         if (name in _collection) {
@@ -103,7 +104,7 @@ export default class MongoDB {
         }
     }
 
-    async find(data = {}, paginate = { limit: 20, page: 1 }) {
+    async find(data: { _id?: any }, paginate: any = { limit: 20, page: 1 }) {
 
         // let { cache } = Hook.do_action('find-before',[...arguments]);
         // if(cache) return cache;
@@ -123,13 +124,13 @@ export default class MongoDB {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        let [res1, countDocument] = await Promise.all([
+        let [res1, countDocument] = await Promise.all<any>([
             new Promise((resolve, reject) => {
                 if (ObjectIDValid(data._id)) {
-                    data._id = ObjectID(data._id);
+                    data._id = new ObjectId(data._id);
                 }
 
-                this.collection.find(data).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error, data) {
+                this.collection.find(data).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error: any, data: any) {
                     if (error) resolve({ error });
                     else resolve({ data });
                 });
@@ -143,20 +144,20 @@ export default class MongoDB {
 
     }
 
-    async findOne(find = {}) {
+    async findOne(find: { _id?: any }, ...ref: any) {
 
-        let { cache } = await Hook.do_action('findOne-before', [...arguments]);
+        let { cache } = await Hook.do_action('findOne-before', [find, ...ref]);
 
         if (cache) return { data: cache };
 
-        if(typeof find === 'string'){
+        if (typeof find === 'string') {
             find = {
                 _id: find
             }
         }
 
-        if (ObjectIDValid(find._id)) {
-            find._id = ObjectID(find._id);
+        if (typeof find._id !== 'undefined' && ObjectIDValid(find._id)) {
+            find._id = new ObjectId(find._id);
         }
 
 
@@ -168,7 +169,7 @@ export default class MongoDB {
 
 
         return new Promise((resolve, reject) => {
-            this.collection.findOne(find, function (error, data) {
+            this.collection.findOne(find, function (error: any, data: any) {
                 if (error) resolve({ error });
                 else {
                     Hook.do_action('findOne-after', [data]);
@@ -184,23 +185,23 @@ export default class MongoDB {
 
     insert() { }
 
-    insertMany(data) { 
-        if(!Array.isArray(data)){
-            data = [data];
-        }
+    insertMany(data: []) {
+        // if (!Array.isArray(data)) {
+        //     data = [data];
+        // }
         return new Promise((resolve, reject) => {
-            this.collection.insertMany(data, (error, data) =>{
-                if(error){
-                    resolve({error})
+            this.collection.insertMany(data, (error: any, data: any) => {
+                if (error) {
+                    resolve({ error })
                 }
-                else{
-                    resolve({insertedCount: data.insertedCount})
+                else {
+                    resolve({ insertedCount: data.insertedCount })
                 }
             });
         })
     }
 
-    async insertOne(data) {
+    async insertOne(data: { _id?: any }) {
         if (data._id) delete data._id;
 
         return new Promise(async (resolve, reject) => {
@@ -212,12 +213,12 @@ export default class MongoDB {
                 resolve({ error });
             } else {
 
-                this.collection.insertOne(res, (error, res) => {
+                this.collection.insertOne(res, (error: any, res: any) => {
 
                     if (error) {
                         if (typeof error.keyValue === 'object') {
 
-                            let [key, value] = objectIndex(error.keyValue, 0);
+                            let [key, value]: any[] = objectIndex(error.keyValue, 0);
                             resolve({
                                 error: {
                                     [key]: this._fields[key].validate.unique || 'This field has exists, please use another value!'
@@ -236,11 +237,11 @@ export default class MongoDB {
         })
     }
 
-    async insertOrUpdate(data) {
+    async insertOrUpdate(data: any) {
         return new Promise(async (resolve, reject) => {
 
 
-            let f = this._generateFind(data);
+            let f: { _id?: any } = this._generateFind(data);
             let update = Object.keys(f).length > 0;
 
             let [res, error] = await _prepareDataField(data, this._fields, update);
@@ -255,7 +256,7 @@ export default class MongoDB {
                     delete res._id;
                     delete res.created_at;
 
-                    this.collection.findOneAndUpdate(f, [{ $set: res }], { new: true, returnOriginal: false }, (error, res) => {
+                    this.collection.findOneAndUpdate(f, [{ $set: res }], { new: true, returnOriginal: false }, (error: any, res: any) => {
                         if (error) {
 
                             if (typeof error.keyValue === 'object') {
@@ -275,7 +276,7 @@ export default class MongoDB {
 
 
                 } else {
-                    this.collection.insertOne(res, (error, res) => {
+                    this.collection.insertOne(res, (error: any, res: any) => {
                         console.log(error, res)
                         if (error) {
                             if (typeof error.keyValue === 'object') {
@@ -306,11 +307,11 @@ export default class MongoDB {
     update() { }
 
 
-    async findOneAndUpdate(find = {}, data) {
+    async findOneAndUpdate(find = {}, data: {}) {
         this._generateFind(find, true);
 
         return new Promise((resolve, reject) => {
-            this.collection.findOneAndUpdate(find, [{ $set: data }], { new: false, returnOriginal: false }, (err, res) => {
+            this.collection.findOneAndUpdate(find, [{ $set: data }], { new: false, returnOriginal: false }, (err: any, res: any) => {
                 if (err) {
 
                     if (typeof err.keyValue === 'object') {
@@ -331,7 +332,7 @@ export default class MongoDB {
     }
 
 
-    async updateOne(find = {}, data) {
+    async updateOne(find = {}, data: {}) {
         return new Promise(async (resolve, reject) => {
 
             this._generateFind(find, true)
@@ -345,7 +346,7 @@ export default class MongoDB {
 
                 delete res._id;
                 delete res.created_at;
-                this.collection.findOneAndUpdate(find, { $set: res }, { returnOriginal: false }, (error, res) => {
+                this.collection.findOneAndUpdate(find, { $set: res }, { returnOriginal: false }, (error: any, res: any) => {
 
 
                     if (error) {
@@ -358,13 +359,13 @@ export default class MongoDB {
                                 }
                             });
                         } else {
-                            resolve({error});
+                            resolve({ error });
                         }
 
                     }
                     else {
                         Hook.do_action('updateOne-after', [res.value]);
-                        resolve({data: res.value});
+                        resolve({ data: res.value });
 
                     }
                 });
@@ -378,19 +379,19 @@ export default class MongoDB {
     updateMany() { }
 
 
-    async delete(find = {}) {
+    async delete(find: { _id?: any }) {
 
 
 
         return new Promise((resolve, reject) => {
 
             if (ObjectIDValid(find._id)) {
-                find._id = ObjectID(find._id)
+                find._id = new ObjectId(find._id)
             }
 
-            this.collection.deleteOne(find, (error, obj) => {
+            this.collection.deleteOne(find, (error: any, obj: any) => {
                 if (error) {
-                    resolve({error});
+                    resolve({ error });
                 } else {
                     resolve({ deleteCount: obj.deletedCount })
                 }
@@ -410,7 +411,7 @@ export default class MongoDB {
 
         for (let i in this._fields) {
             if (i === '_id') continue;
-            let indexObject = {}
+            let indexObject: any = {}
             if (this._fields[i].index) {
                 indexObject[i] = 1;
             }
@@ -441,10 +442,10 @@ export default class MongoDB {
 
 
 
-    _generateFind(find, assign = false) {
-        let f = {}
+    _generateFind(find: { _id?: any }, assign = false) {
+        let f: any = {}
         if (ObjectIDValid(find._id)) {
-            f._id = ObjectID(find._id )
+            f._id = new ObjectId(find._id)
             if (assign) {
                 delete find._id
 
@@ -459,14 +460,15 @@ export default class MongoDB {
 
 
 // ANCHOR: export
-export async function getDatabase(name) {
+export async function getDatabase(name?: string) {
     if (_database) return _database;
 
+
     return new Promise((resolve, reject) => {
-        MongoClient.connect(url, { useUnifiedTopology: true }, (err, db) => {
+        MongoClient.connect(dbConfig.MongoDB.stringConnect, { useUnifiedTopology: true }, (err: any, db: any) => {
             if (err) throw err;
             console.log('database created!');
-            _database = db.db(name || DATABASE);
+            _database = db.db(name);
 
             resolve(_database);
 
@@ -475,28 +477,28 @@ export async function getDatabase(name) {
 
 }
 
-export function getModel(name, fields = {}) {
+export function getModel(name: string, fields = {}) {
     if (name in _.instance) {
         return _.instance[name];
     }
 
-    return new Model(name, fields);
+    return new MongoDB(name, fields);
 }
 
-export async function getCollection(name) {
+export async function getCollection(name: string) {
     let database = await getDatabase();
     return database.collection(name)
 }
 
 
 export const TYPE = {
-    Enum: function () {
-        return (data) => {
-            if ([].includes.bind(arguments)(data)) return data;
+    Enum: function (...ref: any) {
+        return (data: never) => {
+            if ([].includes.bind(ref)(data)) return data;
             return null;
         }
     },
-    Hash: function (str) {
+    Hash: function (str: string) {
         return crypto.createHash('md5').update(str).digest('hex')
     }
 }
@@ -508,6 +510,6 @@ export function getAllModel() {
 
 
 
-export function ObjectIDValid(str) {
-    return ObjectID.isValid(str);
+export function ObjectIDValid(str: string) {
+    return ObjectId.isValid(str);
 }

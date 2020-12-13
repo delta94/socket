@@ -2,16 +2,16 @@ import expressgraphql from 'express-graphql'
 import graphql from 'graphql';
 import graphqlType from 'graphql-type-json';
 import mongodb from 'mongodb';
-import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper.js';
-import { ModelTypeList } from '../../core/helper/model.js';
+import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper';
+import { ModelTypeList } from '../../core/helper/model';
 import Hook from '../../core/Hook.js';
-import graphqlConfig from '../../config/graphql.js';
-import fs from 'fs';
+import graphqlConfig from '../../config/graphql';
+import { getAllModel, getModel } from '../../core/Model';
+import generalConfig from '../../config/general';
 
+// const generalConfig = JSON.parse(fs.readFileSync(__dirname + '/config/general'));
 
-const generalConfig = JSON.parse(fs.readFileSync(__dirname + '/config/general.json'));
-
-import { getAllModel, getModel } from '../../core/Model.js';
+console.log('aaaaaaaaaaaa')
 
 const { GraphQLJSON, GraphQLJSONObject } = graphqlType;
 
@@ -314,7 +314,7 @@ function generateOne(model) {
                     FieldType = GraphQLFloat
                 } else if (field.type === 'OBJECT') {
                     FieldType = GraphQLJSON
-                }else if(field.type === 'LIST'){
+                } else if (field.type === 'LIST') {
                     FieldType = GraphQLJSON
                 }
 
@@ -639,3 +639,5 @@ function generateDeleteArgs(model) {
 Hook.add_action('before-router', createModelGraphQL)
 
 // ANCHOR
+
+export default () => { }

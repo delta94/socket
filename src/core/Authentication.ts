@@ -1,20 +1,20 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import Model from './Model.js';
-import { getModel } from './model/MongoDB.js';
+import Model, { getModel } from './Model.js';
+// import { getModel } from './model/MongoDB';
+import { NextFunction, Request, Response } from 'express';
 
 const { TokenExpiredError, JsonWebTokenError } = jwt;
 
 
-
 dotenv.config();
 
-function generateAccessToken(user) {
+function generateAccessToken(user: any) {
     let { email, _id } = user;
-    return jwt.sign({ email, _id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.EXPIRE_TOKEN });
+    return jwt.sign({ email, _id }, process.env.ACCESS_TOKEN_SECRET || 'AccessToken', { expiresIn: process.env.EXPIRE_TOKEN });
 }
 
-function cacheError(err, res) {
+function cacheError(err: any, res: Response) {
     if (err instanceof TokenExpiredError) {
         return res.status(403).json({ error: 1, error_code: 'TOKEN_EXPIRED', message: 'Token was expired' });
     }
@@ -28,13 +28,13 @@ function cacheError(err, res) {
 
 }
 
-export function authenticateToken(req, res, next) {
+export function authenticateToken(req: any, res: any, next: NextFunction) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
 
     if (token == null) return res.sendStatus(401)
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'AccessToken', (err: any, user: any) => {
 
 
         if (err) return cacheError(err, res)
@@ -45,7 +45,7 @@ export function authenticateToken(req, res, next) {
     })
 }
 
-export default (app) => {
+export default (app: any) => {
 
     let Token = new class extends Model {
 
@@ -64,14 +64,14 @@ export default (app) => {
     let User = getModel('user');
 
 
-    app.get('/api/generate-token', async (req, res) => {
+    app.get('/api/generate-token', async (req: Request, res: Response) => {
 
 
-        let accessToken = jwt.sign({ 'email': 'admin' }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15y' });
+        let accessToken = jwt.sign({ 'email': 'admin' }, (window as any).process.env.ACCESS_TOKEN_SECRET, { expiresIn: '15y' });
         return res.json({ accessToken: accessToken })
     })
 
-    app.get('/api/get-user-info', authenticateToken, async (req, res) => {
+    app.get('/api/get-user-info', authenticateToken, async (req: any, res: Response) => {
         let { user } = req;
 
         if (user) {
@@ -87,7 +87,7 @@ export default (app) => {
     })
 
 
-    app.post('/api/refresh-token', async (req, res) => {
+    app.post('/api/refresh-token', async (req: Request, res: Response) => {
         const { refreshToken } = req.body
 
         if (refreshToken == null) {
@@ -111,7 +111,7 @@ export default (app) => {
                 message: 'refreshToken invalid'
             });
         }
-        jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
+        jwt.verify(refreshToken, (window as any).process.env.REFRESH_TOKEN_SECRET, (err: any, user: any) => {
             if (err) return cacheError(err, res)
             const accessToken = generateAccessToken(user)
 
@@ -123,13 +123,13 @@ export default (app) => {
         })
     })
 
-    app.delete('/logout', async (req, res) => {
+    app.delete('/logout', async (req: Request, res: Response) => {
         let [data, error] = await Token.find({ refreshToken: req.body.refreshToken });
 
         res.sendStatus(204)
     })
 
-    app.post('/api/login', async (req, res) => {
+    app.post('/api/login', async (req: Request, res: Response) => {
         let { email, password, accessToken: reqAccessToken } = req.body;
 
         // let {data: user, error: userError} = await User.findOne({email});
@@ -145,7 +145,7 @@ export default (app) => {
 
             const accessToken = generateAccessToken(user);
 
-            const refreshToken = jwt.sign({ email, _id }, process.env.REFRESH_TOKEN_SECRET)
+            const refreshToken = jwt.sign({ email, _id }, (window as any).process.env.REFRESH_TOKEN_SECRET)
 
             let { data, error } = await User.findOneAndUpdate({ _id }, { accessToken, refreshToken });
             console.log(data, error);

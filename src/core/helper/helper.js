@@ -46,7 +46,7 @@ export function getFiles(dir, files_) {
 
 let config_store = {};
 
-export async function config(name = 'App', slug = '') {
+async function config(name = 'app', slug = '') {
 
     if (name in config_store) {
         if (slug) {
@@ -118,6 +118,7 @@ export function objectIndex(obj, index = 0) {
         if (index-- === 0) return [i, obj[i]];
 
     }
+    return [];
 }
 
 export function capitalizeFirstLetter(string) {

@@ -1,7 +1,6 @@
 import Model from '../../core/Model.js'
 
 // const { ObjectID } = mongodb;
-
 class Message extends Model {
     // name = 'chat';
     // fields = {

@@ -1,75 +1,78 @@
 import crypto from 'crypto';
-import MongoDB, { getAllModel as getAllModelMongoDB, getModel as getModelMongoDB } from './model/MongoDB.js';
+import MongoDB, { getAllModel as getAllModelMongoDB, getModel as getModelMongoDB } from './model/MongoDB';
 import MySQL, { getAllModel as getAllModelMySQL, getModel as getModelMySQL } from './model/MySQL.js';
 // import { prepareField, _prepareDataField } from './helper/model.js';
 
 
-import configDatabase from '../config/Database.js';
+import configDatabase from '../config/database.json';
 
 let ModelClass;
-if(configDatabase.default === 'MongoDB'){
+if (configDatabase.default === 'MongoDB') {
     ModelClass = MongoDB;
-}else if(configDatabase.default === 'MySQL'){
+} else {
     ModelClass = MySQL;
 }
 export default ModelClass;
 
 // ANCHOR: export
-export async function getDatabase(name) {
-    if (_database) return _database;
+// export async function getDatabase(name?: string) {
+//     if (_database) return _database;
 
-    return new Promise((resolve, reject) => {
-        MongoClient.connect(url, { useUnifiedTopology: true }, (err, db) => {
-            if (err) throw err;
-            console.log('database created!');
-            _database = db.db(name || DATABASE);
+//     return new Promise((resolve, reject) => {
+//         MongoClient.connect(url, { useUnifiedTopology: true }, (err: any, db: any) => {
+//             if (err) throw err;
+//             console.log('database created!');
+//             _database = db.db(name || DATABASE);
 
-            resolve(_database);
-          
-        })
-    })
+//             resolve(_database);
 
-}
+//         })
+//     })
 
-export function getModel(name, fields = {}) {
+// }
 
-    if(configDatabase.default === 'MongoDB'){
-        return getModelMongoDB(...arguments);
+export function getModel(...ref) {
+
+    if (configDatabase.default === 'MongoDB') {
+        return getModelMongoDB(...ref);
     }
 
-    return getModelMySQL(...arguments)
-    
-}
+    return getModelMySQL(...ref)
 
-export async function getCollection(name) {
-    let database = await getDatabase();
-    return database.collection(name)
 }
 
 
-export const TYPE = {
-    // Enum: function () {
-    //     const Enum = (data) => {
-    //         if ([].includes.bind(arguments)(data)) return data;
-    //         return null;
-    //     }
-
-    //     return Enum
-    // },
-    Hash: function (str) {
-        return crypto.createHash('md5').update(str).digest('hex')
-    }
-}
 
 
-export const getAllModel = () => {
+// export async function getCollection(name: string) {
+//     let database = await getDatabase();
+//     return database.collection(name)
+// }
 
-    if(configDatabase.default === 'MongoDB'){
-        return getAllModelMongoDB();
-    }
 
-    return getAllModelMySQL()
-}
+// export const TYPE = {
+//     // Enum: function () {
+//     //     const Enum = (data) => {
+//     //         if ([].includes.bind(arguments)(data)) return data;
+//     //         return null;
+//     //     }
+
+//     //     return Enum
+//     // },
+//     Hash: function (str) {
+//         return crypto.createHash('md5').update(str).digest('hex')
+//     }
+// }
+
+
+// export const getAllModel = () => {
+
+//     if (configDatabase.default === 'MongoDB') {
+//         return getAllModelMongoDB();
+//     }
+
+//     return getAllModelMySQL()
+// }
 
 // ANCHOR: Example parttern
 // {

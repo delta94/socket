@@ -1,10 +1,33 @@
 {
-    "compilerOptions": {
-        "baseUrl": ".",
-        "target": "es6",
-        "module": "CommonJS",
-        "rootDir": "./",
-        "esModuleInterop": true,
-        "strict": true
-    }
+  "compilerOptions": {
+    "resolveJsonModule": true,
+    "declaration": true,
+    "types": ["node"],
+    "module": "commonjs",                     
+    "lib": ["es5", "es6", "dom", "dom.iterable"], 
+    "allowJs": true,                      
+    "allowSyntheticDefaultImports": true,
+    "outDir": "./",                        
+    "strict": true,                         
+    "noImplicitAny": false,                
+   
+    "moduleResolution": "node",           
+    "baseUrl": "src",                       
+    "paths": {
+      "@core/*": ["core/*"],
+      "@plugins/*": ["plugins/*"],
+      "@app/*": ["app/*"]
+    },                          
+    "rootDirs": ["src"],                        
+    
+    "esModuleInterop": true,                  
+    "skipLibCheck": true,                     
+    "forceConsistentCasingInFileNames": true  ,
+  },
+  
+  "exclude": [
+    "node_modules",
+    "test"
+  ],
+  "include": ["*.ts"]
 }

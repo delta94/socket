@@ -5,9 +5,9 @@ import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors'
 
-import Authentication, { authenticateToken } from './core/Authentication.js';
-import Hook from './core/Hook.js';
-import { loadModel, loadPlugin, loadRoute } from './core/autoload.js';
+import Authentication, { authenticateToken } from './src/core/Authentication';
+import Hook from './src/core/Hook.js';
+import { loadModel, loadPlugin, loadRoute } from './src/core/autoload';
 
 // var log = console.log;
 // console.log = function() {
@@ -16,7 +16,7 @@ import { loadModel, loadPlugin, loadRoute } from './core/autoload.js';
 //     console.trace();
 // };
 
-const __dirname = path.resolve();
+// const __dirname = path.resolve();
 
 async function loadModule() {
 
@@ -34,13 +34,13 @@ async function loadModule() {
     await loadPlugin();
     await loadModel();
     await loadRoute();
-    
+
     // socket(server);
 
 
     app.use(express.json())
 
-    app.use((err, req, res, next) => {
+    app.use((err: { status?: any }, req, res, next) => {
 
         // This check makes sure this is a JSON parsing issue, but it might be
         // coming from any middleware, not just body-parser:
@@ -52,19 +52,15 @@ async function loadModule() {
         next();
     });
 
+
     app.use(cors())
 
 
     app.use(express.static(__dirname + '/public'));
 
-
-
     Authentication(app);
 
-    
-
-
-    app.get('/posts', authenticateToken, (req, res) => {
+    app.get('/posts', authenticateToken, (req: any, res) => {
         res.json({ post: req.user.name })
     })
 
