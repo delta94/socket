@@ -2,10 +2,10 @@
 import Hook from "../../core/Hook.js";
 import swaggerUi from 'swagger-ui-express'
 // import { config } from "../../core/helper/helper.js";
-import restConfig from '../../config/rest.js';
-import { capitalizeFirstLetter } from "../../core/helper/helper.js";
-import { getAllModel, getModel } from "../../core/Model.js";
-import { authenticateToken } from "../../core/Authentication.js";
+import restConfig from '../../config/rest';
+import { capitalizeFirstLetter } from "../../core/helper/helper";
+import { getAllModel, getModel } from "../../core/Model";
+import { authenticateToken } from "../../core/Authentication";
 import fetch from 'node-fetch'
 
 const type = {

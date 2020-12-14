@@ -9,7 +9,7 @@
   "scripts": {
     "test": "jest --coverage",
     "start": "ts-node --respawn app.ts",
-    "dev": "nodemon --exec ts-node app.ts",
+    "dev": "nodemon --exec ts-node  app.ts",
     "build": "tsc"
   },
   "nodemonConfig": {

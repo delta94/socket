@@ -3,8 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import Hook from "./Hook.js";
 import appConfig from "../config/app";
-import a from '../plugins/vn-cms-graphql';
-a();
 // let __dirname = path.resolve();
 // let configFilename = path.join(__dirname, "../../../", "config.js");
 
@@ -50,11 +48,11 @@ export async function loadPlugin() {
     for (let i in plugin) {
         let dir = path.resolve(__dirname, '../plugins/' + plugin[i]);
 
-        console.log(dir, fs.existsSync(dir + '/index.js'))
+        // console.log(dir, fs.existsSync(dir + '/index.js'))
 
         if (fs.existsSync(dir + '/index.js')) {
 
-            // await import(dir + '/index.js');
+            await import(dir);
 
         }
 

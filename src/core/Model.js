@@ -65,14 +65,14 @@ export function getModel(...ref) {
 // }
 
 
-// export const getAllModel = () => {
+export const getAllModel = () => {
 
-//     if (configDatabase.default === 'MongoDB') {
-//         return getAllModelMongoDB();
-//     }
+    if (configDatabase.default === 'MongoDB') {
+        return getAllModelMongoDB();
+    }
 
-//     return getAllModelMySQL()
-// }
+    return getAllModelMySQL()
+}
 
 // ANCHOR: Example parttern
 // {
