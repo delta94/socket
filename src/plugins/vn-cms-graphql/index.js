@@ -11,7 +11,6 @@ import generalConfig from '../../config/general';
 
 // const generalConfig = JSON.parse(fs.readFileSync(__dirname + '/config/general'));
 
-console.log('aaaaaaaaaaaa')
 
 // const { GraphQLJSON, GraphQLJSONObject } = graphqlType;
 

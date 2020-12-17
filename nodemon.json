@@ -1,0 +1,5 @@
+{
+    "watch": ["src"],
+    "ext": "ts,json,js",
+    "ignore": [".rest", "_drawio", "__tests__", "public"]
+}

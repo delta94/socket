@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import MongoDB, { getAllModel as getAllModelMongoDB, getModel as getModelMongoDB } from './model/MongoDB';
-import MySQL, { getAllModel as getAllModelMySQL, getModel as getModelMySQL } from './model/MySQL.js';
+// import MySQL, { getAllModel as getAllModelMySQL, getModel as getModelMySQL } from './model/MySQL';
 // import { prepareField, _prepareDataField } from './helper/model.js';
 
 
@@ -10,7 +10,7 @@ let ModelClass;
 if (configDatabase.default === 'MongoDB') {
     ModelClass = MongoDB;
 } else {
-    ModelClass = MySQL;
+    // ModelClass = MySQL;
 }
 export default ModelClass;
 

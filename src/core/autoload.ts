@@ -50,7 +50,7 @@ export async function loadPlugin() {
 
         // console.log(dir, fs.existsSync(dir + '/index.js'))
 
-        if (fs.existsSync(dir + '/index.js')) {
+        if (fs.existsSync(dir + '/index.js') || fs.existsSync(dir + '/index.ts')) {
 
             await import(dir);
 

@@ -6,8 +6,8 @@ export default {
         "vn-cms-core",
         "vn-cms-graphql",
         "vn-cms-rest-api",
-        "vn-cms-elearning"
-
+        "vn-cms-elearning",
+        "vn-cms-raw-data"
     ],
     "redis_port": 6379
 }
