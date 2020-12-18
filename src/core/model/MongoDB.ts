@@ -500,7 +500,7 @@ export default class MongoDB {
         if(ObjectIDValid(find)){
             find = {_id: new ObjectId(find)}
         }
-        // console.log(find)
+        console.log(find)
         return find;
     }
 }
