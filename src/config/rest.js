@@ -33,7 +33,7 @@ export default {
             },
         ],
     },
-    list: ['user', 'elearning_course', 'elearning_teacher'],
+    list: ['user', 'elearning_course', 'elearning_teacher', 'blog_author', 'blog_category', 'blog_comment', 'blog_post', 'blog_tag', 'blog_user'],
 
 
     // tags: [],

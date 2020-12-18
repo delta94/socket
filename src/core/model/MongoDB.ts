@@ -5,6 +5,7 @@ import util from 'util'
 import Hook from '../Hook.js';
 import { objectIndex } from '../helper/helper.js';
 import dbConfig from '../../config/database.json';
+import e from 'express';
 
 // const { ObjectID } = mongodb;
 
@@ -126,9 +127,13 @@ export default class MongoDB {
 
         let [res1, countDocument] = await Promise.all<any>([
             new Promise((resolve, reject) => {
-                if (ObjectIDValid(data._id)) {
-                    data._id = new ObjectId(data._id);
-                }
+                data = this._generateFind(data);
+                // console.log(data);
+                // if (ObjectIDValid(data?._id || data)) {
+                //     data = {
+                //         _id: new ObjectId(data?._id || data)
+                //     };
+                // }
 
                 this.collection.find(data).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error: any, data: any) {
                     if (error) resolve({ error });
@@ -180,7 +185,13 @@ export default class MongoDB {
     }
 
 
-    findMany() { }
+    findMany() {
+        return new Promise(async (resolve, reject) => {
+            let data = await this.collection.find({}).toArray();
+
+            resolve({ data });
+        })
+    }
 
 
     insert() { }
@@ -308,7 +319,7 @@ export default class MongoDB {
 
 
     async findOneAndUpdate(find = {}, data: {}) {
-        this._generateFind(find, true);
+        find = this._generateFind(find);
 
         return new Promise((resolve, reject) => {
             this.collection.findOneAndUpdate(find, [{ $set: data }], { new: false, returnOriginal: false }, (err: any, res: any) => {
@@ -335,7 +346,7 @@ export default class MongoDB {
     async updateOne(find = {}, data: {}) {
         return new Promise(async (resolve, reject) => {
 
-            this._generateFind(find, true)
+            find = this._generateFind(find)
 
             let [res, error] = await _prepareDataField(data, this._fields, true);
 
@@ -442,18 +453,55 @@ export default class MongoDB {
 
 
 
-    _generateFind(find: { _id?: any }, assign = false) {
-        let f: any = {}
-        if (ObjectIDValid(find._id)) {
-            f._id = new ObjectId(find._id)
-            if (assign) {
-                delete find._id
+    _generateFind(find: { _id?: any } | any = {}): {} {
 
-                find._id = f._id
+        
+        if (typeof find === 'object' && !ObjectIDValid(find) && !Array.isArray(find)) {
+            for (let i in find) {
+                
+                if (this._fields?.[i]?.relation) {
+                    if (ObjectIDValid(find[i])) {
+                        find[i] = new ObjectId(find[i])
+                    }
+                }
             }
         }
 
-        return f;
+
+        if (typeof find === 'string') {
+            find = { _id: new ObjectId(find) }
+        } else if (find?.['_id'] && Array.isArray(find?.['_id'])) {
+            let $in: any[] = [];
+            for (let i in find) {
+                if (ObjectIDValid(find[i])) {
+                    $in.push(new ObjectId(find[i]))
+                }
+            }
+            find['_id'] = {
+                $in
+            };
+        } else if (ObjectIDValid(find['_id'])) {
+            find['_id'] = new ObjectId(find['_id'])
+
+        }else if(Array.isArray(find)){
+            let $in: any[] = [];
+            for (let i in find) {
+                if (ObjectIDValid(find[i])) {
+                    $in.push(new ObjectId(find[i]))
+                }
+            }
+            find = {
+                _id: {
+                    $in
+                }
+            }
+        }
+
+        if(ObjectIDValid(find)){
+            find = {_id: new ObjectId(find)}
+        }
+        // console.log(find)
+        return find;
     }
 }
 

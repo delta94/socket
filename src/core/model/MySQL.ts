@@ -9,15 +9,27 @@ var con = mysql.createConnection({
 })
 
 con.connect((err) => {
-    if (err) throw err;
-    console.log('mysql connect')
+    if (err){
+        console.log('mysql connect fail')
+    }else{
+        console.log('mysql connect success')
+    }
 })
 export default class MySQL implements AbstractModel {
+    count(table: string): Promise<{error?:any, count?: number}> {
+        return new Promise((res, rej) => {
+            con.query(`SELECT COUNT(*) as count FROM \`${table}\``, function (err, result) {
+                if (err) return res({ error: err });
+                console.log(result?.[0])
+                return res(result?.[0])
+            });
+            
+        })
+    }
     find(table: string, limit: number = 20, page: number = 0): Promise<{ error?: any; data?: any; }> {
         return new Promise((resolve, reject) => {
-            con.query(`SELECT * FROM \`${table}\` ORDER BY \`${table}\`.\`id\` ASC LIMIT ${limit} OFFSET ${page * limit}`, function (err, result, fields) {
+            con.query(`SELECT * FROM \`${table}\` LIMIT ${limit} OFFSET ${page * limit}`, function (err, result, fields) {
                 if (err) return resolve({ error: err });
-                console.log(result);
                 return resolve({ data: result })
             });
         })

@@ -109,6 +109,7 @@ function generateRoot() {
                         page: { type: GraphQLInt },
                     },
                     resolve: async (parent, args) => {
+
                         let { limit, page } = args;
                         delete args.limit;
                         delete args.page;
@@ -120,8 +121,9 @@ function generateRoot() {
                             }
                         }
                         if (isEmptyObject(args)) {
-                            args = undefined;
+                            args = {};
                         }
+
                         let { data, error, paginate } = await getModel(i).find(args, paging);
 
                         return {
@@ -325,13 +327,17 @@ function generateOne(model) {
                         type,
                         resolve: async (parent) => {
                             let f;
-                            if (field.multi && Array.isArray(parent[fieldName])) {
-                                f = parent[fieldName].map(e => ObjectID(e));
-                                f = { _id: { $in: f } };
-                            } else {
-                                f = { _id: ObjectID(parent[fieldName]) };
+                            f = parent[fieldName]
+                            // if (field.multi && Array.isArray(parent[fieldName])) {
+                            //     f = parent[fieldName].map(e => ObjectID(e));
+                            //     f = { _id: { $in: f } };
+                            // } else {
+                            //     f = { _id: ObjectID(parent[fieldName]) };
+                            // }
+                            if(typeof f === 'undefined'){
+                                f = {}
                             }
-
+                            
                             let { data, error } = await getModel(field.relation).find(f);
 
                             if (field.multi) {

@@ -29,4 +29,6 @@ export default interface AbstractModel {
     deleteOne(): Promise<{ error?: any, deleteCount?: number }>
 
     deleteMany(): Promise<{ error?: any, deleteCount?: number }>
+
+    count(table: string): Promise<{error?:any, count?: number}>
 }
