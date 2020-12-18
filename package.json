@@ -8,7 +8,8 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "start": "ts-node --respawn app.ts",
+    "start": "nodemon --exec ts-node  app.t",
+    "start2": "ts-node --respawn app.ts",
     "dev": "nodemon --exec ts-node  app.ts",
     "build": "tsc"
   },
