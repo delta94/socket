@@ -146,7 +146,8 @@ function loadPlugin() {
                     if (!(_i < _a.length)) return [3 /*break*/, 4];
                     i = _a[_i];
                     dir = path_1["default"].resolve(__dirname, '../plugins/' + plugin[i]);
-                    if (!(fs_1["default"].existsSync(dir + '/index.js') || fs_1["default"].existsSync(dir + '/index.ts'))) return [3 /*break*/, 3];
+                    console.log(dir);
+                    if (!fs_1["default"].existsSync(dir + '/index.js')) return [3 /*break*/, 3];
                     return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require(dir)); })];
                 case 2:
                     _c.sent();
@@ -176,7 +177,7 @@ function loadRouterFolder(folder) {
                 case 1:
                     if (!(_i < _a.length)) return [3 /*break*/, 4];
                     i = _a[_i];
-                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require('file:' + __dirname + '/' + models[i])); })];
+                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require(__dirname + '/' + models[i])); })];
                 case 2:
                     fun = _c.sent();
                     if (typeof fun["default"] === 'function') {

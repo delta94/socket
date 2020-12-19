@@ -47,10 +47,10 @@ export async function loadPlugin() {
 
     for (let i in plugin) {
         let dir = path.resolve(__dirname, '../plugins/' + plugin[i]);
-
+        console.log(dir)
         // console.log(dir, fs.existsSync(dir + '/index.js'))
 
-        if (fs.existsSync(dir + '/index.js') || fs.existsSync(dir + '/index.ts')) {
+        if (fs.existsSync(dir + '/index.js')) {
 
             await import(dir);
 
@@ -64,7 +64,7 @@ async function loadRouterFolder(folder) {
     if (fs.existsSync(folder)) {
         let models = getFiles(folder);
         for (let i in models) {
-            let fun = await import('file:' + __dirname + '/' + models[i]);
+            let fun = await import(__dirname + '/' + models[i]);
             if (typeof fun.default === 'function') {
                 Hook.add_action('before-router', fun.default);
             }
