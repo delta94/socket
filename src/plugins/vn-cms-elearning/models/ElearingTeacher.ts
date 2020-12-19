@@ -1,8 +1,8 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class Teacher extends ModelClass{
-    constructor(){
+class Teacher extends ModelClass {
+    constructor() {
         super('elearning_teacher', {
             id: {
                 type: Number,
@@ -28,7 +28,7 @@ class Teacher extends ModelClass{
             // },
             // avatar: String,rs
             // introduce: String
-        } )
+        })
 
         this.restFulTagName = 'Elearning API'
     }

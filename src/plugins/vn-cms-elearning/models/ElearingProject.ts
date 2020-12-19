@@ -1,8 +1,8 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class Project extends ModelClass{
-    constructor(){
+class Project extends ModelClass {
+    constructor() {
         super('elearning_project', {
             id: {
                 unique: true,
@@ -21,7 +21,7 @@ class Project extends ModelClass{
             //     relation: 'user',
             //     required: true
             // }
-        } )
+        })
 
         this.restFulTagName = 'Elearning API'
     }

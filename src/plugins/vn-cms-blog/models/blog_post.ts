@@ -1,8 +1,8 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class BlogPost extends ModelClass{
-    constructor(){
+class BlogPost extends ModelClass {
+    constructor() {
         super('blog_post', {
             // id: {
             //     type: Number,
@@ -41,7 +41,7 @@ class BlogPost extends ModelClass{
                 relation: 'blog_category',
                 multi: true
             }
-        } )
+        })
 
     }
 }

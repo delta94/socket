@@ -4,7 +4,7 @@ import { GraphQLJSON, GraphQLJSONObject } from 'graphql-type-json';
 import { ObjectID } from 'mongodb';
 import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper';
 import { ModelTypeList } from '../../core/helper/model';
-import Hook from '../../core/Hook.js';
+import Hook from '../../core/Hook';
 import graphqlConfig from '../../config/graphql';
 import { getAllModel, getModel } from '../../core/Model';
 import generalConfig from '../../config/general';
@@ -33,7 +33,7 @@ function capFirstChild(str) {
 
 function createModelGraphQL(app, server) {
     let models = getAllModel();
-    models = models.filterFun(e => graphqlConfig.list.includes(e.name));
+    models = models.filterFun((e) => graphqlConfig.list.includes(e.name));
 
 
     for (let i in models) {
@@ -80,7 +80,7 @@ function generateRoot() {
                     args,
                     resolve: async (parent, args) => {
                         if (args._id || args.id) {
-                            args._id = ObjectID(args._id || args.id);
+                            args._id = new ObjectID(args._id || args.id);
                             delete args.id;
                         }
 
@@ -113,7 +113,7 @@ function generateRoot() {
                         let { limit, page } = args;
                         delete args.limit;
                         delete args.page;
-                        let paging = undefined;
+                        let paging: any = undefined;
                         if (limit || page) {
                             paging = {
                                 limit: limit || generalConfig.limit,
@@ -194,7 +194,7 @@ function generateArgsMutation(model) {
 
 
     for (let i in _fields) {
-        let FieldType = GraphQLString,
+        let FieldType: any = GraphQLString,
             fieldName = i,
             field = _fields[i];
 
@@ -334,10 +334,10 @@ function generateOne(model) {
                             // } else {
                             //     f = { _id: ObjectID(parent[fieldName]) };
                             // }
-                            if(typeof f === 'undefined'){
+                            if (typeof f === 'undefined') {
                                 f = {}
                             }
-                            
+
                             let { data, error } = await getModel(field.relation).find(f);
 
                             if (field.multi) {
@@ -380,7 +380,7 @@ function generateFields(model) {
 
 
     for (let i in _fields) {
-        let FieldType = GraphQLString,
+        let FieldType: any = GraphQLString,
             fieldName = i,
             field = _fields[i];
 
@@ -410,7 +410,7 @@ function generateDeleteArgs(model) {
     global_delete_store[name] = {};
 
     for (let i in _fields) {
-        let FieldType = GraphQLString,
+        let FieldType: any = GraphQLString,
             fieldName = i,
             field = _fields[i];
 

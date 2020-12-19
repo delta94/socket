@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 import MongoDB, { getAllModel as getAllModelMongoDB, getModel as getModelMongoDB } from './model/MongoDB';
-// import MySQL, { getAllModel as getAllModelMySQL, getModel as getModelMySQL } from './model/MySQL';
+import MySQL, { getAllModel as getAllModelMySQL, getModel as getModelMySQL } from './model/MySQL';
 // import { prepareField, _prepareDataField } from './helper/model.js';
 
 
-import configDatabase from '../config/database.json';
+import configDatabase from '../config/database';
 
 let ModelClass;
 if (configDatabase.default === 'MongoDB') {
@@ -31,13 +31,13 @@ export default ModelClass;
 
 // }
 
-export function getModel(...ref) {
+export function getModel(name: string, fields?: {}, ...ref: any[]) {
 
     if (configDatabase.default === 'MongoDB') {
-        return getModelMongoDB(...ref);
+        return getModelMongoDB(name, fields, ...ref);
     }
 
-    return getModelMySQL(...ref)
+    return getModelMySQL(name, fields, ...ref)
 
 }
 
@@ -65,7 +65,7 @@ export function getModel(...ref) {
 // }
 
 
-export const getAllModel = () => {
+export const getAllModel = (): any => {
 
     if (configDatabase.default === 'MongoDB') {
         return getAllModelMongoDB();

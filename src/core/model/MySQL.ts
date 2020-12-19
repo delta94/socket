@@ -9,21 +9,21 @@ var con = mysql.createConnection({
 })
 
 con.connect((err) => {
-    if (err){
+    if (err) {
         console.log('mysql connect fail')
-    }else{
+    } else {
         console.log('mysql connect success')
     }
 })
 export default class MySQL implements AbstractModel {
-    count(table: string): Promise<{error?:any, count?: number}> {
+    count(table: string): Promise<{ error?: any, count?: number }> {
         return new Promise((res, rej) => {
             con.query(`SELECT COUNT(*) as count FROM \`${table}\``, function (err, result) {
                 if (err) return res({ error: err });
                 console.log(result?.[0])
                 return res(result?.[0])
             });
-            
+
         })
     }
     find(table: string, limit: number = 20, page: number = 0): Promise<{ error?: any; data?: any; }> {
@@ -71,11 +71,13 @@ export default class MySQL implements AbstractModel {
 
 }
 
-export function getModel() {
+export function getModel(name: string, fields = {}, ...ref) {
 
 }
 
 
-export function getAllModel() {
+export function getAllModel(): {} {
     // return _.instance;
+
+    return {}
 }

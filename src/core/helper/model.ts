@@ -1,5 +1,5 @@
 import mongodb from 'mongodb';
-import { getModel } from './../Model.js';
+import { getModel } from '../Model';
 
 const { ObjectID } = mongodb;
 
@@ -107,7 +107,7 @@ export function prepareField(fields) {
 
 }
 
-function Enum(value) {
+function Enum(this: { enum?: any, default?: any }, value: never) {
 
     if ([].includes.bind(this.enum)(value)) return value;
     return this.default || null;
@@ -223,7 +223,7 @@ function Type_3(fields) {
 function Type_2(fields) {
 
 }
-function ModelTypeNormal(data) {
+function ModelTypeNormal(this: { validate?: any, required?: any, default?: any, resolve: Function }, data) {
     // console.log(data)
     if (this.required && (!data && data != 0)) {
         return [null, this?.validate?.required || defaultErrorMessage.required];
@@ -256,7 +256,7 @@ export function ModelTypeList(data) {
     return [data];
 }
 
-export async function ModelTypeRelation(data) {
+export async function ModelTypeRelation(this: { validate?: any, required?: any, multi?: any, relation?: any, resolve: Function }, data) {
     // only _id
     // object 
     // object with _id key
@@ -273,38 +273,38 @@ export async function ModelTypeRelation(data) {
                 if (!Array.isArray(data)) {
                     data = [data]
                 }
-                if(data.length > 0){
+                if (data.length > 0) {
                     f = data.map(e => {
-                        if(ObjectID.isValid(e)) return ObjectID(e)
+                        if (ObjectID.isValid(e)) return new ObjectID(e)
                         return e;
                     })
                     f = { _id: { $in: f } }
                 }
-                
+
             } else {
-                if(ObjectID.isValid(data)){
-                    f = { _id: ObjectID(data) }
+                if (ObjectID.isValid(data)) {
+                    f = { _id: new ObjectID(data) }
                 }
-                
+
             }
-            
-            let { data: res, error } = f ? await getModel(this.relation).find(f) : { data: null, error: null}
+
+            let { data: res, error } = f ? await getModel(this.relation).find(f) : { data: null, error: null }
 
 
-            if(res){
+            if (res) {
                 if (this.multi) {
-                    res = res.map(e => ObjectID(e._id));
-    
+                    res = res.map(e => new ObjectID(e._id));
+
                 } else {
                     if (res[0]) {
-                        res = ObjectID(res[0]._id)
+                        res = new ObjectID(res[0]._id)
                     } else {
                         res = null
                     }
                 }
             }
 
-            
+
 
             if (this.required &&
                 (
@@ -341,7 +341,19 @@ export function renderPaginate({ page = 1, limit = 10, countDocument }) {
     const startIndex = (page - 1) * limit;
     const endIndex = page * limit;
 
-    let result = {}
+    let result: {
+        nextPage?: number,
+        previousPage?: number,
+        currentPage: number,
+        totalPage: number,
+        count: number,
+        perPage: number
+    } = {
+        currentPage: page,
+        totalPage: Math.ceil(countDocument / limit),
+        count: countDocument,
+        perPage: limit
+    }
 
 
     if (endIndex < countDocument) {
@@ -352,12 +364,10 @@ export function renderPaginate({ page = 1, limit = 10, countDocument }) {
         result.previousPage = page - 1
     }
 
-    result.currentPage = page;
-
-
-    result.totalPage = Math.ceil(countDocument / limit)
-    result.count = countDocument;
-    result.perPage = limit;
+    // result.currentPage = page;
+    // result.totalPage = Math.ceil(countDocument / limit)
+    // result.count = countDocument;
+    // result.perPage = limit;
 
     return result;
 }

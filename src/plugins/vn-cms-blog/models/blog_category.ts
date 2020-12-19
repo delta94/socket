@@ -1,8 +1,8 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class BlogCategory extends ModelClass{
-    constructor(){
+class BlogCategory extends ModelClass {
+    constructor() {
         super('blog_category', {
             // id: {
             //     type: Number,
@@ -17,7 +17,7 @@ class BlogCategory extends ModelClass{
                 required: true,
                 unique: true
             }
-        } )
+        })
 
     }
 }

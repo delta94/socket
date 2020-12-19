@@ -1,24 +1,24 @@
-import fs  from 'fs';
+import fs from 'fs';
 // import path from 'path'; 
 
-export default async function config(name = 'App' , slug = '') {
+export default async function config(name = 'App', slug = '') {
     let absolutePath = './../../../../config/' + name + '.js';
     let rootPath = 'config/' + name + '.js';
-    try{
+    try {
 
-        if(fs.existsSync(rootPath)){
+        if (fs.existsSync(rootPath)) {
             let configObject = await import(absolutePath);
 
-            if(slug){
+            if (slug) {
                 return configObject.default[slug]
             }
 
-            return {...configObject.default};
+            return { ...configObject.default };
         }
-    }catch(e){
+    } catch (e) {
         console.log(e)
     }
 
     return {};
-    
+
 }

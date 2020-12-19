@@ -1,5 +1,5 @@
 // import swaggerJSDoc from "swagger-jsdoc";
-import Hook from "../../core/Hook.js";
+import Hook from "../../core/Hook";
 import swaggerUi from 'swagger-ui-express'
 // import { config } from "../../core/helper/helper.js";
 import restConfig from '../../config/rest';

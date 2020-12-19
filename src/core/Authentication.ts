@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import Model, { getModel } from './Model.js';
+import Model, { getModel } from './Model';
 // import { getModel } from './model/MongoDB';
 import { NextFunction, Request, Response } from 'express';
 

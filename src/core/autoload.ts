@@ -1,7 +1,7 @@
 import { getFiles } from "./helper/helper";
 import fs from 'fs';
 import path from 'path';
-import Hook from "./Hook.js";
+import Hook from "./Hook";
 import appConfig from "../config/app";
 // let __dirname = path.resolve();
 // let configFilename = path.join(__dirname, "../../../", "config.js");

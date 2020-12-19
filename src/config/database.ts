@@ -1,4 +1,4 @@
-{
+export default {
     "default": "MongoDB",
     "_id": "_id",
     "network": {

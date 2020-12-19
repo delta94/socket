@@ -1,6 +1,6 @@
-import ModelClass, { TYPE } from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
-class ElearingUser extends ModelClass{
+class ElearingUser extends ModelClass {
     // fields = {
     //     name: {
     //         type: String,
@@ -17,7 +17,7 @@ class ElearingUser extends ModelClass{
     //     }
     // }
     // name = 'user'
-    constructor(){
+    constructor() {
         super('elearning_student', {
             id: {
                 unique: true,
@@ -59,12 +59,12 @@ class ElearingUser extends ModelClass{
             // avatar: {
             //     Type: String
             // }
-        } )
+        })
 
         this.restFulTagName = 'Elearning API'
     }
 
-    
+
 }
 
 // export default new ElearingUser;

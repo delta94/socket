@@ -15,9 +15,9 @@
     "moduleResolution": "node",           
     "baseUrl": "src",                       
     "paths": {
-      "@core/*": ["core/*"],
-      "@plugins/*": ["plugins/*"],
-      "@app/*": ["app/*"]
+      "core/*": ["core/*"],
+      "plugins/*": ["plugins/*"],
+      "app/*": ["app/*"]
     },                          
     "rootDirs": ["src"],                        
     

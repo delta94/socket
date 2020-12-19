@@ -1,10 +1,10 @@
 import crypto from 'crypto';
 import mongodb, { ObjectId } from 'mongodb';
-import { prepareField, _prepareDataField, renderPaginate } from '../helper/model.js';
+import { prepareField, _prepareDataField, renderPaginate } from '../helper/model';
 import util from 'util'
-import Hook from '../Hook.js';
-import { objectIndex } from '../helper/helper.js';
-import dbConfig from '../../config/database.json';
+import Hook from '../Hook';
+import { objectIndex } from '../helper/helper';
+import dbConfig from '../../config/database';
 import e from 'express';
 
 // const { ObjectID } = mongodb;
@@ -455,10 +455,10 @@ export default class MongoDB {
 
     _generateFind(find: { _id?: any } | any = {}): {} {
 
-        
+
         if (typeof find === 'object' && !ObjectIDValid(find) && !Array.isArray(find)) {
             for (let i in find) {
-                
+
                 if (this._fields?.[i]?.relation) {
                     if (ObjectIDValid(find[i])) {
                         find[i] = new ObjectId(find[i])
@@ -483,7 +483,7 @@ export default class MongoDB {
         } else if (ObjectIDValid(find['_id'])) {
             find['_id'] = new ObjectId(find['_id'])
 
-        }else if(Array.isArray(find)){
+        } else if (Array.isArray(find)) {
             let $in: any[] = [];
             for (let i in find) {
                 if (ObjectIDValid(find[i])) {
@@ -497,8 +497,8 @@ export default class MongoDB {
             }
         }
 
-        if(ObjectIDValid(find)){
-            find = {_id: new ObjectId(find)}
+        if (ObjectIDValid(find)) {
+            find = { _id: new ObjectId(find) }
         }
         console.log(find)
         return find;
@@ -525,7 +525,7 @@ export async function getDatabase(name?: string) {
 
 }
 
-export function getModel(name: string, fields = {}) {
+export function getModel(name: string, fields = {}, ...ref) {
     if (name in _.instance) {
         return _.instance[name];
     }

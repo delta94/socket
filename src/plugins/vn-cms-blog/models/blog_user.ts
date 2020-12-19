@@ -1,8 +1,8 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class BlogUser extends ModelClass{
-    constructor(){
+class BlogUser extends ModelClass {
+    constructor() {
         super('blog_user', {
             // id: {
             //     type: Number,
@@ -19,7 +19,7 @@ class BlogUser extends ModelClass{
             avatar: {
                 type: String,
             }
-        } )
+        })
 
     }
 }

@@ -1,8 +1,8 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class BlogComment extends ModelClass{
-    constructor(){
+class BlogComment extends ModelClass {
+    constructor() {
         super('blog_comment', {
             // id: {
             // },
@@ -18,7 +18,7 @@ class BlogComment extends ModelClass{
                 required: true
 
             }
-        } )
+        })
 
     }
 }

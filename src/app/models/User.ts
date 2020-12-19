@@ -1,5 +1,5 @@
-import Model, { TYPE } from '../../core/Model.js'
-class User extends Model{
+import Model from '../../core/Model'
+class User extends Model {
     // fields = {
     //     name: {
     //         type: String,
@@ -16,13 +16,13 @@ class User extends Model{
     //     }
     // }
     // name = 'user'
-    constructor(){
+    constructor() {
         super('user', {
             // id: Number,
             total_coin_current: Number,
             student_type: String,
             review: String,
-            avatar:{},
+            avatar: {},
             skype: String,
             email: {
                 type: String,
@@ -45,7 +45,7 @@ class User extends Model{
             // password: {
             //     Type: TYPE.Hash
             // },
-        } )
+        })
     }
 }
 

@@ -1,8 +1,8 @@
-import ModelClass, { TYPE } from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class Register extends ModelClass{
-    constructor(){
+class Register extends ModelClass {
+    constructor() {
         super('elearning_register', {
             id: {
                 type: Number,
@@ -33,7 +33,7 @@ class Register extends ModelClass{
             //     enum: [true, false],
             //     default: false
             // }
-        } )
+        })
 
         this.restFulTagName = 'Elearning API'
     }

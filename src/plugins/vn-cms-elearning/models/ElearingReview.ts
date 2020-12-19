@@ -1,4 +1,4 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
 // class Review extends ModelClass{

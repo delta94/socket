@@ -1,5 +1,5 @@
 
-import ModelClass, { TYPE } from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 class Course extends ModelClass {
     constructor() {
         super('elearning_course', {
@@ -23,11 +23,9 @@ class Course extends ModelClass {
                 enum: ['offline', 'online'],
                 default: 'offline'
             },
-            benefits: [],
             opening_time: String,
             schedule: String,
             required: [],
-            content: [],
             short_description: String,
             slug: {
                 type: String,

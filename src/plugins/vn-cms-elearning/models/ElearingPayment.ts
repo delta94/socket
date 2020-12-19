@@ -1,8 +1,8 @@
-import ModelClass from "../../../core/Model.js";
+import ModelClass from "../../../core/Model";
 
 
-class Payment extends ModelClass{
-    constructor(){
+class Payment extends ModelClass {
+    constructor() {
         super('elearning_payment', {
             id: {
                 unique: true,
@@ -21,8 +21,8 @@ class Payment extends ModelClass{
             //     required: true
             // },
             // money: Number,
-            
-        } )
+
+        })
 
         this.restFulTagName = 'Elearning API'
     }

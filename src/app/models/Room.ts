@@ -1,6 +1,6 @@
-import Model, { TYPE } from '../../core/Model.js'
+import Model from '../../core/Model'
 
-class Room extends Model{
+class Room extends Model {
     // fields = {
     //     name: String,
     //     people: [
@@ -18,7 +18,7 @@ class Room extends Model{
     //     }
     // }
     // name = 'room'
-    constructor(){
+    constructor() {
 
         super('room', {
             name: String,
