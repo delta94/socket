@@ -5,9 +5,9 @@ import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors'
 
-import Authentication, { authenticateToken } from './src/core/Authentication';
-import Hook from './src/core/Hook';
-import { loadModel, loadPlugin, loadRoute } from './src/core/autoload';
+import Authentication, { authenticateToken } from 'core/Authentication';
+import Hook from 'core/Hook';
+import { loadModel, loadPlugin, loadRoute } from 'core/autoload';
 
 // var log = console.log;
 // console.log = function() {

@@ -44,13 +44,12 @@ export async function loadModel() {
 export async function loadPlugin() {
     let { plugin } = appConfig;
 
-
     for (let i in plugin) {
         let dir = path.resolve(__dirname, '../plugins/' + plugin[i]);
-        console.log(dir)
-        // console.log(dir, fs.existsSync(dir + '/index.js'))
+        // console.log(dir)
+        console.log(dir, fs.existsSync(dir + '/index.js'), fs.existsSync(dir + '/index.ts'))
 
-        if (fs.existsSync(dir + '/index.js')) {
+        if (fs.existsSync(dir + '/index.js') || fs.existsSync(dir + '/index.ts')) {
 
             await import(dir);
 
@@ -68,7 +67,6 @@ async function loadRouterFolder(folder) {
             if (typeof fun.default === 'function') {
                 Hook.add_action('before-router', fun.default);
             }
-
         }
         return true;
     }

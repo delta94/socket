@@ -1,3 +1,4 @@
+
 {
   "compilerOptions": {
     "resolveJsonModule": true,
@@ -7,17 +8,15 @@
     "lib": ["es5", "es6", "dom", "dom.iterable"], 
     "allowJs": true,                      
     "allowSyntheticDefaultImports": true,
-    "outDir": "./build",            
+    "outDir": "./dist",            
     "downlevelIteration":true,            
     "strict": true,                         
     "noImplicitAny": false,                
    
     "moduleResolution": "node",           
-    "baseUrl": "src",                       
+    "baseUrl": ".",                       
     "paths": {
-      "core/*": ["core/*"],
-      "plugins/*": ["plugins/*"],
-      "app/*": ["app/*"]
+      "*": ["src/*"]
     },                          
     "rootDirs": ["src"],                        
     
@@ -25,10 +24,12 @@
     "skipLibCheck": true,                     
     "forceConsistentCasingInFileNames": true  ,
   },
+  "ts-node": {
+    "files": true
+  },
   
   "exclude": [
     "node_modules",
     "test"
-  ],
-  "include": ["*.ts"]
+  ]
 }
