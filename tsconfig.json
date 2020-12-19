@@ -7,7 +7,7 @@
     "lib": ["es5", "es6", "dom", "dom.iterable"], 
     "allowJs": true,                      
     "allowSyntheticDefaultImports": true,
-    "outDir": "./",            
+    "outDir": "./build",            
     "downlevelIteration":true,            
     "strict": true,                         
     "noImplicitAny": false,                
