@@ -11,7 +11,9 @@
     "start": "nodemon --exec ts-node -r tsconfig-paths/register dist/app.js",
     "start2": "ts-node --respawn app.ts",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register  app.ts",
-    "build": "tsc -p ."
+    "build": "tsc -p . && yarn copy-files",
+    "clean": "rm  ./dist",
+    "copy-files": "copy ./src/views/ ./dist/"
   },
   "nodemonConfig": {
     "ignore": [

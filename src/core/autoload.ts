@@ -3,14 +3,6 @@ import fs from 'fs';
 import path from 'path';
 import Hook from "./Hook";
 import appConfig from "../config/app";
-// let __dirname = path.resolve();
-// let configFilename = path.join(__dirname, "../../../", "config.js");
-
-// console.log(process.cwd(), path.resolve())
-
-
-
-// global.__dirname = path.resolve();
 
 async function loadModelFolder(folder) {
     let dir = path.resolve(__dirname, folder);
@@ -27,26 +19,25 @@ async function loadModelFolder(folder) {
 }
 
 
-export async function loadModel() {
-    // let models = getFiles('app/Model');
+async function loadModel() {
+
 
     await loadModelFolder('../app/models')
 
-    for (let i in appConfig.plugin) {
-        await loadModelFolder('../plugins/' + appConfig.plugin[i] + '/models')
-    }
+    await forEachPlugin(async (pluginName) => {
+        await loadModelFolder('../plugins/' + pluginName + '/models')
+    })
 
 }
 
 
 
 
-export async function loadPlugin() {
-    let { plugin } = appConfig;
+async function loadPlugin() {
 
-    for (let i in plugin) {
-        let dir = path.resolve(__dirname, '../plugins/' + plugin[i]);
-        // console.log(dir)
+    await forEachPlugin(async (pluginName) => {
+
+        let dir = path.resolve(__dirname, '../plugins/' + pluginName);
         console.log(dir, fs.existsSync(dir + '/index.js'), fs.existsSync(dir + '/index.ts'))
 
         if (fs.existsSync(dir + '/index.js') || fs.existsSync(dir + '/index.ts')) {
@@ -54,8 +45,7 @@ export async function loadPlugin() {
             await import(dir);
 
         }
-
-    }
+    })
 }
 
 
@@ -73,15 +63,19 @@ async function loadRouterFolder(folder) {
 
     return false;
 }
-// global.demoFun = 'adsfasdf'
-export async function loadRoute() {
-    let { plugin } = appConfig;
 
+async function forEachPlugin(callback: (pluginName: string) => void) {
+    let { plugin } = appConfig;
 
     for (let i in plugin) {
 
-        await loadRouterFolder('plugin/' + plugin[i] + '/router')
+        await callback(plugin[i]);
+
     }
+}
 
 
+export default async function autoload() {
+    await loadModel();
+    await loadPlugin();
 }

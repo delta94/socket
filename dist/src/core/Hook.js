@@ -67,6 +67,7 @@ var __spread = (this && this.__spread) || function () {
     return ar;
 };
 exports.__esModule = true;
+exports.add_router = void 0;
 var Hook = /** @class */ (function () {
     function Hook() {
         this.action_list = {};
@@ -119,6 +120,10 @@ var Hook = /** @class */ (function () {
     };
     return Hook;
 }());
-exports["default"] = new Hook;
-// export function add_router(){
-// }
+var hook = new Hook;
+exports["default"] = hook;
+function add_router(name, callback) {
+    hook.add_action('before-router', function (app, server) {
+    });
+}
+exports.add_router = add_router;

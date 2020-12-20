@@ -65,7 +65,7 @@ var dotenv_1 = __importDefault(require("dotenv"));
 var cors_1 = __importDefault(require("cors"));
 var Authentication_1 = __importStar(require("core/Authentication"));
 var Hook_1 = __importDefault(require("core/Hook"));
-var autoload_1 = require("core/autoload");
+var autoload_1 = __importDefault(require("core/autoload"));
 // var log = console.log;
 // console.log = function() {
 //     log.apply(console, arguments);
@@ -84,14 +84,8 @@ function loadModule() {
                     // })
                     dotenv_1["default"].config();
                     app = express_1["default"](), server = http_1["default"].createServer(app);
-                    return [4 /*yield*/, autoload_1.loadPlugin()];
+                    return [4 /*yield*/, autoload_1["default"]()];
                 case 1:
-                    _a.sent();
-                    return [4 /*yield*/, autoload_1.loadModel()];
-                case 2:
-                    _a.sent();
-                    return [4 /*yield*/, autoload_1.loadRoute()];
-                case 3:
                     _a.sent();
                     // socket(server);
                     app.use(express_1["default"].json());
@@ -121,7 +115,7 @@ function loadModule() {
                     //     })
                     // }
                     return [4 /*yield*/, Hook_1["default"].do_action('before-router', [app, server])];
-                case 4:
+                case 2:
                     // function authenticateToken(req, res, next) {
                     //     const authHeader = req.headers['authorization']
                     //     const token = authHeader && authHeader.split(' ')[1]

@@ -1,8 +1,8 @@
 import fs from 'fs'
 import { getAllModel } from '../../../core/Model';
-
+console.log('aaa')
 export default function (app, server) {
-    app.use(function (req, res, next) {
+    app.use('admin', function (req, res, next) {
         // console.log(fs.existsSync(__dirname + '/views/index.html'))
         if (fs.existsSync(__dirname + '/views' + req.path + '.html')) {
             console.log('pageview')

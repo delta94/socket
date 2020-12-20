@@ -3,7 +3,7 @@ class Hook {
 
 
 
-    add_action(name, callback) {
+    add_action(name: string, callback: Function) {
 
         // console.log('add_action', name)
 
@@ -53,8 +53,12 @@ class Hook {
     }
 }
 
-export default new Hook;
+let hook = new Hook;
 
-// export function add_router(){
+export default hook;
 
-// }
+export function add_router(name: string, callback: Function) {
+    hook.add_action('before-router', (app, server) => {
+
+    })
+}

@@ -7,7 +7,7 @@ import cors from 'cors'
 
 import Authentication, { authenticateToken } from 'core/Authentication';
 import Hook from 'core/Hook';
-import { loadModel, loadPlugin, loadRoute } from 'core/autoload';
+import autoload from 'core/autoload';
 
 // var log = console.log;
 // console.log = function() {
@@ -31,9 +31,9 @@ async function loadModule() {
 
 
 
-    await loadPlugin();
-    await loadModel();
-    await loadRoute();
+
+
+    await autoload();
 
     // socket(server);
 

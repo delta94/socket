@@ -2,3 +2,5 @@
 /coverage/
 /temp/
 /build/
+/dist/
+/__tests__/

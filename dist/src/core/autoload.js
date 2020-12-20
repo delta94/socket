@@ -58,16 +58,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.loadRoute = exports.loadPlugin = exports.loadModel = void 0;
 var helper_1 = require("./helper/helper");
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var Hook_1 = __importDefault(require("./Hook"));
 var app_1 = __importDefault(require("../config/app"));
-// let __dirname = path.resolve();
-// let configFilename = path.join(__dirname, "../../../", "config.js");
-// console.log(process.cwd(), path.resolve())
-// global.__dirname = path.resolve();
 function loadModelFolder(folder) {
     return __awaiter(this, void 0, void 0, function () {
         var dir, models, _a, _b, _i, i;
@@ -100,68 +95,57 @@ function loadModelFolder(folder) {
 }
 function loadModel() {
     return __awaiter(this, void 0, void 0, function () {
-        var _a, _b, _i, i;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0: 
-                // let models = getFiles('app/Model');
-                return [4 /*yield*/, loadModelFolder('../app/models')];
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, loadModelFolder('../app/models')];
                 case 1:
-                    // let models = getFiles('app/Model');
-                    _c.sent();
-                    _a = [];
-                    for (_b in app_1["default"].plugin)
-                        _a.push(_b);
-                    _i = 0;
-                    _c.label = 2;
+                    _a.sent();
+                    return [4 /*yield*/, forEachPlugin(function (pluginName) { return __awaiter(_this, void 0, void 0, function () {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, loadModelFolder('../plugins/' + pluginName + '/models')];
+                                    case 1:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); })];
                 case 2:
-                    if (!(_i < _a.length)) return [3 /*break*/, 5];
-                    i = _a[_i];
-                    return [4 /*yield*/, loadModelFolder('../plugins/' + app_1["default"].plugin[i] + '/models')];
-                case 3:
-                    _c.sent();
-                    _c.label = 4;
-                case 4:
-                    _i++;
-                    return [3 /*break*/, 2];
-                case 5: return [2 /*return*/];
+                    _a.sent();
+                    return [2 /*return*/];
             }
         });
     });
 }
-exports.loadModel = loadModel;
 function loadPlugin() {
     return __awaiter(this, void 0, void 0, function () {
-        var plugin, _a, _b, _i, i, dir;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
-                case 0:
-                    plugin = app_1["default"].plugin;
-                    _a = [];
-                    for (_b in plugin)
-                        _a.push(_b);
-                    _i = 0;
-                    _c.label = 1;
+        var _this = this;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, forEachPlugin(function (pluginName) { return __awaiter(_this, void 0, void 0, function () {
+                        var dir;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    dir = path_1["default"].resolve(__dirname, '../plugins/' + pluginName);
+                                    console.log(dir, fs_1["default"].existsSync(dir + '/index.js'), fs_1["default"].existsSync(dir + '/index.ts'));
+                                    if (!(fs_1["default"].existsSync(dir + '/index.js') || fs_1["default"].existsSync(dir + '/index.ts'))) return [3 /*break*/, 2];
+                                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require(dir)); })];
+                                case 1:
+                                    _a.sent();
+                                    _a.label = 2;
+                                case 2: return [2 /*return*/];
+                            }
+                        });
+                    }); })];
                 case 1:
-                    if (!(_i < _a.length)) return [3 /*break*/, 4];
-                    i = _a[_i];
-                    dir = path_1["default"].resolve(__dirname, '../plugins/' + plugin[i]);
-                    // console.log(dir)
-                    console.log(dir, fs_1["default"].existsSync(dir + '/index.js'), fs_1["default"].existsSync(dir + '/index.ts'));
-                    if (!(fs_1["default"].existsSync(dir + '/index.js') || fs_1["default"].existsSync(dir + '/index.ts'))) return [3 /*break*/, 3];
-                    return [4 /*yield*/, Promise.resolve().then(function () { return __importStar(require(dir)); })];
-                case 2:
-                    _c.sent();
-                    _c.label = 3;
-                case 3:
-                    _i++;
-                    return [3 /*break*/, 1];
-                case 4: return [2 /*return*/];
+                    _a.sent();
+                    return [2 /*return*/];
             }
         });
     });
 }
-exports.loadPlugin = loadPlugin;
 function loadRouterFolder(folder) {
     return __awaiter(this, void 0, void 0, function () {
         var models, _a, _b, _i, i, fun;
@@ -194,8 +178,7 @@ function loadRouterFolder(folder) {
         });
     });
 }
-// global.demoFun = 'adsfasdf'
-function loadRoute() {
+function forEachPlugin(callback) {
     return __awaiter(this, void 0, void 0, function () {
         var plugin, _a, _b, _i, i;
         return __generator(this, function (_c) {
@@ -210,7 +193,7 @@ function loadRoute() {
                 case 1:
                     if (!(_i < _a.length)) return [3 /*break*/, 4];
                     i = _a[_i];
-                    return [4 /*yield*/, loadRouterFolder('plugin/' + plugin[i] + '/router')];
+                    return [4 /*yield*/, callback(plugin[i])];
                 case 2:
                     _c.sent();
                     _c.label = 3;
@@ -222,4 +205,19 @@ function loadRoute() {
         });
     });
 }
-exports.loadRoute = loadRoute;
+function autoload() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, loadModel()];
+                case 1:
+                    _a.sent();
+                    return [4 /*yield*/, loadPlugin()];
+                case 2:
+                    _a.sent();
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+exports["default"] = autoload;
