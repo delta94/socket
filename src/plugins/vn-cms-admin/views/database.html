@@ -138,7 +138,7 @@
 
             // create the model for the E-R diagram
 
-            fetch('/get-uml-json')
+            fetch('/admin/get-uml-json')
                 .then(res => res.json())
                 .then(res => {
                     let nodeDataArray = []
@@ -153,7 +153,7 @@
                                     if (j === '_id') {
                                         object.unshift({ name: j, iskey: true, figure: 'Decision', color: colors.red })
                                     } else if (collection[j].relation) {
-                                        
+
                                         object.push({ name: j, iskey: true, figure: 'Circle', color: colors.green })
 
                                         linkDataArray.push({ from: collection[j].relation, to: i, text: "0..N", toText: "1" })
@@ -173,6 +173,13 @@
                             nodeDataArray: nodeDataArray,
                             linkDataArray: linkDataArray
                         });
+
+                    myDiagram.addModelChangedListener(function (evt) {
+                        if (evt.isTransactionFinished) {
+                            // console.log(evt.model)
+                            // localStorage.setItem('UML', JSON.parse(evt.model))
+                        }
+                    });
                 })
             // var nodeDataArray = [
             //     {

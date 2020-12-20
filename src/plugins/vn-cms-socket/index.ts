@@ -4,8 +4,12 @@
 
 
 const Socket = require('socket.io');
-const Hook = require('core/Hook');
+const { HookApp } = require('core/Hook');
 const { getModel } = require('../../core/Model');
+const path = require('path')
+
+
+
 
 
 
@@ -16,7 +20,13 @@ const { getModel } = require('../../core/Model');
 
 
 function init(express, server) {
-    var io = Socket.listen(server);
+
+    express.get('/chat', (req, res) => {
+        res.sendFile(path.join(__dirname, './views/index.html'));
+    })
+
+
+    var io = Socket(server);
 
     let users = {},
         hosts = {};
@@ -123,4 +133,4 @@ function init(express, server) {
 
 }
 
-Hook.add_action('before-router', init)
+HookApp(init)

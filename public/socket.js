@@ -68,7 +68,7 @@
 //     return false;
 // }
 // let socket = io(window.location.origin, {forceNew: true});
-// let socket = io(window.location.origin);
+let socket = io(window.location.origin);
 
 class SocketDB {
     constructor(name) {

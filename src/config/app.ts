@@ -9,6 +9,7 @@ export default {
         "vn-cms-elearning",
         "vn-cms-blog",
         "vn-cms-raw-data",
+        "vn-cms-socket",
     ],
     "redis_port": 6379
 }

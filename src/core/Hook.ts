@@ -1,3 +1,5 @@
+import { Application } from "express";
+
 class Hook {
     action_list = {};
 
@@ -57,8 +59,12 @@ let hook = new Hook;
 
 export default hook;
 
-export function add_router(name: string, callback: Function) {
-    hook.add_action('before-router', (app, server) => {
-
-    })
+export function HookApp(callback: (app: Application, server: any) => void) {
+    hook.add_action('before-router', callback)
 }
+
+// export function add_router(name: string, callback: Function) {
+//     hook.add_action('before-router', (app, server) => {
+
+//     })
+// }

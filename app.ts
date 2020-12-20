@@ -57,12 +57,15 @@ async function loadModule() {
 
 
     app.use(express.static(__dirname + '/public'));
+    app.set('views', path.join(__dirname, 'src/views'))
 
     Authentication(app);
 
     app.get('/posts', authenticateToken, (req: any, res) => {
         res.json({ post: req.user.name })
     })
+
+
 
     // function authenticateToken(req, res, next) {
     //     const authHeader = req.headers['authorization']

@@ -1,6 +1,8 @@
 import Hook from '../../core/Hook'
 import MySQL from '../../core/model/MySQL'
 import { getModel } from '../../core/model/MongoDB';
+import request from 'request';
+import jsdom from 'jsdom';
 
 
 let mysql = new MySQL
@@ -8,7 +10,7 @@ let mysql = new MySQL
 async function getAuthor() {
     let { data } = await mysql.find('author', 2000);
 
-    for(let i in data){
+    for (let i in data) {
         data[i].avatar = 'https://picsum.photos/300/300'
     }
 
@@ -35,7 +37,7 @@ async function getTag() {
 async function getUser() {
     let { data } = await mysql.find('user', 2000);
 
-    for(let i in data){
+    for (let i in data) {
         data[i].avatar = 'https://picsum.photos/300/300'
     }
 
@@ -117,7 +119,7 @@ async function getComment() {
 
         data[i].post = p;
         data[i].user = u;
-        
+
     }
 
 
@@ -128,14 +130,24 @@ async function getComment() {
 
 
 function init(app, server) {
-    app.get('/mysql', async (req, res) => {
-        // let author = await getAuthor();
-        // let user = await getUser();
-        // let result = await getCategory();
-        // let result = await getTag();
-        // let post = await getPost();
-        let comment = await getComment();
-        res.json(comment);
+    // app.get('/mysql', async (req, res) => {
+    //     // let author = await getAuthor();
+    //     // let user = await getUser();
+    //     // let result = await getCategory();
+    //     // let result = await getTag();
+    //     // let post = await getPost();
+    //     let comment = await getComment();
+    //     res.json(comment);
+    // })
+
+    app.get('/test', (req, res) => {
+        request({
+            uri: "https://thachpham.com/",
+        }, function (error, response, body) {
+            // console.log(body)
+            const dom = new jsdom.JSDOM(body)
+            res.send(dom.window.document.querySelector("#main").innerHTML)
+        });
     })
 
 }
