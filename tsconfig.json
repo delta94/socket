@@ -4,13 +4,13 @@
     "resolveJsonModule": true,
     "declaration": true,
     "types": ["node"],
-    "module": "CommonJS",                     
+    "module": "commonjs",                     
     "lib": ["es5", "es6", "dom", "dom.iterable"], 
     "allowJs": true,                      
     "allowSyntheticDefaultImports": true,
     "outDir": "./dist",            
     "downlevelIteration":true,            
-    "strict": true,                         
+    "strict": true,                       
     "noImplicitAny": false,                
    
     "moduleResolution": "node",           
@@ -30,6 +30,7 @@
   
   "exclude": [
     "node_modules",
+    "public",
     "test"
   ]
 }

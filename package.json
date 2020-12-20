@@ -8,11 +8,11 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "start": "nodemon --exec ts-node -r tsconfig-paths/register dist/app.js",
+    "start": "nodemon --exec ts-node -r tsconfig-paths/register app.ts",
     "start2": "ts-node --respawn app.ts",
     "dev": "nodemon --exec ts-node -r tsconfig-paths/register  app.ts",
-    "build": "tsc -p .",
-    "clean": "rm  ./dist",
+    "build": "jest --coverage",
+    "clean": "del dist",
     "copy-files": "copy ./src/views/ ./dist/"
   },
   "nodemonConfig": {
