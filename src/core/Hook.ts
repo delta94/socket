@@ -57,8 +57,12 @@ let hook = new Hook;
 
 export default hook;
 
-export function add_router(name: string, callback: Function) {
-    hook.add_action('before-router', (app, server) => {
+// export function add_router(name: string, callback: Function) {
+//     hook.add_action('before-router', (app, server) => {
 
-    })
+//     })
+// }
+
+export function HookApp() {
+
 }

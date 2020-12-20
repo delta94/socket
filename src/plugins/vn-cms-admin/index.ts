@@ -1,2 +1,2 @@
-import { add_router } from "core/Hook";
+// import { add_router } from "core/Hook";
 
