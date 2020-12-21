@@ -5,7 +5,7 @@ import util from 'util'
 import Hook from '../Hook';
 import { objectIndex } from '../helper/helper';
 import dbConfig from '../../config/database';
-import e from 'express';
+import ModelPattern, { findOneOptions, findOptions, findResponse } from '../pattern/ModelPattern';
 
 // const { ObjectID } = mongodb;
 
@@ -52,7 +52,7 @@ let _ = {
 }
 
 
-export default class MongoDB {
+export default class MongoDB implements ModelPattern {
 
     defaultColumn = {
         _id: {
@@ -75,7 +75,6 @@ export default class MongoDB {
 
 
     constructor(name: string, fields = {}) {
-
         this.name = name;
         if (name in _collection) {
             this.collection = _collection[name];
@@ -105,76 +104,47 @@ export default class MongoDB {
         }
     }
 
-    async find(data: { _id?: any }, paginate: any = { limit: 20, page: 1 }) {
 
-        // let { cache } = Hook.do_action('find-before',[...arguments]);
-        // if(cache) return cache;
+    async find(options: findOptions): Promise<findResponse> {
+        // async find(data: { _id?: any }, paginate: any = { limit: 20, page: 1 }) {
 
-        // let arr = ['5fafadb8334ee92f442d7a3c','5fafb01273970242f00c5cb4', '5fb0d4a06a9db7403c28bb3d','5fb0d4a06a9db7403c28bb3e','5fb0d4a06a9db7403c28bb3a','5fb0d4a06a9db7403c28bb3c','5fb0d4a06a9db7403c28bb3f','5fb0d4a06a9db7403c28bb66','5fb0d4a06a9db7403c28bb39','5fb0d4a06a9db7403c28bb4c','5fb0d4a06a9db7403c28bb44','5fb0d4a06a9db7403c28bb40','5fb0d4a06a9db7403c28bb51','5fb0d4a06a9db7403c28bb46','5fb0d4a06a9db7403c28bb5e','5fb0d4a06a9db7403c28bb63','5fb0d4a06a9db7403c28bb3b','5fb0d4a06a9db7403c28bb41','5fb0d4a06a9db7403c28bb6e','5fb0d4a06a9db7403c28bb52']
-        // let result = [];
-        // for(let i in arr){
-        //     let {data, error} = await cache('5fafadb8334ee92f442d7a3c');
-        //     result.push(JSON.parse(data))
-        // }
+        let { page, limit, match } = options;
 
-        // return [result];
-
-
-        let { page, limit } = paginate;
         page <= 0 && (page = 1);
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
         let [res1, countDocument] = await Promise.all<any>([
             new Promise((resolve, reject) => {
-                data = this._generateFind(data);
-                // console.log(data);
-                // if (ObjectIDValid(data?._id || data)) {
-                //     data = {
-                //         _id: new ObjectId(data?._id || data)
-                //     };
-                // }
+                match = this._generateFind(match);
 
-                this.collection.find(data).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error: any, data: any) {
+                this.collection.find(match).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error: any, data: any) {
                     if (error) resolve({ error });
                     else resolve({ data });
                 });
             }),
-            this.collection.countDocuments(data)])
+            this.collection.countDocuments(match)])
 
-        paginate = renderPaginate({ page, limit, countDocument });
+        let paginate = renderPaginate({ page, limit, countDocument });
 
 
-        return { ...res1, paginate };
+        return { data: res1, paginate };
 
     }
 
-    async findOne(find: { _id?: any }, ...ref: any) {
+    async findOne(options: findOneOptions) : Promise<{ error?: {}, data?: {} }> {
+        // async findOne(find: { _id?: any }, ...ref: any) {
 
-        let { cache } = await Hook.do_action('findOne-before', [find, ...ref]);
+        let { match } = options;
+
+        let { cache } = await Hook.do_action('findOne-before', [match]);
 
         if (cache) return { data: cache };
 
-        if (typeof find === 'string') {
-            find = {
-                _id: find
-            }
-        }
-
-        if (typeof find._id !== 'undefined' && ObjectIDValid(find._id)) {
-            find._id = new ObjectId(find._id);
-        }
-
-
-        // if (typeof find === 'string' && ObjectIDValid(find)) {
-        //     find = {
-        //         _id: ObjectID(find)
-        //     }
-        // }
-
+        match = this._generateFind(match);
 
         return new Promise((resolve, reject) => {
-            this.collection.findOne(find, function (error: any, data: any) {
+            this.collection.findOne(match, function (error: any, data: any) {
                 if (error) resolve({ error });
                 else {
                     Hook.do_action('findOne-after', [data]);
@@ -288,7 +258,7 @@ export default class MongoDB {
 
                 } else {
                     this.collection.insertOne(res, (error: any, res: any) => {
-                        console.log(error, res)
+                        // console.log(error, res)
                         if (error) {
                             if (typeof error.keyValue === 'object') {
 
@@ -416,6 +386,11 @@ export default class MongoDB {
 
     deleteMany() { }
 
+
+    count(options: { match?: {} }): number {
+        throw new Error('Method not implemented.');
+    }
+
     async createIndex() {
 
         // console.log(this.collection.dropIndex)
@@ -500,7 +475,7 @@ export default class MongoDB {
         if (ObjectIDValid(find)) {
             find = { _id: new ObjectId(find) }
         }
-        console.log(find)
+        // console.log(find)
         return find;
     }
 }
@@ -525,12 +500,14 @@ export async function getDatabase(name?: string) {
 
 }
 
-export function getModel(name: string, fields = {}, ...ref) {
+export function getModel(name: string, fields = {}, ...ref): AbstractModel {
     if (name in _.instance) {
         return _.instance[name];
     }
 
-    return new MongoDB(name, fields);
+    let o = new MongoDB(name, fields);
+
+    return o;
 }
 
 export async function getCollection(name: string) {

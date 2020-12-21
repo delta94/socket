@@ -1,3 +1,6 @@
+import { Application } from "express";
+import { Server } from "http";
+
 class Hook {
     action_list = {};
 
@@ -26,7 +29,7 @@ class Hook {
 
     }
 
-    async do_action(name, parameters: any = []): Promise<{ cache?: {} }> {
+    async do_action(name: string, parameters: any = []): Promise<{ cache?: {} }> {
         // if(name === 'init-model'){
         //     console.log('add_action',name,this.action_list[name])
         // }
@@ -63,6 +66,17 @@ export default hook;
 //     })
 // }
 
-export function HookApp() {
-
+export function HookApp(callback: (app: Application, server: Server) => void) {
+    hook.add_action('before-router', callback)
 }
+
+
+
+
+// export function BeforeUpdateModel(){
+
+// }
+
+// export function HookBeforeUpdateModel(callback: () => void){
+
+// }

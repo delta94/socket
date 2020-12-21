@@ -95,7 +95,7 @@
     <!-- <script src="https://www.gstatic.com/firebasejs/8.0.0/firebase-analytics.js"></script> -->
     <script>
         var fireBaseRef = new SocketDB("https://pnj-project.firebaseio.com/");
-        var chatCollection = fireBaseRef.database('chat');
+        var chatCollection = fireBaseRef.database('message');
 
         $("#submit-btn").bind("click", async function(e) {
             e.preventDefault();

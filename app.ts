@@ -10,8 +10,8 @@ import Hook from 'core/Hook';
 import autoload from 'core/autoload';
 
 // var log = console.log;
-// console.log = function() {
-//     log.apply(console, arguments);
+// console.log = function(...refs) {
+//     log.apply(console, refs);
 //     // Print the stack trace
 //     console.trace();
 // };

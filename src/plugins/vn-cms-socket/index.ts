@@ -2,10 +2,11 @@
 // import Room from '../../Model/Room.js';
 // import User from '../../Model/User.js';
 
+import { HookApp } from "core/Hook";
+import path from 'path';
 
 const Socket = require('socket.io');
-const Hook = require('core/Hook');
-const { getModel } = require('../../core/Model');
+const { getModel } = require('core/Model');
 
 
 
@@ -16,10 +17,15 @@ const { getModel } = require('../../core/Model');
 
 
 function init(express, server) {
-    var io = Socket.listen(server);
+    var io = Socket(server);
 
     let users = {},
         hosts = {};
+
+
+    express.get('/chat', (req, res) => {
+        res.sendFile(path.join(__dirname, 'views/index.html'));
+    })
 
 
     // function getCollection(name, host) {
@@ -65,7 +71,7 @@ function init(express, server) {
                 let collection = getModel(database);
 
 
-                let [res, error] = await collection.insertOrUpdate(data)
+                let { data: res, error } = await collection.insertOrUpdate(data)
                 if (error == null) {
                     socket.in(socket.host).emit('child_added_' + database, data);
                     socket.emit('child_added_' + database, data);
@@ -75,7 +81,8 @@ function init(express, server) {
 
         socket.on('get_collection_data', async (data, callback) => {
             let collection = getModel(data.database);
-            let [res] = await collection.find();
+            console.log(data.database)
+            let { data: res } = await collection.find();
 
             callback(res);
         })
@@ -123,4 +130,6 @@ function init(express, server) {
 
 }
 
-Hook.add_action('before-router', init)
+
+
+HookApp(init)

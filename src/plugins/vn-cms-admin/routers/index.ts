@@ -1,30 +1,34 @@
+import { HookApp } from 'core/Hook';
 import fs from 'fs'
+import path from 'path';
+
+
 import { getAllModel } from '../../../core/Model';
-console.log('aaa')
-export default function (app, server) {
-    app.use('admin', function (req, res, next) {
-        // console.log(fs.existsSync(__dirname + '/views/index.html'))
-        if (fs.existsSync(__dirname + '/views' + req.path + '.html')) {
-            console.log('pageview')
-            return res.sendFile(__dirname + '/views' + req.path + '.html');
-        }
-        next();
-        // res.sendFile(__dirname + '/views/index.html');
+import express from 'express';
+const router = express.Router();
 
-    })
+router.get('/*', function (req, res, next) {
+    let dir = path.resolve(__dirname, '../views' + req.path + '.html')
+    console.log(dir)
 
-    app.get('/get-uml-json', function (req, res) {
-        let models = getAllModel()
-        let responseJson = {};
-        for (let i in models) {
-            responseJson[i] = models[i]._fields;
-        }
-        // res.json(JSON.parse(JSON.stringify(models['token'])))
-        res.json(responseJson)
-    })
+    if (fs.existsSync(dir)) {
+        console.log('pageview')
+        return res.sendFile(dir);
+    }
+    next();
 
-    // app.get('/aaaa', function(req,res){
-    //     res.json({a: 1});
-    // })
+})
 
-}
+router.get('/get-uml-json', function (req, res) {
+    let models = getAllModel()
+    let responseJson = {};
+    for (let i in models) {
+        responseJson[i] = models[i]._fields;
+    }
+    res.json(responseJson)
+})
+
+
+HookApp((app, server) => {
+    app.use('/admin', router)
+})

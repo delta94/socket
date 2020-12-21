@@ -1,5 +1,5 @@
 import mysql from 'mysql'
-import AbstractModel from './AbstractModel';
+import ModelPattern from '../pattern/ModelPattern';
 
 var con = mysql.createConnection({
     host: 'localhost',
@@ -15,7 +15,11 @@ con.connect((err) => {
         console.log('mysql connect success')
     }
 })
-export default class MySQL implements AbstractModel {
+export default class MySQL implements ModelPattern {
+
+
+
+
     count(table: string): Promise<{ error?: any, count?: number }> {
         return new Promise((res, rej) => {
             con.query(`SELECT COUNT(*) as count FROM \`${table}\``, function (err, result) {

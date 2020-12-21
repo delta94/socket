@@ -1,7 +1,7 @@
-import Model from '../../core/Model'
+import ModelClass from "core/Model";
 
-// const { ObjectID } = mongodb;
-class Message extends Model {
+
+class Message extends ModelClass {
     // name = 'chat';
     // fields = {
     //     comment: String,
