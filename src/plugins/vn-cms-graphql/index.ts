@@ -80,7 +80,7 @@ function generateRoot() {
                     args,
                     resolve: async (parent, args) => {
                         if (args._id || args.id) {
-                            args._id = new ObjectID(args._id || args.id);
+                            args._id = args._id || args.id;
                             delete args.id;
                         }
 
@@ -113,19 +113,16 @@ function generateRoot() {
                         let { limit, page } = args;
                         delete args.limit;
                         delete args.page;
-                        let paging: any = undefined;
-                        if (limit || page) {
-                            paging = {
-                                limit: limit || generalConfig.limit,
-                                page: page || 0
-                            }
-                        }
-                        if (isEmptyObject(args)) {
-                            args = {};
-                        }
 
-                        let { data, error, paginate } = await getModel(i).find(args, paging);
+                        let paging = {
+                            limit: parseInt(limit) || generalConfig.limit || 15,
+                            page: parseInt(page) || 1
+                        };
 
+                        let { data, error, paginate } = await getModel(i).find({ ...paging, match: args });
+
+                        // console.log( data, error, paginate)
+                        // let { data, error, paginate } = await getModel(i).find(args, paging);
                         return {
                             data,
                             paginate
@@ -154,10 +151,9 @@ function generateMutation() {
                     description: `Add 1 ${capFirstChild(i)}`,
                     args,
                     resolve: async (parent, args) => {
-                        console.log(args)
                         let { data, error } = await getModel(i).insertOrUpdate(args);
                         if (error) {
-                            throw new GraphQLError(error);
+                            throw new GraphQLError(JSON.stringify(error));
                         }
                         return data;
                     }
@@ -170,14 +166,13 @@ function generateMutation() {
                     description: `Delete 1 ${capFirstChild(i)}`,
                     args: argsDelete,
                     resolve: async (parent, args) => {
-                        console.log(args)
-                        let { data, error } = await getModel(i).delete(args);
+                        let { data, error, deleteCount } = await getModel(i).deleteOne(args);
                         if (error) {
-                            throw new GraphQLError(error);
+                            throw new GraphQLError(JSON.stringify(error));
                         }
 
 
-                        return data.deleteCount;
+                        return deleteCount;
                     }
                 }
             }
@@ -326,25 +321,28 @@ function generateOne(model) {
                     object[fieldName] = {
                         type,
                         resolve: async (parent) => {
-                            let f;
-                            f = parent[fieldName]
+                            let f = parent[fieldName] || {};
                             // if (field.multi && Array.isArray(parent[fieldName])) {
                             //     f = parent[fieldName].map(e => ObjectID(e));
                             //     f = { _id: { $in: f } };
                             // } else {
                             //     f = { _id: ObjectID(parent[fieldName]) };
                             // }
-                            if (typeof f === 'undefined') {
-                                f = {}
+                            if (f) {
+                                let { data, error } = await getModel(field.relation).find({ match: f });
+                                if (error) {
+                                    throw new GraphQLError(JSON.stringify(error));
+                                } else if (Array.isArray(data)) {
+                                    if (field.multi) {
+                                        return data
+                                    }
+
+                                    return data[0] || null;
+                                }
                             }
 
-                            let { data, error } = await getModel(field.relation).find(f);
+                            return null
 
-                            if (field.multi) {
-                                return data
-                            } else {
-                                return data[0] || null;
-                            }
                         }
                     }
 
@@ -353,7 +351,6 @@ function generateOne(model) {
                         object[fieldName] = {
                             type: GraphQLList(global_store[name]),
                             resolve: (parent) => {
-                                console.log(parent);
                                 return [];
                             }
                         }

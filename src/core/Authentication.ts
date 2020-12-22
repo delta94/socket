@@ -100,7 +100,9 @@ export default (app: any) => {
 
 
         let { data, error } = await User.findOne({
-            refreshToken
+            match: {
+                refreshToken
+            }
         })
 
 
@@ -115,7 +117,7 @@ export default (app: any) => {
             if (err) return cacheError(err, res)
             const accessToken = generateAccessToken(user)
 
-            User.findOneAndUpdate({ refreshToken }, {
+            User.updateOne({ refreshToken }, {
                 accessToken
             })
 
@@ -135,19 +137,19 @@ export default (app: any) => {
         // let {data: user, error: userError} = await User.findOne({email});
         // let { data: token, error: tokenError } = Token.findOne({email})
 
-        let [{ data: user, error: userError }, { data: token, error: tokenError }] = await Promise.all([User.findOne({ email }), Token.findOne({ email })])
+        let [{ data: user, error: userError }, { data: token, error: tokenError }] = await Promise.all([User.findOne({ match: { email } }), Token.findOne({ match: { email } })])
 
 
 
         if (user) {
 
-            let { email, _id, avatar, name } = user;
+            let {  _id, avatar, name } = user;
 
             const accessToken = generateAccessToken(user);
 
             const refreshToken = jwt.sign({ email, _id }, (window as any).process.env.REFRESH_TOKEN_SECRET)
 
-            let { data, error } = await User.findOneAndUpdate({ _id }, { accessToken, refreshToken });
+            let { data, error } = await User.updateOne({ _id }, { accessToken, refreshToken });
             console.log(data, error);
 
             // let [data, error] = await Token.insertOrUpdate({

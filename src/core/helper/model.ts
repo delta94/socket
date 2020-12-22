@@ -290,33 +290,32 @@ export async function ModelTypeRelation(this: { validate?: any, required?: any, 
 
             let { data: res, error } = f ? await getModel(this.relation).find(f) : { data: null, error: null }
 
-
+            let result: any = res;
             if (res) {
                 if (this.multi) {
-                    res = res.map(e => new ObjectID(e._id));
+                    result = res.map(e => new ObjectID(e._id));
 
                 } else {
                     if (res[0]) {
-                        res = new ObjectID(res[0]._id)
+                        result = new ObjectID(res[0]._id)
                     } else {
-                        res = null
+                        result = null
                     }
                 }
             }
 
 
-
             if (this.required &&
                 (
-                    (Array.isArray(res) && res.length === 0) ||
-                    !res
+                    (Array.isArray(result) && result.length === 0) ||
+                    !result
                 )
             ) {
                 resolve([null, `Data not match with "${this.relation}" please check again`]);
                 return;
             }
 
-            resolve([res]);
+            resolve([result]);
 
         })
     }

@@ -179,13 +179,13 @@ async function init(app, server) {
             // e.cfd_teacher = e.cfd_teacher.map(e => teacher.find(e1 => e.id === e1.id))
             let teacher = e.cfd_teacher[0]
             // teacher = teacher[0]
-            let { data, error } = await getModel('elearning_teacher').findOne({ email: teacher.email })
+            let { data, error } = await getModel('elearning_teacher').findOne({ match: { email: teacher.email } })
 
 
             let mentors = e.mentor
             let mentor: any = [];
             for (let j in mentors) {
-                let { data, error } = await getModel('elearning_teacher').findOne({ id: mentors[j].id });
+                let { data, error } = await getModel('elearning_teacher').findOne({ match: { id: mentors[j].id } });
                 if (data) {
                     mentor.push(data._id)
                 }
@@ -689,8 +689,10 @@ function generateApiDocs(model) {
 function generateRouter(model, app) {
     let Model = getModel(model.name);
     app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
-        if (req.params.id) {
-            let { data, error } = await Model.findOne(req.params.id);
+        let { id } = req.params;
+
+        if (id) {
+            let { data, error } = await Model.findOne(id);
             if (error) {
                 return res.status(type.STATUS_SERVER_ERROR).json({ error })
             }
@@ -712,8 +714,11 @@ function generateRouter(model, app) {
             }
         }
 
-
-        let { data, error, paginate } = await Model.find(query, { page: parseInt(page), limit: parseInt(limit) });
+        let { data, error, paginate } = await Model.find({
+            match: query,
+            page: parseInt(page),
+            limit: parseInt(limit)
+        });
 
         if (error) {
             return res.status(type.STATUS_SERVER_ERROR).json({ error })
@@ -745,7 +750,7 @@ function generateRouter(model, app) {
     })
 
     app.delete(prefix + '/' + model.name + '/:id', authenticateToken, async (req, res) => {
-        let { data, error, deleteCount } = await Model.delete({ id: req.params.id });
+        let { data, error, deleteCount } = await Model.deleteOne({ id: req.params.id });
         if (error) {
             return res.status(type.STATUS_BAD_REQUEST).json({ error });
         }

@@ -1,5 +1,5 @@
 import mysql from 'mysql'
-import ModelPattern from '../pattern/ModelPattern';
+import ModelPattern, { deleteManyResponse, deleteOneResponse, findOneOptions, findOneResponse, findOptions, findResponse, insertManyResponse, intertOneResponse, intertOrUpdateResponse, ModelAbstract, updateManyResponse, updateOneResponse } from '../pattern/ModelPattern';
 
 var con = mysql.createConnection({
     host: 'localhost',
@@ -15,68 +15,64 @@ con.connect((err) => {
         console.log('mysql connect success')
     }
 })
-export default class MySQL implements ModelPattern {
+export default class MySQL extends ModelAbstract implements ModelPattern {
+    find(options: findOptions): Promise<findResponse> {
+        throw new Error('Method not implemented.');
+    }
+    findOne(options: string | findOneOptions): Promise<findOneResponse> {
+        throw new Error('Method not implemented.');
+    }
+    insertOne(options: {}): Promise<intertOneResponse> {
+        throw new Error('Method not implemented.');
+    }
+    insertMany(options: []): Promise<insertManyResponse>{
+        throw new Error('Method not implemented.');
+    }
+    insertOrUpdate(options: {} | []) : Promise<intertOrUpdateResponse>{
+        throw new Error('Method not implemented.');
+    }
+    updateOne(query: {}, data: {}): Promise<updateOneResponse> {
+        throw new Error('Method not implemented.');
+    }
+    updateMany(data: []): Promise<updateManyResponse>{
+        throw new Error('Method not implemented.');
+    }
+    deleteOne(query: {}): Promise<deleteOneResponse> {
+        throw new Error('Method not implemented.');
+    }
+    deleteMany(query: []): Promise<deleteManyResponse>{
+        throw new Error('Method not implemented.');
+    }
+    count(options: { match?: {} | undefined; }): Promise<number> {
+        throw new Error('Method not implemented.');
+    }
+    // insertMany, insertOrUpdate, updateMany, deleteMany
 
+    // count(table: string): Promise<{ error?: any, count?: number }> {
+    //     return new Promise((res, rej) => {
+    //         con.query(`SELECT COUNT(*) as count FROM \`${table}\``, function (err, result) {
+    //             if (err) return res({ error: err });
+    //             console.log(result?.[0])
+    //             return res(result?.[0])
+    //         });
 
-
-
-    count(table: string): Promise<{ error?: any, count?: number }> {
-        return new Promise((res, rej) => {
-            con.query(`SELECT COUNT(*) as count FROM \`${table}\``, function (err, result) {
-                if (err) return res({ error: err });
-                console.log(result?.[0])
-                return res(result?.[0])
-            });
-
-        })
-    }
-    find(table: string, limit: number = 20, page: number = 0): Promise<{ error?: any; data?: any; }> {
-        return new Promise((resolve, reject) => {
-            con.query(`SELECT * FROM \`${table}\` LIMIT ${limit} OFFSET ${page * limit}`, function (err, result, fields) {
-                if (err) return resolve({ error: err });
-                return resolve({ data: result })
-            });
-        })
-    }
-    findOne(): Promise<{ error?: any; data?: any; }> {
-        throw new Error('Method not implemented.');
-    }
-    findMany(): Promise<{ error?: any; data?: any; }> {
-        throw new Error('Method not implemented.');
-    }
-    insert(): Promise<{ error?: any; insertCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    insertOne(): Promise<{ error?: any; insertCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    insertMany(): Promise<{ error?: any; inertCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    update(): Promise<{ error?: any; updateCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    updateOne(): Promise<{ error?: any; updateCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    updateMany(): Promise<{ error?: any; updateCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    delete(): Promise<{ error?: any; deleteCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    deleteOne(): Promise<{ error?: any; deleteCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
-    deleteMany(): Promise<{ error?: any; deleteCount?: number | undefined; }> {
-        throw new Error('Method not implemented.');
-    }
+    //     })
+    // }
+    // find(table: string, limit: number = 20, page: number = 0): Promise<{ error?: any; data?: any; }> {
+    //     return new Promise((resolve, reject) => {
+    //         con.query(`SELECT * FROM \`${table}\` LIMIT ${limit} OFFSET ${page * limit}`, function (err, result, fields) {
+    //             if (err) return resolve({ error: err });
+    //             return resolve({ data: result })
+    //         });
+    //     })
+    // }
+    
 
 
 }
 
-export function getModel(name: string, fields = {}, ...ref) {
-
+export function getModel(name: string, fields = {}, ...ref) : ModelPattern {
+    throw new Error('Method not implemented.');
 }
 
 

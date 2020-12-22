@@ -5,7 +5,8 @@ import util from 'util'
 import Hook from '../Hook';
 import { objectIndex } from '../helper/helper';
 import dbConfig from '../../config/database';
-import ModelPattern, { findOneOptions, findOptions, findResponse } from '../pattern/ModelPattern';
+import ModelPattern, { deleteManyResponse, findOneOptions, findOneResponse, findOptions, findResponse, insertManyResponse, intertOneResponse, intertOrUpdateResponse, updateOneResponse, updateManyResponse, deleteOneResponse, ModelAbstract } from '../pattern/ModelPattern';
+import { DoBeforeFindOneModel } from 'hooks/modelhook';
 
 // const { ObjectID } = mongodb;
 
@@ -52,7 +53,7 @@ let _ = {
 }
 
 
-export default class MongoDB implements ModelPattern {
+export default class MongoDB extends ModelAbstract implements ModelPattern {
 
     defaultColumn = {
         _id: {
@@ -75,6 +76,7 @@ export default class MongoDB implements ModelPattern {
 
 
     constructor(name: string, fields = {}) {
+        super()
         this.name = name;
         if (name in _collection) {
             this.collection = _collection[name];
@@ -86,7 +88,7 @@ export default class MongoDB implements ModelPattern {
                     _collection[name] = _database.collection(name);
                     this.collection = _collection[name]
 
-                    this.createIndex();
+                    this._createIndex();
                 } else {
                     this.collection = _collection[name]
                 }
@@ -105,10 +107,13 @@ export default class MongoDB implements ModelPattern {
     }
 
 
-    async find(options: findOptions): Promise<findResponse> {
+    async find(options: findOptions = { limit: 15, page: 10 }): Promise<findResponse> {
         // async find(data: { _id?: any }, paginate: any = { limit: 20, page: 1 }) {
 
         let { page, limit, match } = options;
+
+        !page && (page = 1)
+        !limit && (limit = 15)
 
         page <= 0 && (page = 1);
         const startIndex = (page - 1) * limit;
@@ -128,97 +133,110 @@ export default class MongoDB implements ModelPattern {
         let paginate = renderPaginate({ page, limit, countDocument });
 
 
-        return { data: res1, paginate };
+        return { data: res1.data, paginate };
 
     }
 
-    async findOne(options: findOneOptions) : Promise<{ error?: {}, data?: {} }> {
+    async findOne(options: string | findOneOptions): Promise<findOneResponse> {
         // async findOne(find: { _id?: any }, ...ref: any) {
 
+        if (typeof options === 'string') {
+            options = { match: { _id: options } }
+        }
         let { match } = options;
-
-        let { cache } = await Hook.do_action('findOne-before', [match]);
-
-        if (cache) return { data: cache };
 
         match = this._generateFind(match);
 
+        if ('_id' in match) {
+            let data = await this.getCache(match['_id']);
+
+            if (data) return { data };
+        }
+
         return new Promise((resolve, reject) => {
-            this.collection.findOne(match, function (error: any, data: any) {
+            this.collection.findOne(match, (error: any, data: any) => {
                 if (error) resolve({ error });
                 else {
                     Hook.do_action('findOne-after', [data]);
+
+                    this.setCache(data)
                     resolve({ data });
                 }
             });
         })
     }
 
-
-    findMany() {
-        return new Promise(async (resolve, reject) => {
-            let data = await this.collection.find({}).toArray();
-
-            resolve({ data });
-        })
+    setCache(object: {_id?: ObjectId}){
+        let name = object._id?.toHexString()
+        super.setCache(name, object);
     }
 
 
-    insert() { }
+    // findMany() {
+    //     return new Promise(async (resolve, reject) => {
+    //         let data = await this.collection.find({}).toArray();
 
-    insertMany(data: []) {
+    //         resolve({ data });
+    //     })
+    // }
+
+
+    // insert() { }
+
+
+
+    async insertOne(data: { _id?: any }): Promise<intertOneResponse> {
+        if (data._id) delete data._id;
+
+        let [res, error] = await _prepareDataField(data, this._fields);
+
+        if (error) {
+            return { error, insertCount: 0 };
+        }
+
+        return new Promise((resolve, reject) => {
+            this.collection.insertOne(res, (error: any, res: any) => {
+
+                if (error) {
+                    if (typeof error.keyValue === 'object') {
+
+                        let [key, value]: any[] = objectIndex(error.keyValue, 0);
+
+                        error = {
+                            [key]: this._fields[key].validate.unique || 'This field has exists, please use another value!'
+                        }
+                        return resolve({ error, insertCount: 0 })
+                    } else {
+                        return resolve({ error, insertCount: 0 })
+                    }
+                }
+                else {
+                    let data = res.ops[0];
+                    this.setCache(data)
+                    return resolve({ data, insertCount: 1 })
+                }
+            });
+        })
+
+    }
+
+    async insertMany(data: []): Promise<insertManyResponse> {
         // if (!Array.isArray(data)) {
         //     data = [data];
         // }
         return new Promise((resolve, reject) => {
             this.collection.insertMany(data, (error: any, data: any) => {
                 if (error) {
-                    resolve({ error })
+                    resolve({ error, insertCount: 0 })
                 }
                 else {
-                    resolve({ insertedCount: data.insertedCount })
+                    resolve({ insertCount: data.insertedCount })
                 }
             });
         })
     }
 
-    async insertOne(data: { _id?: any }) {
-        if (data._id) delete data._id;
-
-        return new Promise(async (resolve, reject) => {
-
-            let [res, error] = await _prepareDataField(data, this._fields);
-            // console.log(res, error)
-            //     return;
-            if (error) {
-                resolve({ error });
-            } else {
-
-                this.collection.insertOne(res, (error: any, res: any) => {
-
-                    if (error) {
-                        if (typeof error.keyValue === 'object') {
-
-                            let [key, value]: any[] = objectIndex(error.keyValue, 0);
-                            resolve({
-                                error: {
-                                    [key]: this._fields[key].validate.unique || 'This field has exists, please use another value!'
-                                }
-                            });
-                        } else {
-                            resolve({ error });
-                        }
-
-
-                    }
-                    else resolve({ data: res.ops[0] });
-                });
-            }
-
-        })
-    }
-
-    async insertOrUpdate(data: any) {
+    async insertOrUpdate(data: any): Promise<intertOrUpdateResponse> {
         return new Promise(async (resolve, reject) => {
 
 
@@ -229,7 +247,7 @@ export default class MongoDB implements ModelPattern {
             // console.log(res, error)
             //     return;
             if (error) {
-                resolve({ error });
+                resolve({ error, insertCount: 0 });
             } else {
 
 
@@ -245,14 +263,15 @@ export default class MongoDB implements ModelPattern {
                                 resolve({
                                     error: {
                                         [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                                    }
+                                    },
+                                    insertCount: 0
                                 });
                             } else {
-                                resolve({ error });
+                                resolve({ error, insertCount: 0 });
                             }
 
                         }
-                        else resolve({ data: res.value });
+                        else resolve({ data: res.value, insertCount: 1 });
                     });
 
 
@@ -266,54 +285,25 @@ export default class MongoDB implements ModelPattern {
                                 resolve({
                                     error: {
                                         [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                                    }
+                                    },
+                                    insertCount: 0
                                 });
                             } else {
-                                resolve({ error });
+                                resolve({ error, insertCount: 0 });
                             }
 
 
                         }
-                        else resolve({ data: res.ops[0] });
+                        else resolve({ data: res.ops[0], insertCount: 1 });
                     });
                 }
-
 
             }
 
         })
     }
 
-
-    update() { }
-
-
-    async findOneAndUpdate(find = {}, data: {}) {
-        find = this._generateFind(find);
-
-        return new Promise((resolve, reject) => {
-            this.collection.findOneAndUpdate(find, [{ $set: data }], { new: false, returnOriginal: false }, (err: any, res: any) => {
-                if (err) {
-
-                    if (typeof err.keyValue === 'object') {
-                        let [key, value] = objectIndex(err.keyValue, 0);
-                        resolve({
-                            error: {
-                                [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                            }
-                        });
-                    } else {
-                        resolve({ error: err });
-                    }
-
-                }
-                else resolve({ data: res.value });
-            });
-        })
-    }
-
-
-    async updateOne(find = {}, data: {}) {
+    async updateOne(find = {}, data: {}): Promise<updateOneResponse> {
         return new Promise(async (resolve, reject) => {
 
             find = this._generateFind(find)
@@ -321,7 +311,7 @@ export default class MongoDB implements ModelPattern {
             let [res, error] = await _prepareDataField(data, this._fields, true);
 
             if (error) {
-                resolve({ error });
+                resolve({ error, updateCount: 0 });
             } else {
 
 
@@ -337,16 +327,17 @@ export default class MongoDB implements ModelPattern {
                             resolve({
                                 error: {
                                     [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                                }
+                                },
+                                updateCount: 0
                             });
                         } else {
-                            resolve({ error });
+                            resolve({ error, updateCount: 0 });
                         }
 
                     }
                     else {
                         Hook.do_action('updateOne-after', [res.value]);
-                        resolve({ data: res.value });
+                        resolve({ data: res.value, updateCount: 1 });
 
                     }
                 });
@@ -357,10 +348,14 @@ export default class MongoDB implements ModelPattern {
         })
     }
 
-    updateMany() { }
+    updateMany(data: []): Promise<updateManyResponse> {
+        return new Promise((resolve, reject) => {
+            resolve({ error: {}, updateCount: 0 })
+        })
+    }
 
 
-    async delete(find: { _id?: any }) {
+    async deleteOne(find: { _id?: any }): Promise<deleteOneResponse> {
 
 
 
@@ -372,7 +367,7 @@ export default class MongoDB implements ModelPattern {
 
             this.collection.deleteOne(find, (error: any, obj: any) => {
                 if (error) {
-                    resolve({ error });
+                    resolve({ error, deleteCount: 0 });
                 } else {
                     resolve({ deleteCount: obj.deletedCount })
                 }
@@ -382,16 +377,20 @@ export default class MongoDB implements ModelPattern {
         // return result;
     }
 
-    deleteOne() { }
-
-    deleteMany() { }
-
-
-    count(options: { match?: {} }): number {
-        throw new Error('Method not implemented.');
+    deleteMany(query: []): Promise<deleteManyResponse> {
+        return new Promise((resolve, reject) => {
+            resolve({ error: {}, deleteCount: 0 })
+        })
     }
 
-    async createIndex() {
+
+    count(options: { match?: {} }): Promise<number> {
+        return new Promise((resolve, reject) => {
+            resolve(0);
+        })
+    }
+
+    async _createIndex() {
 
         // console.log(this.collection.dropIndex)
 
@@ -428,7 +427,7 @@ export default class MongoDB implements ModelPattern {
 
 
 
-    _generateFind(find: { _id?: any } | any = {}): {} {
+    _generateFind(find: string | { _id?: any } | any = {}): {} {
 
 
         if (typeof find === 'object' && !ObjectIDValid(find) && !Array.isArray(find)) {
@@ -500,7 +499,7 @@ export async function getDatabase(name?: string) {
 
 }
 
-export function getModel(name: string, fields = {}, ...ref): AbstractModel {
+export function getModel(name: string, fields = {}, ...ref): ModelPattern {
     if (name in _.instance) {
         return _.instance[name];
     }
