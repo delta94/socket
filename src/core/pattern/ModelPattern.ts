@@ -1,6 +1,7 @@
 
-import databaseConfig from 'config/database';
-import CachePattern from './CachePattern';
+import appConfig from 'config/app'
+import databaseConfig from 'config/database'
+import CacheAbstract from './CachePattern';
 export interface findOptions {
     limit?: number,
     page?: number,
@@ -44,7 +45,7 @@ export interface deleteOneResponse { error?: {}, deleteCount: number, data?: any
 export interface deleteManyResponse { error?: {}, deleteCount: number, data?: any[] }
 export default interface ModelPattern {
 
-    find(options: findOptions): Promise<findResponse>
+    find(options?: findOptions): Promise<findResponse>
 
     findOne(options: findOneOptions | string): Promise<findOneResponse>
 
@@ -76,20 +77,23 @@ export default interface ModelPattern {
 }
 
 export abstract class ModelAbstract {
-    cache: CachePattern | null = null
+    cache: CacheAbstract | null | any = null
     findOptions: any = null
     constructor() {
-        if ('cache' in databaseConfig) {
-            this.cache = databaseConfig['cache']
+
+        if (databaseConfig.cache) {
+            this.cache = databaseConfig.cache;
+        } else if ('cache' in appConfig?.provider) {
+            this.cache = appConfig.provider['cache']
         }
     }
 
     setCache(name, value) {
         if (!this.cache) return;
 
-        if (typeof value !== 'string') {
-            value = JSON.stringify(value)
-        }
+        // if (typeof value !== 'string') {
+        //     value = JSON.stringify(value)
+        // }
         this.cache?.set(name, value)
     }
 
@@ -99,10 +103,6 @@ export abstract class ModelAbstract {
         if (typeof id !== 'string') {
             id = id.toString()
         }
-        try {
-            return JSON.parse(await this.cache?.get(id))
-        } catch (err) {
-            return false;
-        }
+        return await this.cache?.get(id)
     }
 }

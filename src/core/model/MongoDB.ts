@@ -6,7 +6,7 @@ import Hook from '../Hook';
 import { objectIndex } from '../helper/helper';
 import dbConfig from '../../config/database';
 import ModelPattern, { deleteManyResponse, findOneOptions, findOneResponse, findOptions, findResponse, insertManyResponse, intertOneResponse, intertOrUpdateResponse, updateOneResponse, updateManyResponse, deleteOneResponse, ModelAbstract } from '../pattern/ModelPattern';
-import { DoBeforeFindOneModel } from 'hooks/modelhook';
+import { DoBeforeFind, DoBeforeFindOneModel } from 'hooks/modelhook';
 
 // const { ObjectID } = mongodb;
 
@@ -119,6 +119,11 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
+        let { data, next } = DoBeforeFind();
+        if (!next) {
+            return { data }
+        }
+
         let [res1, countDocument] = await Promise.all<any>([
             new Promise((resolve, reject) => {
                 match = this._generateFind(match);
@@ -149,7 +154,6 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
 
         if ('_id' in match) {
             let data = await this.getCache(match['_id']);
-
             if (data) return { data };
         }
 
@@ -166,7 +170,7 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
         })
     }
 
-    setCache(object: {_id?: ObjectId}){
+    setCache(object: { _id?: ObjectId }) {
         let name = object._id?.toHexString()
         super.setCache(name, object);
     }
@@ -528,7 +532,7 @@ export const TYPE = {
 }
 
 
-export function getAllModel() : any {
+export function getAllModel(): any {
     return _.instance;
 }
 

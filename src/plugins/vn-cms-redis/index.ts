@@ -1,13 +1,12 @@
-import Hook from './../vn-cms-core/Hook.js';
 import redis from 'redis';
-import appConfig from 'config/app';
+import config from './config';
 // import dbConfig from './../../../config/Database.js';
 import { HookBeforeFindOneModel, HookParamsBeforeFindOneModel } from 'hooks/modelhook.js';
-import CachePattern from 'CachePattern';
+import AbstractCache from 'CachePattern';
 
 // const { _id } = dbConfig;
 
-const client = redis.createClient(appConfig.redis_port);
+const client = redis.createClient(config.port);
 
 console.log('REDISSSSSSSSSSSSSSS')
 export async function cache(name): Promise<{ data?: any, error?: any }> {
@@ -60,7 +59,13 @@ export async function cache(name): Promise<{ data?: any, error?: any }> {
 // })
 
 
-export default class Redis implements CachePattern {
+export default class Redis implements AbstractCache {
+    async rememeber(key: string, callback: () => any) {
+        throw new Error('Method not implemented.');
+    }
+    forget(key: string) {
+        throw new Error('Method not implemented.');
+    }
     async get(key: string): Promise<any> {
         let { data, error } = await cache(key)
         if (data) {
@@ -69,7 +74,7 @@ export default class Redis implements CachePattern {
         return null;
     }
     set(key: string, value: string): void {
-        
+
         client.set(key, value)
     }
 

@@ -1,4 +1,5 @@
 import Hook from "core/Hook"
+import CacheFile from "plugins/vn-cms-cache"
 
 const HookType = {
     BEFORE_MODEL_CHANGE: 'BEFORE_MODEL_CHANGE',
@@ -28,7 +29,7 @@ export function HookAfterModelChange(callback: (...params: any[]) => any) {
 
 export interface HookParamsBeforeFindOneModel { match?: any }
 
-export async function DoBeforeFindOneModel(params : HookParamsBeforeFindOneModel): Promise<{ cache?: any }> {
+export async function DoBeforeFindOneModel(params: HookParamsBeforeFindOneModel): Promise<{ cache?: any }> {
     return await Hook.do_action(HookType.BEFORE_FIND_ONE_DATA, params)
 }
 
@@ -36,3 +37,15 @@ export async function DoBeforeFindOneModel(params : HookParamsBeforeFindOneModel
 export function HookBeforeFindOneModel(callback: (...params: any[]) => Promise<{ cache?: any }>) {
     return Hook.add_action(HookType.BEFORE_FIND_ONE_DATA, callback)
 }
+
+// --------------------
+
+export function DoBeforeFind(): { data?: any, next?: boolean } {
+
+    return { next: true }
+}
+
+export function HookBeforeFind() {
+
+}
+

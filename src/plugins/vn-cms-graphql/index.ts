@@ -5,7 +5,7 @@ import { ObjectID } from 'mongodb';
 import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper';
 import { ModelTypeList } from '../../core/helper/model';
 import Hook from '../../core/Hook';
-import graphqlConfig from '../../config/graphql';
+import graphqlConfig from './config';
 import { getAllModel, getModel } from '../../core/Model';
 import generalConfig from '../../config/general';
 import App from 'app';

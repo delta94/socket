@@ -1,10 +1,11 @@
 import Redis from "vn-cms-redis";
+import CacheFile from "vn-cms-cache";
 
 
 export default {
     "default": "MongoDB",
     "_id": "_id",
-    "cache": new Redis,
+    "cache": false,
     "network": {
         "DATABASE": "PNJ",
         "USERNAME": "pnj",

@@ -2,7 +2,7 @@
 import Hook from "../../core/Hook";
 import swaggerUi from 'swagger-ui-express'
 // import { config } from "../../core/helper/helper.js";
-import restConfig from '../../config/rest';
+import restConfig from './config';
 import { capitalizeFirstLetter } from "../../core/helper/helper";
 import { getAllModel, getModel } from "../../core/Model";
 import { authenticateToken } from "../../core/Authentication";

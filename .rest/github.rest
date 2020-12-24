@@ -1,0 +1,7 @@
+
+@ACESS_TOKEN = e5d88f606e5ecc265f09ea4b62be5485901bc9dd
+@REFRESH_TOKEN = r1.964adc0535c2bdf8bf95d5a3066e6e49788af8fc6588e56569ae4c95c7e1ca6a04f193631669e8a4
+
+### 
+GET https://api.github.com/user
+Authorization: token {{ACESS_TOKEN}}

@@ -9,3 +9,7 @@
 
 GET {{HOST}}/rest/blog_post/5fdc84bb8d7ec73efc3693fb
 Authorization: {{FOREVER_TOKEN}}
+
+###
+
+GET {{HOST}}/blog
