@@ -2,7 +2,8 @@
 // import Room from '../../Model/Room.js';
 // import User from '../../Model/User.js';
 
-import { HookApp } from "core/Hook";
+import { Server } from "app";
+import { add_router } from "hooks/routerhook";
 import path from 'path';
 
 const Socket = require('socket.io');
@@ -16,14 +17,14 @@ const { getModel } = require('core/Model');
 // }, 5000)
 
 
-function init(express, server) {
+function init(server) {
     var io = Socket(server);
 
     let users = {},
         hosts = {};
 
 
-    express.get('/chat', (req, res) => {
+    add_router('/chat', (req, res) => {
         res.sendFile(path.join(__dirname, 'views/index.html'));
     })
 
@@ -131,5 +132,4 @@ function init(express, server) {
 }
 
 
-
-HookApp(init)
+init( Server)

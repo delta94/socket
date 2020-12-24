@@ -10,6 +10,7 @@ export default {
         "vn-cms-blog",
         "vn-cms-raw-data",
         "vn-cms-socket",
+        "vn-cms-backup",
     ],
     "redis_port": 6379
 }

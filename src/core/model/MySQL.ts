@@ -76,7 +76,7 @@ export function getModel(name: string, fields = {}, ...ref) : ModelPattern {
 }
 
 
-export function getAllModel(): {} {
+export function getAllModel() : any {
     // return _.instance;
 
     return {}

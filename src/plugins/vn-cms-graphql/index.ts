@@ -8,6 +8,7 @@ import Hook from '../../core/Hook';
 import graphqlConfig from '../../config/graphql';
 import { getAllModel, getModel } from '../../core/Model';
 import generalConfig from '../../config/general';
+import App from 'app';
 
 // const generalConfig = JSON.parse(fs.readFileSync(__dirname + '/config/general'));
 
@@ -31,7 +32,7 @@ function capFirstChild(str) {
     return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
-function createModelGraphQL(app, server) {
+function createModelGraphQL(app) {
     let models = getAllModel();
     models = models.filterFun((e) => graphqlConfig.list.includes(e.name));
 
@@ -638,8 +639,5 @@ function generateDeleteArgs(model) {
 
 
 // Hook.do_action('init-model', addModelToGraphQL)
-Hook.add_action('before-router', createModelGraphQL)
 
-// ANCHOR
-
-export default () => { }
+createModelGraphQL(App)

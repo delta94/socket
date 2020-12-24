@@ -7,6 +7,7 @@ import { capitalizeFirstLetter } from "../../core/helper/helper";
 import { getAllModel, getModel } from "../../core/Model";
 import { authenticateToken } from "../../core/Authentication";
 import fetch from 'node-fetch'
+import App from "app";
 
 const type = {
     STATUS_SUCCESS: 200,
@@ -150,7 +151,7 @@ async function getRegister(params) {
 
 let models;
 
-async function init(app, server) {
+async function init(app) {
 
 
     models = getAllModel();
@@ -767,4 +768,5 @@ function generateRouter(model, app) {
 
 // Hook.do_action('init-model', initModel)
 
-Hook.add_action('before-router', init)
+
+init(App)

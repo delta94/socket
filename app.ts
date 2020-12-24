@@ -18,75 +18,75 @@ import autoload from 'core/autoload';
 
 // const __dirname = path.resolve();
 
-async function loadModule() {
 
+// files.forEach(e => {
+//     import('./' + e)
+// })
 
-    // files.forEach(e => {
-    //     import('./' + e)
-    // })
-
-    dotenv.config();
-    var app = express(),
-        server = http.createServer(app);
-
+dotenv.config();
+var app = express(),
+    server = http.createServer(app);
 
 
 
 
-    await autoload();
-
-    // socket(server);
 
 
-    app.use(express.json())
-
-    app.use((err: { status?: any }, req, res, next) => {
-
-        // This check makes sure this is a JSON parsing issue, but it might be
-        // coming from any middleware, not just body-parser:
-        console.log(err)
-        if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
-            return res.status(400).json({ error: err }); // Bad request
-        }
-
-        next();
-    });
+// socket(server);
 
 
-    app.use(cors())
+app.use(express.json())
+
+app.use((err: { status?: any }, req, res, next) => {
+
+    // This check makes sure this is a JSON parsing issue, but it might be
+    // coming from any middleware, not just body-parser:
+    console.log(err)
+    if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+        return res.status(400).json({ error: err }); // Bad request
+    }
+
+    next();
+});
 
 
-    app.use(express.static(__dirname + '/public'));
+app.use(cors())
 
-    Authentication(app);
 
-    app.get('/posts', authenticateToken, (req: any, res) => {
-        res.json({ post: req.user.name })
-    })
+app.use(express.static(__dirname + '/public'));
 
-    // function authenticateToken(req, res, next) {
-    //     const authHeader = req.headers['authorization']
-    //     const token = authHeader && authHeader.split(' ')[1]
-    //     if (token == null) return res.sendStatus(401)
+Authentication(app);
 
-    //     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-    //         if (err) return res.sendStatus(403)
-    //         req.user = user
-    //         next()
-    //     })
-    // }
+app.get('/posts', authenticateToken, (req: any, res) => {
+    res.json({ post: req.user.name })
+})
 
-    await Hook.do_action('before-router', [app, server]);
+// function authenticateToken(req, res, next) {
+//     const authHeader = req.headers['authorization']
+//     const token = authHeader && authHeader.split(' ')[1]
+//     if (token == null) return res.sendStatus(401)
 
-    // app.get('/*/', function (req, res) {
-    //     res.sendFile(__dirname + '/views/index.html');
-    // });
+//     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+//         if (err) return res.sendStatus(403)
+//         req.user = user
+//         next()
+//     })
+// }
 
-    server.listen(process.env.PORT || 8888);
+Hook.do_action('before-router', [app, server]);
 
-    console.log('app listen on port: ' + process.env.PORT || 8888)
-    console.log('DEBUG', process.env.DEBUG);
-}
+// app.get('/*/', function (req, res) {
+//     res.sendFile(__dirname + '/views/index.html');
+// });
 
-loadModule();
+server.listen(process.env.PORT || 8888);
 
+console.log('app listen on port: ' + process.env.PORT || 8888)
+console.log('DEBUG', process.env.DEBUG);
+
+
+export const Server = server;
+const App = app;
+export default App;
+
+autoload();

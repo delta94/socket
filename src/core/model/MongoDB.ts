@@ -528,7 +528,7 @@ export const TYPE = {
 }
 
 
-export function getAllModel() {
+export function getAllModel() : any {
     return _.instance;
 }
 
