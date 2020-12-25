@@ -22,8 +22,6 @@ class Cart extends ModelClass{
             tax: Number,
             shipping: Number
         } )
-
-        this.restFulTagName = 'Ecommerce API'
     }
 }
 

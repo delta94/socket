@@ -10,8 +10,6 @@ class Category extends ModelClass{
                 // unique: true
             },
         } )
-
-        this.restFulTagName = 'Ecommerce API'
     }
 }
 

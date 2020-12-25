@@ -20,8 +20,6 @@ class Store extends ModelClass{
                 relation: 'user'
             }
         } )
-
-        this.restFulTagName = 'Ecommerce API'
     }
 }
 

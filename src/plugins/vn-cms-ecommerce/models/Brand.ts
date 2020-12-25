@@ -10,8 +10,6 @@ class Brand extends ModelClass{
                 // unique: true
             },
         } )
-
-        this.restFulTagName = 'Ecommerce API'
     }
 }
 

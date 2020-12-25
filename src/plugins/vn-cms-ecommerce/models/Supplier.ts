@@ -10,8 +10,6 @@ class Supplier extends ModelClass{
                 // unique: true
             },
         } )
-
-        this.restFulTagName = 'Ecommerce API'
     }
 }
 

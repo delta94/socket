@@ -18,16 +18,14 @@ class Product extends ModelClass{
                 type: String,
                 required: true
             },
-            store_id: {
+            store: {
                 relation: 'ecommerce_store'
             },
-            brand_id: {
+            brand: {
                 relation: 'ecommerce_brand'
             }
 
         } )
-
-        this.restFulTagName = 'Ecommerce API'
     }
 }
 

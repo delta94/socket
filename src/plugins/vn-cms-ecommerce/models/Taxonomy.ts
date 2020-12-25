@@ -10,8 +10,6 @@ class Taxonomy extends ModelClass{
                 // unique: true
             },
         } )
-
-        this.restFulTagName = 'Ecommerce API'
     }
 }
 
