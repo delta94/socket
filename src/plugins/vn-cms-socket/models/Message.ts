@@ -23,7 +23,7 @@ class Message extends ModelClass {
                 relation: 'user',
                 required: true,
                 validate: {
-                    required: 'uid is required',
+                    required: 'from is required',
                 }
             },
             to: {

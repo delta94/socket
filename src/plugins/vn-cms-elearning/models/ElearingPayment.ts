@@ -23,8 +23,6 @@ class Payment extends ModelClass {
             // money: Number,
 
         })
-
-        this.restFulTagName = 'Elearning API'
     }
 }
 

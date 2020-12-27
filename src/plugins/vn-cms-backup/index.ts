@@ -1,13 +1,13 @@
 import { getAllModel, getModel } from "core/Model";
-import ModelPattern, { ModelAbstract } from "core/pattern/ModelPattern";
+import { ModelInterface } from "core/pattern/ModelPattern";
 import { add_router, add_router_group } from "hooks/routerhook";
 import dateformat from 'dateformat';
 import fs from 'fs';
 
 
-const getDocuments = async function (collection: ModelPattern, callback) {
+const getDocuments = async function (collection: ModelInterface, callback) {
     const query = {};  // this is your query criteria
-    let { data } = await collection.find(query)
+    let { data } = await collection.findMany(query)
     callback(data);
 
 };

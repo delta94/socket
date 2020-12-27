@@ -1,9 +1,11 @@
 import Redis from "vn-cms-redis";
 import CacheFile from "vn-cms-cache";
+import MongoDB from "core/model/MongoDB";
 
 
 export default {
     "default": "MongoDB",
+    "driver": MongoDB,
     "_id": "_id",
     "cache": false,
     "network": {

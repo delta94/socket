@@ -1,11 +1,11 @@
 import crypto from 'crypto';
-import mongodb, { ObjectId } from 'mongodb';
-import { prepareField, _prepareDataField, renderPaginate } from '../helper/model';
+import mongodb, { ObjectID, ObjectId } from 'mongodb';
+import { _prepareDataField, renderPaginate } from '../helper/model';
 import util from 'util'
 import Hook from '../Hook';
 import { objectIndex } from '../helper/helper';
 import dbConfig from '../../config/database';
-import ModelPattern, { deleteManyResponse, findOneOptions, findOneResponse, findOptions, findResponse, insertManyResponse, intertOneResponse, intertOrUpdateResponse, updateOneResponse, updateManyResponse, deleteOneResponse, ModelAbstract } from '../pattern/ModelPattern';
+import ModelAbstract, { deleteManyResponse, findOneOptions, findOneResponse, findOptions, findResponse, insertManyResponse, intertOneResponse, intertOrUpdateResponse, updateOneResponse, updateManyResponse, deleteOneResponse, ModelInterface, Field, FieldsInput } from '../pattern/ModelPattern';
 import { DoBeforeFind, DoBeforeFindOneModel } from 'hooks/modelhook';
 
 // const { ObjectID } = mongodb;
@@ -53,31 +53,18 @@ let _ = {
 }
 
 
-export default class MongoDB extends ModelAbstract implements ModelPattern {
+export default class MongoDB extends ModelAbstract implements ModelInterface {
 
-    defaultColumn = {
-        _id: {
-            type: ObjectId
-        },
-        created_at: {
-            type: Date,
-            default: Date.now
-        },
-        updated_at: {
-            type: Date,
-            default: Date.now
-        }
+    protected primaryKey = {
+        name: '_id',
+        type: ObjectID
     }
 
-    name
-    collection
-    _fields
+    private collection: any = null
 
-
-
-    constructor(name: string, fields = {}) {
-        super()
-        this.name = name;
+    constructor(name: string, fields: FieldsInput) {
+        super(name, fields)
+        this._prepareData(fields)
         if (name in _collection) {
             this.collection = _collection[name];
         } else {
@@ -95,9 +82,7 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
             })()
         }
 
-        // console.log(this.constructor.name)
         _.instance[name] = this;
-        this._fields = prepareField({ ...fields, ...this.defaultColumn });
 
         Hook.do_action('init-model', [this]);
 
@@ -107,22 +92,13 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
     }
 
 
-    async find(options: findOptions = { limit: 15, page: 10 }): Promise<findResponse> {
-        // async find(data: { _id?: any }, paginate: any = { limit: 20, page: 1 }) {
+    async findMany(options: findOptions = { limit: 15, page: 10 }): Promise<findResponse> {
 
-        let { page, limit, match } = options;
+        let { page = 1, limit = 15, match, data } = await super._findMany(options)
+        if (data) return { data }
 
-        !page && (page = 1)
-        !limit && (limit = 15)
-
-        page <= 0 && (page = 1);
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-
-        let { data, next } = DoBeforeFind();
-        if (!next) {
-            return { data }
-        }
 
         let [res1, countDocument] = await Promise.all<any>([
             new Promise((resolve, reject) => {
@@ -143,7 +119,6 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
     }
 
     async findOne(options: string | findOneOptions): Promise<findOneResponse> {
-        // async findOne(find: { _id?: any }, ...ref: any) {
 
         if (typeof options === 'string') {
             options = { match: { _id: options } }
@@ -152,10 +127,8 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
 
         match = this._generateFind(match);
 
-        if ('_id' in match) {
-            let data = await this.getCache(match['_id']);
-            if (data) return { data };
-        }
+        let { data, next } = await this._findOne(options)
+        if (data) return { data };
 
         return new Promise((resolve, reject) => {
             this.collection.findOne(match, (error: any, data: any) => {
@@ -176,30 +149,17 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
     }
 
 
-    // findMany() {
-    //     return new Promise(async (resolve, reject) => {
-    //         let data = await this.collection.find({}).toArray();
+    async insertOne(insertData: any): Promise<intertOneResponse> {
+        if (insertData._id) delete insertData._id;
 
-    //         resolve({ data });
-    //     })
-    // }
-
-
-    // insert() { }
-
-
-
-    async insertOne(data: { _id?: any }): Promise<intertOneResponse> {
-        if (data._id) delete data._id;
-
-        let [res, error] = await _prepareDataField(data, this._fields);
+        let { error, data } = await this._checkValidateOne(insertData);
 
         if (error) {
             return { error, insertCount: 0 };
         }
 
         return new Promise((resolve, reject) => {
-            this.collection.insertOne(res, (error: any, res: any) => {
+            this.collection.insertOne(data, (error: any, res: any) => {
 
                 if (error) {
                     if (typeof error.keyValue === 'object') {
@@ -225,9 +185,6 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
     }
 
     async insertMany(data: []): Promise<insertManyResponse> {
-        // if (!Array.isArray(data)) {
-        //     data = [data];
-        // }
         return new Promise((resolve, reject) => {
             this.collection.insertMany(data, (error: any, data: any) => {
                 if (error) {
@@ -248,8 +205,7 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
             let update = Object.keys(f).length > 0;
 
             let [res, error] = await _prepareDataField(data, this._fields, update);
-            // console.log(res, error)
-            //     return;
+
             if (error) {
                 resolve({ error, insertCount: 0 });
             } else {
@@ -396,7 +352,6 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
 
     async _createIndex() {
 
-        // console.log(this.collection.dropIndex)
 
         for (let i in this._fields) {
             if (i === '_id') continue;
@@ -423,9 +378,6 @@ export default class MongoDB extends ModelAbstract implements ModelPattern {
 
 
         }
-        // if(Object.keys(indexObject).length > 0){
-        //     this.collection.createIndex(indexObject)
-        // }
 
     }
 
@@ -503,7 +455,7 @@ export async function getDatabase(name?: string) {
 
 }
 
-export function getModel(name: string, fields = {}, ...ref): ModelPattern {
+export function getModel(name: string, fields = {}, ...ref): ModelInterface {
     if (name in _.instance) {
         return _.instance[name];
     }

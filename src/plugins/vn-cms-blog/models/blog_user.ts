@@ -1,4 +1,4 @@
-import ModelClass from "../../../core/Model";
+import ModelClass from "core/Model";
 
 
 class BlogUser extends ModelClass {

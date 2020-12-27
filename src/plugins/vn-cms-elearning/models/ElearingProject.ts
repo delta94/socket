@@ -22,8 +22,6 @@ class Project extends ModelClass {
             //     required: true
             // }
         })
-
-        this.restFulTagName = 'Elearning API'
     }
 }
 

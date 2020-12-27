@@ -1,10 +1,11 @@
-import jwt from 'jsonwebtoken';
+import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import Model, { getModel } from './Model';
 // import { getModel } from './model/MongoDB';
 import { NextFunction, Request, Response } from 'express';
 
-const { TokenExpiredError, JsonWebTokenError } = jwt;
+
+// const { TokenExpiredError, JsonWebTokenError } = jwt;
 
 
 dotenv.config();
@@ -47,21 +48,12 @@ export function authenticateToken(req: any, res: any, next: NextFunction) {
 
 export default (app: any) => {
 
-    let Token = new class extends Model {
-
-        constructor() {
-            super('token', {
-                accessToken: String,
-                refreshToken: String,
-                user: {
-                    relation: 'user'
-                }
-            });
-            this.graphql = false;
-        }
-    }
+    let Token = getModel('token')
 
     let User = getModel('user');
+
+    // let Token: any = {};
+    // let User: any = {};
 
 
     app.get('/api/generate-token', async (req: Request, res: Response) => {
@@ -126,7 +118,7 @@ export default (app: any) => {
     })
 
     app.delete('/logout', async (req: Request, res: Response) => {
-        let [data, error] = await Token.find({ refreshToken: req.body.refreshToken });
+        let { data, error } = await Token.findOne({ match: { refreshToken: req.body.refreshToken } });
 
         res.sendStatus(204)
     })
@@ -143,7 +135,7 @@ export default (app: any) => {
 
         if (user) {
 
-            let {  _id, avatar, name } = user;
+            let { _id, avatar, name } = user;
 
             const accessToken = generateAccessToken(user);
 
@@ -169,9 +161,6 @@ export default (app: any) => {
                 }
             })
         }
-
-
-
     })
 }
 

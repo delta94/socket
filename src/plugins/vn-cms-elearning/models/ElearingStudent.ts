@@ -19,20 +19,35 @@ class ElearingUser extends ModelClass {
     // name = 'user'
     constructor() {
         super('elearning_student', {
-            id: {
-                unique: true,
-            },
-            total_coin_current: Number,
-            student_type: String,
-            review: String,
-            avatar: {
 
+            total_coin_current: {
+                type: Number
             },
-            skype: String,
-            email: String,
-            phone: String,
-            title: String,
-            password: String
+            student_type: {
+                type: String
+            },
+            review: {
+                type: String
+            },
+            skype: {
+                type: String
+            },
+            email: {
+                type: String
+            },
+            phone: {
+                type: String
+            },
+            title: {
+                type: String
+            },
+            password: {
+                type: String
+            },
+            user: {
+                relation: 'user',
+                required: true
+            }
             // name: {
             //     type: String,
             //     required: true,
@@ -61,7 +76,6 @@ class ElearingUser extends ModelClass {
             // }
         })
 
-        this.restFulTagName = 'Elearning API'
     }
 
 

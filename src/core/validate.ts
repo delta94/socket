@@ -7,13 +7,13 @@ const patternUrl = /https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0
 const requiredMsg = 'This field is required';
 const patternMsg = 'This field not match with pattern';
 
-export function validate (data, validate, message = {}, exclude = false) {
+export default function validate(data: any, rules: any, message = {}, exclude = false): { error?: any, data?: any } {
 
     let errorObj = {}
 
-    for (let i in validate) {
+    for (let i in rules) {
         if (i in data) {
-            let rule = validate[i],
+            let rule = rules[i],
                 value = data[i];
 
             value = value.trim()
@@ -40,14 +40,18 @@ export function validate (data, validate, message = {}, exclude = false) {
         }
     }
 
-    // exclude field of data not in validate
+    // exclude field of data not in rules
     if (exclude) {
-        for(let i in data){
-            if(!(i in validate)){
+        for (let i in data) {
+            if (!(i in rules)) {
                 delete data[i]
             }
         }
     }
 
-    return data;
+    if (Object.keys(errorObj).length > 0) {
+        return { error: errorObj }
+    }
+
+    return { data };
 }

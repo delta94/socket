@@ -715,7 +715,7 @@ function generateRouter(model, app) {
             }
         }
 
-        let { data, error, paginate } = await Model.find({
+        let { data, error, paginate } = await Model.findMany({
             match: query,
             page: parseInt(page),
             limit: parseInt(limit)

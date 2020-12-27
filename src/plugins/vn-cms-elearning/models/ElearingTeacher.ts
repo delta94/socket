@@ -29,8 +29,6 @@ class Teacher extends ModelClass {
             // avatar: String,rs
             // introduce: String
         })
-
-        this.restFulTagName = 'Elearning API'
     }
 }
 

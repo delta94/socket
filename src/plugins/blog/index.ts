@@ -6,7 +6,7 @@ add_router('blog', async (req, res) => {
 
     let data = await Cache.rememeber('index', async () => {
         let Blog = getModel('blog_post');
-        let { data, paginate } = await Blog.find()
+        let { data, paginate } = await Blog.findMany()
         return { data, paginate }
     })
     res.json(data)

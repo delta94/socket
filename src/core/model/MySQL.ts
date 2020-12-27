@@ -1,5 +1,5 @@
 import mysql from 'mysql'
-import ModelPattern, { deleteManyResponse, deleteOneResponse, findOneOptions, findOneResponse, findOptions, findResponse, insertManyResponse, intertOneResponse, intertOrUpdateResponse, ModelAbstract, updateManyResponse, updateOneResponse } from '../pattern/ModelPattern';
+import ModelAbstract, { deleteManyResponse, deleteOneResponse, findOneOptions, findOneResponse, findOptions, findResponse, insertManyResponse, intertOneResponse, intertOrUpdateResponse, ModelInterface, updateManyResponse, updateOneResponse } from '../pattern/ModelPattern';
 
 var con = mysql.createConnection({
     host: 'localhost',
@@ -15,8 +15,8 @@ con.connect((err) => {
         console.log('mysql connect success')
     }
 })
-export default class MySQL extends ModelAbstract implements ModelPattern {
-    find(options: findOptions): Promise<findResponse> {
+export default class MySQL extends ModelAbstract implements ModelInterface {
+    findMany(options: findOptions): Promise<findResponse> {
         throw new Error('Method not implemented.');
     }
     findOne(options: string | findOneOptions): Promise<findOneResponse> {
@@ -25,22 +25,22 @@ export default class MySQL extends ModelAbstract implements ModelPattern {
     insertOne(options: {}): Promise<intertOneResponse> {
         throw new Error('Method not implemented.');
     }
-    insertMany(options: []): Promise<insertManyResponse>{
+    insertMany(options: []): Promise<insertManyResponse> {
         throw new Error('Method not implemented.');
     }
-    insertOrUpdate(options: {} | []) : Promise<intertOrUpdateResponse>{
+    insertOrUpdate(options: {} | []): Promise<intertOrUpdateResponse> {
         throw new Error('Method not implemented.');
     }
     updateOne(query: {}, data: {}): Promise<updateOneResponse> {
         throw new Error('Method not implemented.');
     }
-    updateMany(data: []): Promise<updateManyResponse>{
+    updateMany(data: []): Promise<updateManyResponse> {
         throw new Error('Method not implemented.');
     }
     deleteOne(query: {}): Promise<deleteOneResponse> {
         throw new Error('Method not implemented.');
     }
-    deleteMany(query: []): Promise<deleteManyResponse>{
+    deleteMany(query: []): Promise<deleteManyResponse> {
         throw new Error('Method not implemented.');
     }
     count(options: { match?: {} | undefined; }): Promise<number> {
@@ -66,17 +66,17 @@ export default class MySQL extends ModelAbstract implements ModelPattern {
     //         });
     //     })
     // }
-    
+
 
 
 }
 
-export function getModel(name: string, fields = {}, ...ref) : ModelPattern {
+export function getModel(name: string, fields = {}, ...ref): ModelInterface {
     throw new Error('Method not implemented.');
 }
 
 
-export function getAllModel() : any {
+export function getAllModel(): any {
     // return _.instance;
 
     return {}

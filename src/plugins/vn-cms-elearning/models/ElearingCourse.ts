@@ -3,9 +3,9 @@ import ModelClass from "../../../core/Model";
 class Course extends ModelClass {
     constructor() {
         super('elearning_course', {
-            id: {
-                unique: true,
-            },
+            // id: {
+            //     unique: true,
+            // },
             benefits: [],
             cfd_teacher: {
                 relation: 'elearning_teacher'
@@ -89,8 +89,6 @@ class Course extends ModelClass {
             // },
 
         })
-
-        this.restFulTagName = 'Elearning API'
     }
 }
 

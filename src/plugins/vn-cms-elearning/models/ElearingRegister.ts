@@ -34,8 +34,6 @@ class Register extends ModelClass {
             //     default: false
             // }
         })
-
-        this.restFulTagName = 'Elearning API'
     }
 }
 

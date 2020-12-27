@@ -1,4 +1,4 @@
-import Model from '../../core/Model'
+import Model from 'core/Model'
 class User extends Model {
     // fields = {
     //     name: {
@@ -19,22 +19,19 @@ class User extends Model {
     constructor() {
         super('user', {
             // id: Number,
-            total_coin_current: Number,
-            student_type: String,
-            review: String,
-            avatar: {},
-            skype: String,
+            avatar: String,
             email: {
                 type: String,
                 required: true,
                 index: true,
                 unique: true,
+                pattern: 'email'
                 // validate: {
                 //     unique: 'Email has exists, please use another email'
                 // }
             },
             phone: String,
-            title: {
+            name: {
                 type: String,
                 required: true,
                 // index: true
@@ -42,6 +39,9 @@ class User extends Model {
 
             },
             password: String,
+            type: {
+                enum: ['github', 'gmail', 'facebook', 'normal']
+            }
             // password: {
             //     Type: TYPE.Hash
             // },

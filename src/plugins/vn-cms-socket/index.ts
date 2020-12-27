@@ -3,18 +3,34 @@
 // import User from '../../Model/User.js';
 
 import { Server } from "app";
-import { add_router } from "hooks/routerhook";
+import { add_router, add_router_group } from "hooks/routerhook";
 import path from 'path';
+import fs from 'fs'
 
 const Socket = require('socket.io');
 const { getModel } = require('core/Model');
 
 
+add_router_group('chat', () => {
+    add_router('/', (req, res) => {
+        res.sendFile(path.join(__dirname, 'views/index.html'));
 
-// setTimeout(async () => {
-//     let [data, error] = await Chat.find()
-//     console.log(data);
-// }, 5000)
+    })
+
+    add_router('js/:file', (req, res) => {
+        let { file } = req.params;
+        let dir = path.join(__dirname, `js/${file}`)
+        if (fs.existsSync(dir)) {
+            res.sendFile(dir);
+        } else {
+            res.json({ error: 'File not found' }).status(404);
+        }
+    })
+
+    add_router('iframe', (req, res) => {
+        res.json({ success: true })
+    })
+})
 
 
 function init(server) {
@@ -22,12 +38,6 @@ function init(server) {
 
     let users = {},
         hosts = {};
-
-
-    add_router('/chat', (req, res) => {
-        res.sendFile(path.join(__dirname, 'views/index.html'));
-    })
-
 
     // function getCollection(name, host) {
     //     if (!(name in hosts[host].collections)) {
@@ -83,7 +93,7 @@ function init(server) {
         socket.on('get_collection_data', async (data, callback) => {
             let collection = getModel(data.database);
             console.log(data.database)
-            let { data: res } = await collection.find();
+            let { data: res } = await collection.findMany();
 
             callback(res);
         })
@@ -132,4 +142,4 @@ function init(server) {
 }
 
 
-init( Server)
+init(Server)

@@ -4,7 +4,6 @@ import { GraphQLJSON, GraphQLJSONObject } from 'graphql-type-json';
 import { ObjectID } from 'mongodb';
 import { copyObjectExcept, isEmptyObject } from '../../core/helper/helper';
 import { ModelTypeList } from '../../core/helper/model';
-import Hook from '../../core/Hook';
 import graphqlConfig from './config';
 import { getAllModel, getModel } from '../../core/Model';
 import generalConfig from '../../config/general';
@@ -41,9 +40,13 @@ function createModelGraphQL(app) {
         if (models[i].graphql !== false) {
             // generateList(models[i])
             generateOne(models[i])
+
             generateDeleteArgs(models[i])
+
             generateFields(models[i]);
+
             generateArgsMutation(models[i]);
+
         }
 
     }
@@ -73,8 +76,7 @@ function generateRoot() {
             let object = {}
             for (let i in global_store) {
                 let args = global_field_store[i];
-                args.id = global_field_store[i]._id;
-
+                // args.id = global_field_store[i]._id;
                 object[i] = {
                     type: global_store[i],
                     description: `A single ${capFirstChild(i)}`,
@@ -120,7 +122,7 @@ function generateRoot() {
                             page: parseInt(page) || 1
                         };
 
-                        let { data, error, paginate } = await getModel(i).find({ ...paging, match: args });
+                        let { data, error, paginate } = await getModel(i).findMany({ ...paging, match: args });
 
                         // console.log( data, error, paginate)
                         // let { data, error, paginate } = await getModel(i).find(args, paging);
@@ -131,7 +133,6 @@ function generateRoot() {
                     }
                 }
             }
-
 
             return object
         }
@@ -219,76 +220,6 @@ function generateArgsMutation(model) {
     }
 
 }
-// function generateList(model) {
-
-//     let { _fields, name } = model;
-
-
-
-//     global_store_many[name] = new GraphQLObjectType({
-//         name: model.constructor.name,
-//         description: `This represents a ${model.constructor.name}`,
-//         fields: () => {
-//             let object = {}
-//             for (let i in _fields) {
-//                 let FieldType = GraphQLString,
-//                     fieldName = i,
-//                     field = _fields[i];
-
-
-//                 if (field.resolve === Number) {
-//                     FieldType = GraphQLFloat
-//                 } else if (field.resolve === Boolean) {
-//                     FieldType = GraphQLBoolean
-//                 } else if (field.resolve === Date) {
-//                     FieldType = GraphQLFloat
-//                 }
-
-
-//                 if (field.relation) {
-//                     let type = field.multi ? GraphQLList(global_store[field.relation]) : global_store[field.relation];
-
-//                     object[fieldName] = {
-//                         type,
-//                         resolve: async (parent) => {
-//                             let f;
-//                             if (field.multi && Array.isArray(parent[fieldName])) {
-//                                 f = parent[fieldName].map(e => ObjectID(e));
-//                                 f = { _id: { $in: f } };
-//                             } else {
-//                                 f = { _id: ObjectID(parent[fieldName]) };
-//                             }
-
-//                             let [res, error] = await getModel(field.relation).find(f);
-
-//                             if (field.multi) {
-//                                 return res
-//                             } else {
-//                                 return res[0] || null;
-//                             }
-//                         }
-//                     }
-
-//                 } else if (field.type === ModelTypeList) {
-//                     if (field.relation) {
-//                         object[fieldName] = {
-//                             type: GraphQLList(global_store[name]),
-//                             resolve: (parent) => {
-//                                 console.log(parent);
-//                                 return [];
-//                             }
-//                         }
-//                     } else {
-
-//                     }
-//                 } else {
-//                     object[fieldName] = { type: FieldType }
-//                 }
-//             }
-//             return object;
-//         }
-//     })
-// }
 
 function generateOne(model) {
     let { _fields, name } = model;
@@ -323,14 +254,8 @@ function generateOne(model) {
                         type,
                         resolve: async (parent) => {
                             let f = parent[fieldName] || {};
-                            // if (field.multi && Array.isArray(parent[fieldName])) {
-                            //     f = parent[fieldName].map(e => ObjectID(e));
-                            //     f = { _id: { $in: f } };
-                            // } else {
-                            //     f = { _id: ObjectID(parent[fieldName]) };
-                            // }
                             if (f) {
-                                let { data, error } = await getModel(field.relation).find({ match: f });
+                                let { data, error } = await getModel(field.relation).findMany({ match: f });
                                 if (error) {
                                     throw new GraphQLError(JSON.stringify(error));
                                 } else if (Array.isArray(data)) {
@@ -433,211 +358,5 @@ function generateDeleteArgs(model) {
 
     }
 }
-
-
-// function addModelToGraphQL(model) {
-//     if (model.graphql !== false) {
-//         let { _fields } = model;
-
-
-
-
-//         let name = model.name;
-//         global_store[name] = new GraphQLObjectType({
-//             name: model.constructor.name,
-//             description: `This represents a ${model.constructor.name}`,
-//             fields: () => {
-//                 let object = {}
-//                 for (let i in _fields) {
-//                     let FieldType = GraphQLString,
-//                         fieldName = i,
-//                         field = _fields[i];
-
-
-//                     if (field.resolve === Number) {
-//                         FieldType = GraphQLFloat
-//                     } else if (field.resolve === Boolean) {
-//                         FieldType = GraphQLBoolean
-//                     } else if (field.resolve === Date) {
-//                         FieldType = GraphQLFloat
-//                     }
-
-
-//                     if (field.relation) {
-//                         let type = field.multi ? GraphQLList(global_store[field.relation]) : global_store[field.relation];
-
-//                         object[fieldName] = {
-//                             type,
-//                             resolve: async (parent) => {
-//                                 let f;
-//                                 if (field.multi && Array.isArray(parent[fieldName])) {
-//                                     f = parent[fieldName].map(e => ObjectID(e));
-//                                     f = { _id: { $in: f } };
-//                                 } else {
-//                                     f = { _id: ObjectID(parent[fieldName]) };
-//                                 }
-
-//                                 let [res, error] = await getModel(field.relation).find(f);
-
-//                                 if (field.multi) {
-//                                     return res
-//                                 } else {
-//                                     return res[0] || null;
-//                                 }
-//                             }
-//                         }
-
-//                     } else if (field.type === ModelTypeList) {
-//                         if (field.relation) {
-//                             object[fieldName] = {
-//                                 type: GraphQLList(global_store[name]),
-//                                 resolve: (parent) => {
-//                                     console.log(parent);
-//                                     return [];
-//                                 }
-//                             }
-//                         } else {
-
-//                         }
-//                     } else {
-//                         object[fieldName] = { type: FieldType }
-//                     }
-
-
-
-//                 }
-
-//                 return object;
-//             }
-//         })
-
-
-//         let paginate = new GraphQLScalarType({
-//             name: 'paginate',
-//             serialize: value => value,
-//             parseValue: value => value,
-//             parseLiteral: (ast) => {
-//                 if (ast.kind !== Kind.OBJECT) {
-//                     throw new GraphQLError(
-//                         `Query error: Can only parse object but got a: ${ast.kind}`,
-//                         [ast],
-//                     );
-//                 }
-//                 return ast.value;
-//             }
-//             // fields: () => ({
-//             //     nextPage: { type: GraphQLInt },
-//             //     previousPage: { type: GraphQLInt },
-//             //     currentPage: { type: GraphQLInt },
-//             //     totalPage: { type: GraphQLInt },
-//             //     count: { type: GraphQLInt },
-//             //     perPage: { type: GraphQLInt },
-//             // })
-//         })
-//         global_store_many[name] = new GraphQLObjectType({
-//             name: model.constructor.name,
-//             description: `This represents a ${model.constructor.name}`,
-//             fields: () => {
-//                 let object = {}
-//                 for (let i in _fields) {
-//                     let FieldType = GraphQLString,
-//                         fieldName = i,
-//                         field = _fields[i];
-
-
-//                     if (field.resolve === Number) {
-//                         FieldType = GraphQLFloat
-//                     } else if (field.resolve === Boolean) {
-//                         FieldType = GraphQLBoolean
-//                     } else if (field.resolve === Date) {
-//                         FieldType = GraphQLFloat
-//                     }
-
-
-//                     if (field.relation) {
-//                         let type = field.multi ? GraphQLList(global_store[field.relation]) : global_store[field.relation];
-
-//                         object[fieldName] = {
-//                             type,
-//                             resolve: async (parent) => {
-//                                 let f;
-//                                 if (field.multi && Array.isArray(parent[fieldName])) {
-//                                     f = parent[fieldName].map(e => ObjectID(e));
-//                                     f = { _id: { $in: f } };
-//                                 } else {
-//                                     f = { _id: ObjectID(parent[fieldName]) };
-//                                 }
-
-//                                 let [res, error] = await getModel(field.relation).find(f);
-
-//                                 if (field.multi) {
-//                                     return res
-//                                 } else {
-//                                     return res[0] || null;
-//                                 }
-//                             }
-//                         }
-
-//                     } else if (field.type === ModelTypeList) {
-//                         if (field.relation) {
-//                             object[fieldName] = {
-//                                 type: GraphQLList(global_store[name]),
-//                                 resolve: (parent) => {
-//                                     console.log(parent);
-//                                     return [];
-//                                 }
-//                             }
-//                         } else {
-
-//                         }
-//                     } else {
-//                         object[fieldName] = { type: FieldType }
-//                     }
-//                 }
-//                 object.paginate = { type: paginate }
-//                 return object;
-//             }
-//         })
-
-//         // This is field for Multitaion
-
-//         global_delete_store[name] = {};
-//         global_field_store[name] = {};
-
-//         for (let i in _fields) {
-//             let FieldType = GraphQLString,
-//                 fieldName = i,
-//                 field = _fields[i];
-
-
-//             if (field.resolve === Number) {
-//                 FieldType = GraphQLFloat
-//             } else if (field.resolve === Boolean) {
-//                 FieldType = GraphQLBoolean
-//             } else if (field.resolve === Date) {
-//                 FieldType = GraphQLInt
-//             } else if (field.relation) {
-//                 if (field.multi) {
-//                     FieldType = GraphQLList(GraphQLString)
-//                 } else {
-//                     FieldType = GraphQLString
-//                 }
-//             }
-
-
-//             global_delete_store[name][fieldName] = { type: FieldType }
-
-//             if (field.required) {
-//                 FieldType = GraphQLNonNull(FieldType);
-//             }
-
-//             global_field_store[name][fieldName] = { type: FieldType }
-//         }
-
-//     }
-// }
-
-
-// Hook.do_action('init-model', addModelToGraphQL)
 
 createModelGraphQL(App)

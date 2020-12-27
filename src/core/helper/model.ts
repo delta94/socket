@@ -288,7 +288,7 @@ export async function ModelTypeRelation(this: { validate?: any, required?: any, 
 
             }
 
-            let { data: res, error } = f ? await getModel(this.relation).find(f) : { data: null, error: null }
+            let { data: res, error } = f ? await getModel(this.relation).findMany(f) : { data: null, error: null }
 
             let result: any = res;
             if (res) {

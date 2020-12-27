@@ -3,7 +3,7 @@ import MySQL from '../../core/model/MySQL'
 import { getModel } from '../../core/model/MongoDB';
 
 
-let mysql = new MySQL
+// let mysql = new MySQL
 
 // async function getAuthor() {
 //     let { data } = await mysql.find('author', 2000);
