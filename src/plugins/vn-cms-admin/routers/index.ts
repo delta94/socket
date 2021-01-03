@@ -5,30 +5,32 @@ import path from 'path';
 
 import { getAllModel } from '../../../core/Model';
 import express from 'express';
-const router = express.Router();
+import { add_router, add_router_group } from 'hooks/routerhook';
 
-router.get('/*', function (req, res, next) {
-    let dir = path.resolve(__dirname, '../views' + req.path + '.html')
-    console.log(dir)
+add_router_group('admin', () => {
+    add_router('/:page', function (req, res, next) {
 
-    if (fs.existsSync(dir)) {
-        console.log('pageview')
-        return res.sendFile(dir);
-    }
-    next();
+        let { page } = req.params
 
+        let dir = path.resolve(__dirname, '../views/' + page + '.html')
+
+        if (fs.existsSync(dir)) {
+            console.log('pageview')
+            return res.sendFile(dir);
+        }
+        next();
+
+    })
+
+
+    add_router('get-uml-json', function (req, res) {
+        let models = getAllModel()
+        let responseJson = {};
+        for (let i in models) {
+            responseJson[i] = models[i]._fields;
+        }
+        res.json(responseJson)
+    })
 })
 
-router.get('/get-uml-json', function (req, res) {
-    let models = getAllModel()
-    let responseJson = {};
-    for (let i in models) {
-        responseJson[i] = models[i]._fields;
-    }
-    res.json(responseJson)
-})
 
-
-HookApp((app, server) => {
-    app.use('/admin', router)
-})
