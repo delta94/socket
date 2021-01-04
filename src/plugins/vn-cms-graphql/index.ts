@@ -33,7 +33,7 @@ function capFirstChild(str) {
 
 function createModelGraphQL(app) {
     let models = getAllModel();
-    models = models.filterFun((e) => graphqlConfig.list.includes(e.name));
+    // models = models.filterFun((e) => !graphqlConfig.exclude.includes(e.name));
 
 
     for (let i in models) {

@@ -173,7 +173,7 @@ add_router_group('raw', () => {
                         "faq": [],
                         "store": "5ff2d67a223c8c18c83c4395",
                         "brand": "5ff2c65663a9610bd85836ab",
-                        "category": "5ff2ddc539b8f02c54ef9b23"
+                        "category": "5ff2dd9939b8f02c54ef9b21"
                     })
                 } catch (er) {
                     console.log('error', file, er);

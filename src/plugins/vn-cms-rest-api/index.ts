@@ -388,7 +388,7 @@ function generateApiDocs(model) {
     let capitalName = capitalizeFirstLetter(model.name);
     // let name = model.c
 
-    swaggerOptions.paths['/' + model.name + '/{_id}'] = {
+    swaggerOptions.paths['/' + model.name] = {
         get: {
             tags: [model.name],
             description: 'Get ' + model.name,
