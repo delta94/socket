@@ -1,4 +1,4 @@
-import ModelClass from "../../vn-cms-core/Model.js";
+import ModelClass from "core/Model";
 
 
 class Brand extends ModelClass{
@@ -9,6 +9,10 @@ class Brand extends ModelClass{
                 required: true,
                 // unique: true
             },
+            slug: {
+                required: true,
+                unique: true
+            }
         } )
     }
 }

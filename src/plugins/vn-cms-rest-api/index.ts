@@ -155,13 +155,15 @@ async function init(app) {
 
 
     models = getAllModel();
-    models = models.filterFun(e => restConfig.list.includes(e.name))
+    models = models.filterFun(e => !restConfig.exclude.includes(e.name))
     for (let i in models) {
 
-        if (restConfig.list.includes(models[i].name)) {
-            generateApiDocs(models[i])
-            generateRouter(models[i], app);
-        }
+        generateApiDocs(models[i])
+        generateRouter(models[i], app);
+        // if (restConfig.list.includes(models[i].name)) {
+        //     generateApiDocs(models[i])
+        //     generateRouter(models[i], app);
+        // }
     }
 
     app.get('/rest/generator', async (req, res) => {
@@ -386,7 +388,7 @@ function generateApiDocs(model) {
     let capitalName = capitalizeFirstLetter(model.name);
     // let name = model.c
 
-    swaggerOptions.paths['/' + model.name] = {
+    swaggerOptions.paths['/' + model.name + '/{_id}'] = {
         get: {
             tags: [model.name],
             description: 'Get ' + model.name,
@@ -687,6 +689,9 @@ function generateApiDocs(model) {
     }
 }
 
+
+
+
 function generateRouter(model, app) {
     let Model = getModel(model.name);
     app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
@@ -730,6 +735,7 @@ function generateRouter(model, app) {
     })
 
     app.post(prefix + '/' + model.name, authenticateToken, async (req, res) => {
+
         let { data, error } = await Model.insertOne(req.body);
         if (error) {
 

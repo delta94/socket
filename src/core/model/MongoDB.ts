@@ -152,12 +152,16 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
     async insertOne(insertData: any): Promise<intertOneResponse> {
         if (insertData._id) delete insertData._id;
 
-        let { error, data } = await this._checkValidateOne(insertData);
+        let [data, error] = await _prepareDataField(insertData, this._fields);
 
         if (error) {
             return { error, insertCount: 0 };
         }
+        // let { error, data } = await this._checkValidateOne(insertData);
 
+        // if (error) {
+        //     return { error, insertCount: 0 };
+        // }
         return new Promise((resolve, reject) => {
             this.collection.insertOne(data, (error: any, res: any) => {
 

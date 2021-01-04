@@ -1,0 +1,42 @@
+@HOST = http://localhost:8888
+@AUTH_TOKEN = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwiaWF0IjoxNjA3MzE1MDg2LCJleHAiOjIwODA2NzkwODZ9.cDPTTv6nN8z5PwBQh4EeYGGvO0rFxb_TR9wReFedtHo
+@REFRESH_TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZ1b25nLmRhbmdAZG5hLnZuIiwiX2lkIjoiNWZhZmFkYjgzMzRlZTkyZjQ0MmQ3YTNjIiwiaWF0IjoxNjA3MTUzNTUwfQ.fV8rHnccYt00PdHI4IFllRkD97bLI758Cu69HHacwj8
+@FOREVER_TOKEN = Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluIiwiaWF0IjoxNjA3MzE1MDg2LCJleHAiOjIwODA2NzkwODZ9.cDPTTv6nN8z5PwBQh4EeYGGvO0rFxb_TR9wReFedtHo
+
+
+#####
+POST {{HOST}}/rest/ecommerce_product
+Authorization: {{FOREVER_TOKEN}}
+Content-Type: application/json
+
+{
+   "sku":"BK0004",
+   "stock":true,
+   "fresh":120,
+   "delivery_day":1,
+   "name":"Country Farms Super Fruit and Veggies Capsules, 30 Fruits and Vegetables, 30 Servings",
+   "image":[
+      "https://salt.tikicdn.com/cache/w444/ts/product/1e/f3/82/46ea376ae77a110574010c6aa0db799f.jpg"
+   ],
+   "price":"626000",
+   "currency":"vnđ",
+   "short_description":"Super Fruit and Veggies capsules provide natural fruit and vegetable formula with zero juicing requiredEqual to 8 traditional servings of fruits and vegetables",
+   "main_description":"<div>Super Fruit and Veggies capsules provide natural fruit and vegetable formula with zero juicing required<br>Equal to 8 traditional servings of fruits and vegetables<br>A single serving provides the antioxidant power equivalent to 5 cartons of blueberries<br>Adds fiber to your diet and helps promote digestion and intestinal health<br>Includes 30 servings — Suggested use: Take 2 capsules daily as a dietary supplement (or as directed by your healthcare professional)<br>  <p>Super Fruit and Veggies capsules provide natural fruit and vegetable formula with zero juicing required</p>  <p>Equal to 8 traditional servings of fruits and vegetables</p>  <p>A single serving provides the antioxidant power equivalent to 5 cartons of blueberries</p>  <p>Adds fiber to your diet and helps promote digestion and intestinal health</p>  <p>Includes 30 servings — Suggested use: Take 2 capsules daily as a dietary supplement (or as directed by your healthcare professional)</p>  <p></p>  <p>Country Farms Super Fruit and Veggies Capsules combine equal parts convenience and nutrition, and with no juicing necessary! This formula was developed to help you meet your daily required intake of phytonutrients while providing probiotics, digestive enzymes, antioxidant and fiber. They contain 30 different kinds of fruits, vegetables and botanicals, all natural and prepared to provide your body with what it craves. This includes 30 servings. Since 1972, Country Farms has served as a trusted source of wholesome, nutrient-dense supplements for health-minded individuals. Their mission has always been to create premium, clean formulas designed to provide balance for central nutrition, health and vitality while supporting overall well-being with convenient, easy-to-use supplements. They strive to inspire quality, natural health choices, which shows in their products that burst with benefits like vitamins, minerals, protein, antioxidants, omegas, fiber, and digestive enzymes. These supplements offer health-conscious convenience without sacrifice and are prepared with integrity to restore your daily nutritional levels. This is the pure, fresh-from-the-garden promise of nature's finest from Country Farms.</p>  <p></p><p>Giá sản phẩm trên Tiki đã bao gồm thuế theo luật hiện hành. Tuy nhiên tuỳ vào từng loại sản phẩm hoặc phương thức, địa chỉ giao hàng mà có thể phát sinh thêm chi phí khác như phí vận chuyển, phụ phí hàng cồng kềnh, ...</p></div>",
+   "reviews":[
+      {
+         "comment":"Sản phẩm dùng rất tốt",
+         "star":5
+      },
+      {
+         "comment":"Tươi ngon",
+         "star":5
+      }
+   ],
+   "star":5,
+   "faq":[
+      
+   ],
+   "store":"5ff2d67a223c8c18c83c4395",
+   "brand":"5ff2c65663a9610bd85836ab",
+   "category":"5ff2c81e086c7c43b818910f"
+}

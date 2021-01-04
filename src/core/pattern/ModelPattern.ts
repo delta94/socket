@@ -50,15 +50,15 @@ export interface deleteManyResponse { error?: {}, deleteCount: number, data?: an
 export interface Field {
     type?: number | boolean | string | any | [],
     default?: any,
-    required?: boolean,
+    required?: true,
     relation?: string,
     struct?: any,
-    multi?: boolean,
+    multi?: true,
     validate?: any,
     pattern?: any,
     enum?: any[],
-    unique?: boolean,
-    index?: boolean
+    unique?: true,
+    index?: true
 }
 
 export interface ModelInterface {

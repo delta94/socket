@@ -8,7 +8,6 @@ const requiredMsg = 'This field is required';
 const patternMsg = 'This field not match with pattern';
 
 export default function validate(data: any, rules: any, message = {}, exclude = false): { error?: any, data?: any } {
-
     let errorObj = {}
 
     for (let i in rules) {
@@ -52,6 +51,6 @@ export default function validate(data: any, rules: any, message = {}, exclude = 
     if (Object.keys(errorObj).length > 0) {
         return { error: errorObj }
     }
-
+    
     return { data };
 }

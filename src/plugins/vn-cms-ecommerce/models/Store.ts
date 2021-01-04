@@ -1,4 +1,4 @@
-import ModelClass from "../../vn-cms-core/Model.js";
+import ModelClass from "core/Model";
 
 
 class Store extends ModelClass{
@@ -7,11 +7,12 @@ class Store extends ModelClass{
             name: {
                 type: String,
                 required: true,
-                index: true
-                // unique: true
+                index: true,
+                unique: true
             },
             slug: {
                 required: true,
+                unique: true
             },
             avatar: {
                 type: String,

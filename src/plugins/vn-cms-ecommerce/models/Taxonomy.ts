@@ -1,4 +1,4 @@
-import ModelClass from "../../vn-cms-core/Model.js";
+import ModelClass from "core/Model";
 
 
 class Taxonomy extends ModelClass{

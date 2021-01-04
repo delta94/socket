@@ -1,4 +1,4 @@
-import mongodb from 'mongodb';
+import mongodb, { ObjectId } from 'mongodb';
 import { getModel } from '../Model';
 
 const { ObjectID } = mongodb;
@@ -260,6 +260,11 @@ export async function ModelTypeRelation(this: { validate?: any, required?: any, 
     // only _id
     // object 
     // object with _id key
+    if(Array.isArray(data)){
+        return [data.map( e => new ObjectID(e) )]
+    }else{
+        return [new ObjectID(data)]
+    }
 
     if (this.required && (!data && data != 0)) {
         return [null, this.validate?.required || defaultErrorMessage.required];

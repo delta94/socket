@@ -9,6 +9,7 @@ export default {
         "vn-cms-graphql",
         "vn-cms-rest-api",
         "vn-cms-elearning",
+        "vn-cms-ecommerce",
         "vn-cms-blog",
         "vn-cms-raw-data",
         "vn-cms-socket",

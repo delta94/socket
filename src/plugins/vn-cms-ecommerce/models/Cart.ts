@@ -1,10 +1,10 @@
-import ModelClass from "../../vn-cms-core/Model.js";
+import ModelClass from "core/Model";
 
 
 class Cart extends ModelClass{
     constructor(){
         super('ecommerce_cart', {
-            user_id: {
+            user: {
                 required: true,
                 relation: 'user'
             },
@@ -15,9 +15,10 @@ class Cart extends ModelClass{
             phone: String,
             address: String,
             products: {
-                realtion: 'ecommerce_product',
+                relation: 'ecommerce_product',
                 multi: true
             },
+            product_number: {},
             subtotal: Number,
             tax: Number,
             shipping: Number
