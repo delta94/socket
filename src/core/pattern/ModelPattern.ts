@@ -155,6 +155,8 @@ export default abstract class ModelAbstract {
         this._setupField(fields);
 
         _[this.name] = this;
+
+        console.log(this._fields)
     }
 
 
@@ -301,7 +303,7 @@ export default abstract class ModelAbstract {
             } else if (Array.isArray(field)) {
                 let type: any = {
                     type: EnumField.Array,
-                    resolve: EnumArray.Array
+                    resolve: ArrayResolve
                 }
                 if (field[0]) {
                     type.struct = field[0]
@@ -310,7 +312,30 @@ export default abstract class ModelAbstract {
                 this._fields[i] = type;
 
             } else if (field.relation) {
+                this._fields[i] = {
+                    ...field,
+                    type: EnumField.Relation,
+                    resolve: RelationResolve
+                }
+            } else if (field.type) {
 
+                this._fields[i] = {
+                    ...field,
+                    type: EnumField.Function,
+                    resolve: field.type
+                }
+            } else if (Array.isArray(field.enum)) {
+                this._fields[i] = {
+                    ...field,
+                    type: EnumField.Enum,
+                    resolve: EnumResolve
+                }
+            } else {
+                this._fields[i] = {
+                    type: EnumField.Struct,
+                    resolve: StructResolve,
+                    struct: field
+                }
             }
         }
     }
@@ -322,11 +347,41 @@ enum EnumField {
     Function = 'FUNCTION',
     Struct = 'STRUCT',
     Array = 'ARRAY',
-    Relation = 'RELATION'
+    Relation = 'RELATION',
+    Enum = 'ENUM'
 }
 
-let ArrayResolve = function (this: any, data) {
-    console.log(this)
+let EnumResolve = function (this: any, data): { error?: any, data?: any } {
+    if (!data && this.default) data = this.default;
+    if (this.enum.include(data)) return { data };
+    return { error: this?.validate?.default || `field required include [${this.enum.join()}]` }
+}
+
+let StructResolve = function (this: any, data): { error?: any, data?: any } {
+    if (typeof data !== 'object') return { error: 'Field required is object' };
+    for (let i in this.struct) {
+        if (typeof this.struct === 'function') {
+            data[i] = this.struct(data[i])
+        }
+    }
+    return { data }
+
+}
+
+let RelationResolve = function (this: any, data): { error?: any, data?: any } {
+
+    if (this.multi) {
+        if (!Array.isArray(data) && data) data = [data];
+        else {
+            data = []
+        }
+    }
+
+    return { data }
+}
+
+let ArrayResolve = function (this: any, data): { error?: any, data?: any } {
+
     if (!Array.isArray(data)) {
         data = [data]
     }
@@ -335,9 +390,19 @@ let ArrayResolve = function (this: any, data) {
             if (typeof this.struct === 'function') {
                 return this.struct(e)
             } else {
+                let type = {
+                    resolve: StructResolve,
+                    struct: this.struct
+                }
 
+                let { data, error } = type.resolve(e);
+                if (!error) return data;
             }
         }
     })
 
-},
+    data = data.filter(e => e !== undefined);
+
+    return { data };
+
+}
