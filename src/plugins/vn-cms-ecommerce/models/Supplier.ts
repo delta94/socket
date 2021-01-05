@@ -1,9 +1,10 @@
 import ModelClass from "core/Model";
+import { TableName } from "..";
 
 
 class Supplier extends ModelClass{
     constructor(){
-        super('ecommerce_supplier', {
+        super(TableName.Supplier, {
             name: {
                 type: String,
                 required: true,

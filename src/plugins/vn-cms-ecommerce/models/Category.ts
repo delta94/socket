@@ -1,9 +1,10 @@
 import ModelClass from "core/Model";
+import { TableName } from "..";
 
 
 class Category extends ModelClass{
     constructor(){
-        super('ecommerce_category', {
+        super(TableName.Category, {
             name: {
                 type: String,
                 required: true,
@@ -12,6 +13,9 @@ class Category extends ModelClass{
             slug: {
                 required: true,
                 unique: true
+            },
+            parent: {
+                relation: TableName.Category
             }
         } )
     }

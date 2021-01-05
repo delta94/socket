@@ -10,6 +10,6 @@ Authorization: {{FOREVER_TOKEN}}
 Content-Type: application/json
 
 {
-    "name": "Pharmacy",
-    "slug": "pharmacy"
+    "name": "Nhà Cửa - Đời Sống",
+    "slug": "nha-cua-doi-song"
 }

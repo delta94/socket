@@ -37,24 +37,19 @@ function createModelGraphQL(app) {
 
 
     for (let i in models) {
-        if (models[i].graphql !== false) {
-            // generateList(models[i])
-            generateOne(models[i])
+        generateOne(models[i])
 
-            generateDeleteArgs(models[i])
+        generateDeleteArgs(models[i])
 
-            generateFields(models[i]);
+        generateFields(models[i]);
 
-            generateArgsMutation(models[i]);
-
-        }
+        generateArgsMutation(models[i]);
 
     }
 
     const RootMutationType = generateMutation();
 
     let RootQueryType = generateRoot();
-
 
     const schema = new GraphQLSchema({
         query: RootQueryType,
@@ -147,7 +142,6 @@ function generateMutation() {
             let object = {}
             for (let i in global_store) {
                 let args = global_args_mutation[i];
-
                 object['insertOrUpdate' + capFirstChild(i)] = {
                     type: global_store[i],
                     description: `Add 1 ${capFirstChild(i)}`,
@@ -300,7 +294,6 @@ function generateOne(model) {
 function generateFields(model) {
     let { _fields, name } = model;
     global_field_store[name] = {};
-
 
     for (let i in _fields) {
         let FieldType: any = GraphQLString,

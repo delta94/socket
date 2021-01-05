@@ -36,6 +36,12 @@ export default function validate(data: any, rules: any, message = {}, exclude = 
                     continue;
                 }
             }
+
+            if(Array.isArray(rule.enum)){
+                if(!rule.enum.include(value)){
+                    errorObj[i] = `${i} require include [${rule.enum.join()}]`
+                }
+            }
         }
     }
 

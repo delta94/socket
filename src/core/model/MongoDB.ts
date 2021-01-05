@@ -64,7 +64,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
 
     constructor(name: string, fields: FieldsInput) {
         super(name, fields)
-        this._prepareData(fields)
+        // this._prepareData(fields)
         if (name in _collection) {
             this.collection = _collection[name];
         } else {

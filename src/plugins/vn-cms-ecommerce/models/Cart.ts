@@ -1,9 +1,10 @@
 import ModelClass from "core/Model";
+import { TableName } from "..";
 
 
 class Cart extends ModelClass{
     constructor(){
-        super('ecommerce_cart', {
+        super(TableName.Cart, {
             user: {
                 required: true,
                 relation: 'user'
@@ -15,7 +16,7 @@ class Cart extends ModelClass{
             phone: String,
             address: String,
             products: {
-                relation: 'ecommerce_product',
+                relation: TableName.Product,
                 multi: true
             },
             product_number: {},

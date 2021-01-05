@@ -1,9 +1,10 @@
 import ModelClass from "core/Model";
+import { TableName } from "..";
 
 
 class Product extends ModelClass {
     constructor() {
-        super('ecommerce_product', {
+        super(TableName.Product, {
             sku: {
                 type: String,
                 unique: true,
@@ -33,13 +34,17 @@ class Product extends ModelClass {
             reviews: [],
             faq: [],
             store: {
-                relation: 'ecommerce_store'
+                relation: TableName.Store
             },
             brand: {
-                relation: 'ecommerce_brand'
+                relation: TableName.Brand
             },
             category: {
-                relation: 'ecommerce_category'
+                relation: TableName.Category
+            },
+            taxonomies: {
+                relation: TableName.Taxonomy,
+                multi: true
             }
 
         })

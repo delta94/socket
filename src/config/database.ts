@@ -18,6 +18,7 @@ export default {
         "USERNAME": "pnj",
         "PASSWORD": "FkYkKnKPRnop79Xt",
         "stringConnect": "mongodb+srv://pnj:FkYkKnKPRnop79Xt@cluster0.ticyv.mongodb.net"
+        // "stringConnect": "mongodb://localhost:27017"
     },
     "MySQL": {
 

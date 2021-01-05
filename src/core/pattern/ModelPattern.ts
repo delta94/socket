@@ -1,9 +1,10 @@
 
 import appConfig from 'config/app'
 import databaseConfig from 'config/database'
-import { prepareField } from 'core/helper/model';
+// import { prepareField } from 'core/helper/model';
 import validate from 'core/validate';
 import { DoBeforeFind } from 'hooks/modelhook';
+import { EnumType } from 'typescript';
 import CacheAbstract from './CachePattern';
 export interface findOptions {
     limit?: number,
@@ -23,6 +24,8 @@ export interface findResponse {
         currentPage: number
     }
 }
+
+
 
 export interface findOneOptions {
     match: {},
@@ -61,6 +64,21 @@ export interface Field {
     index?: true
 }
 
+interface PrivateField {
+    type: EnumField,
+    default?: any,
+    required?: true,
+    relation?: string,
+    struct?: any,
+    multi?: true,
+    validate?: any,
+    pattern?: any,
+    enum?: any[],
+    unique?: true,
+    index?: true,
+    resolve: Function
+}
+
 export interface ModelInterface {
     findOne(options: findOneOptions | string): Promise<findOneResponse>
 
@@ -91,7 +109,7 @@ export interface ModelInterface {
     count(options: { match?: {} }): Promise<number>
 }
 
-export interface FieldsInput { [key: string]: [] | Field | Function }
+export interface FieldsInput { [key: string]: any[] | Field | Function }
 
 let _: any = {}
 export default abstract class ModelAbstract {
@@ -117,49 +135,33 @@ export default abstract class ModelAbstract {
 
     protected cache: CacheAbstract | null | any = null
     protected findOptions: any = null
-    protected _fields: { [key: string]: Field } = {}
+    protected _fields: { [key: string]: PrivateField } = {}
     protected idValue: Function = String
 
 
     name: string | null = null
 
+    static getModel(name: string): ModelInterface | null {
+        if (name in _.instance) {
+            return _.instance[name];
+        }
+
+        return null;
+    }
+
     constructor(name: string, fields: FieldsInput) {
         this.name = name
-        if (databaseConfig.cache) {
-            this.cache = databaseConfig.cache;
-        } else if ('cache' in appConfig?.provider) {
-            this.cache = appConfig.provider['cache']
-        }
-
-        for (let i in fields) {
-
-            let field = fields[i];
-            if (typeof field === 'function') {
-                this._fields[i] = {
-                    type: field
-                }
-            }
-        }
-
-
-
-        // this._fields = prepareField({
-        //     [this.primaryKey.name]: this.primaryKey.type,
-        //     ...fields,
-        //     ...this.defaultColumn
-        // })
+        this._setupCache();
+        this._setupField(fields);
 
         _[this.name] = this;
-
-
     }
+
+
 
     setCache(name, value) {
         if (!this.cache) return;
 
-        // if (typeof value !== 'string') {
-        //     value = JSON.stringify(value)
-        // }
         this.cache?.set(name, value)
     }
 
@@ -172,7 +174,6 @@ export default abstract class ModelAbstract {
         return await this.cache?.get(id)
     }
 
-    // abstract find(options?: findOptions): Promise<findResponse>
 
     protected async _findOne(options: findOneOptions | string): Promise<{ next: boolean, data?: any }> {
         let { match } = options;
@@ -205,52 +206,65 @@ export default abstract class ModelAbstract {
 
     protected async _checkValidateOne(data: any): Promise<{ error?: any, data?: any }> {
 
-        let rules = {}
-        let message = {}
+        // let rules = {}
+        // let message = {}
+
+        let errors = {}
         for (let i in this._fields) {
             let field = this._fields[i];
-            rules[i] = {}
-            message[i] = {}
-            if (field.required) {
-                rules[i].required = true
-                message[i].required = field?.validate?.requried || `${i} field is require`
-            }
+            // rules[i] = {}
+            // message[i] = {}
+            // if (field.required) {
+            //     rules[i].required = true
+            //     message[i].required = field?.validate?.requried || `${i} field is require`
+            // }
 
-            if (field.pattern) {
-                rules[i].pattern = field.pattern
-                message[i].pattern = field?.validate?.pattern || `${i} field is not like pattern`;
-            }
+            // if (field.pattern) {
+            //     rules[i].pattern = field.pattern
+            //     message[i].pattern = field?.validate?.pattern || `${i} field is not like pattern`;
+            // }
 
-            if (field.enum) {
-                rules[i].enum = field.enum
-                message[i].enum = field?.validate?.enum || `${i} field is in [${field.enum.join()}]`
+            // if (field.enum) {
+            //     rules[i].enum = field.enum
+            //     message[i].enum = field?.validate?.enum || `${i} field is in [${field.enum.join()}]`
+            // }
+
+            let { error, value } = field.resolve(data[i])
+            if (error) {
+                errors[i] = error;
+            } else {
+                data[i] = value;
             }
+            // if(!data[i] && field.default){
+            //     data[i] = field.default;
+            // }
+
+            // if(field.type === EnumField.Relation){
+            //     if(field.multi){
+            //         if(!Array.isArray(data[i])){
+            //             data[i] = [data[i]]
+            //         }
+            //     }
+            // }
         }
 
-        return validate(data, rules, message)
+        if (Object.keys(errors).length > 0) {
+            return { error: errors }
+        }
+
+        return { data }
+
+        // return validate(data, rules, message)
     }
-
-
-    // insert(): Promise<{ error?: any, insertCount?: number }>
-
-    // protected async _insertOne(options: {}): Promise<intertOneResponse> {
-
-    // }
-
-    // protected _insertMany(options: []): Promise<{ data?: any, error?: any }> {
-
-    // }
 
     abstract insertOrUpdate(options: {} | []): Promise<intertOrUpdateResponse>
 
 
-    // update(): {error?: {}, updateCount: number, result: []}
 
     abstract updateOne(query: {}, data: {}): Promise<updateOneResponse>
 
     abstract updateMany(data: []): Promise<updateManyResponse>
 
-    // delete(): Promise<{ error?: any, deleteCount?: number }>
 
     abstract deleteOne(query: {}): Promise<deleteOneResponse>
 
@@ -258,19 +272,72 @@ export default abstract class ModelAbstract {
 
     abstract count(options: { match?: {} }): Promise<number>
 
-    protected _prepareData(fields: FieldsInput) {
-        this._fields = prepareField({
-            [this.primaryKey.name]: this.primaryKey.type,
-            ...fields,
-            ...this.defaultColumn
-        })
+    private _prepareData() {
+        // this._fields = prepareField({
+        //     [this.primaryKey.name]: this.primaryKey.type,
+        //     ...this.defaultColumn
+        // })
     }
 
-    static getModel(name: string): ModelInterface | null {
-        if (name in _.instance) {
-            return _.instance[name];
+    private _setupCache() {
+        if (databaseConfig.cache) {
+            this.cache = databaseConfig.cache;
+        } else if ('cache' in appConfig?.provider) {
+            this.cache = appConfig.provider['cache']
         }
-
-        return null;
     }
+
+    private _setupField(fields: FieldsInput) {
+
+
+        for (let i in fields) {
+
+            let field = fields[i];
+            if (typeof field === 'function') {
+                this._fields[i] = {
+                    type: EnumField.Function,
+                    resolve: field
+                }
+            } else if (Array.isArray(field)) {
+                let type: any = {
+                    type: EnumField.Array,
+                    resolve: EnumArray.Array
+                }
+                if (field[0]) {
+                    type.struct = field[0]
+                }
+
+                this._fields[i] = type;
+
+            } else if (field.relation) {
+
+            }
+        }
+    }
+
 }
+
+
+enum EnumField {
+    Function = 'FUNCTION',
+    Struct = 'STRUCT',
+    Array = 'ARRAY',
+    Relation = 'RELATION'
+}
+
+let ArrayResolve = function (this: any, data) {
+    console.log(this)
+    if (!Array.isArray(data)) {
+        data = [data]
+    }
+    data = data.map(e => {
+        if (this.struct) {
+            if (typeof this.struct === 'function') {
+                return this.struct(e)
+            } else {
+
+            }
+        }
+    })
+
+},

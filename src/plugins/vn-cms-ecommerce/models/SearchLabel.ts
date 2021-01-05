@@ -2,9 +2,9 @@ import ModelClass from "core/Model";
 import { TableName } from "..";
 
 
-class Brand extends ModelClass{
+class SearchLabel extends ModelClass{
     constructor(){
-        super(TableName.Brand, {
+        super(TableName.SearchLabel, {
             name: {
                 type: String,
                 required: true,
@@ -12,9 +12,14 @@ class Brand extends ModelClass{
             },
             category: {
                 relation: TableName.Category
-            }
+            },
+            attribute: {
+                relation: TableName.Attribute,
+                multi: true
+            },
+            order: Number
         } )
     }
 }
 
-export default new Brand;
+export default new SearchLabel;
