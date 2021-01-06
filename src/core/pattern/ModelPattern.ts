@@ -76,7 +76,13 @@ interface PrivateField {
     enum?: any[],
     unique?: true,
     index?: true,
-    resolve: Function
+
+    resolve: FieldResolve,
+    function?: Function
+}
+
+interface FieldResolve {
+    (data): { error?: any, value?: any }
 }
 
 export interface ModelInterface {
@@ -156,7 +162,7 @@ export default abstract class ModelAbstract {
 
         _[this.name] = this;
 
-        console.log(this._fields)
+        // console.log(this._fields)
     }
 
 
@@ -208,28 +214,22 @@ export default abstract class ModelAbstract {
 
     protected async _checkValidateOne(data: any): Promise<{ error?: any, data?: any }> {
 
-        // let rules = {}
-        // let message = {}
-
+        let rules = {}
+        let message = {}
         let errors = {}
         for (let i in this._fields) {
             let field = this._fields[i];
-            // rules[i] = {}
-            // message[i] = {}
-            // if (field.required) {
-            //     rules[i].required = true
-            //     message[i].required = field?.validate?.requried || `${i} field is require`
-            // }
+            rules[i] = {}
+            message[i] = {}
+            if (field.required) {
+                rules[i].required = true
+                message[i].required = field?.validate?.requried || `${i} field is require`
+            }
 
-            // if (field.pattern) {
-            //     rules[i].pattern = field.pattern
-            //     message[i].pattern = field?.validate?.pattern || `${i} field is not like pattern`;
-            // }
-
-            // if (field.enum) {
-            //     rules[i].enum = field.enum
-            //     message[i].enum = field?.validate?.enum || `${i} field is in [${field.enum.join()}]`
-            // }
+            if (field.pattern) {
+                rules[i].pattern = field.pattern
+                message[i].pattern = field?.validate?.pattern || `${i} field is not like pattern`;
+            }
 
             let { error, value } = field.resolve(data[i])
             if (error) {
@@ -237,26 +237,22 @@ export default abstract class ModelAbstract {
             } else {
                 data[i] = value;
             }
-            // if(!data[i] && field.default){
-            //     data[i] = field.default;
-            // }
-
-            // if(field.type === EnumField.Relation){
-            //     if(field.multi){
-            //         if(!Array.isArray(data[i])){
-            //             data[i] = [data[i]]
-            //         }
-            //     }
-            // }
+            if (!data[i] && field.default) {
+                data[i] = field.default;
+            }
         }
+
+
+        let { error: error2, data: data2 } = validate(data, rules, message);
+
+        errors = Object.assign(error2, errors)
+        data = Object.assign(data, data2)
 
         if (Object.keys(errors).length > 0) {
             return { error: errors }
         }
 
         return { data }
-
-        // return validate(data, rules, message)
     }
 
     abstract insertOrUpdate(options: {} | []): Promise<intertOrUpdateResponse>
@@ -298,7 +294,8 @@ export default abstract class ModelAbstract {
             if (typeof field === 'function') {
                 this._fields[i] = {
                     type: EnumField.Function,
-                    resolve: field
+                    function: field,
+                    resolve: FunctionResolve
                 }
             } else if (Array.isArray(field)) {
                 let type: any = {
@@ -322,7 +319,8 @@ export default abstract class ModelAbstract {
                 this._fields[i] = {
                     ...field,
                     type: EnumField.Function,
-                    resolve: field.type
+                    function: field.type,
+                    resolve: FunctionResolve
                 }
             } else if (Array.isArray(field.enum)) {
                 this._fields[i] = {
@@ -351,24 +349,36 @@ enum EnumField {
     Enum = 'ENUM'
 }
 
-let EnumResolve = function (this: any, data): { error?: any, data?: any } {
+let FunctionResolve: FieldResolve = function (this: any, data) {
+    console.log(this, data)
+
+    let value = undefined;
+    try {
+        value = this.function(data);
+    } catch (err) {
+        return { error: { err, msg: 'Value of field not unsatisfactory of type function' } }
+    }
+    return { value }
+}
+
+let EnumResolve: FieldResolve = function (this: any, data) {
     if (!data && this.default) data = this.default;
-    if (this.enum.include(data)) return { data };
+    if (this.enum.include(data)) return { value: data };
     return { error: this?.validate?.default || `field required include [${this.enum.join()}]` }
 }
 
-let StructResolve = function (this: any, data): { error?: any, data?: any } {
+let StructResolve: FieldResolve = function (this: any, data) {
     if (typeof data !== 'object') return { error: 'Field required is object' };
     for (let i in this.struct) {
         if (typeof this.struct === 'function') {
             data[i] = this.struct(data[i])
         }
     }
-    return { data }
+    return { value: data }
 
 }
 
-let RelationResolve = function (this: any, data): { error?: any, data?: any } {
+let RelationResolve: FieldResolve = function (this: any, data) {
 
     if (this.multi) {
         if (!Array.isArray(data) && data) data = [data];
@@ -377,10 +387,10 @@ let RelationResolve = function (this: any, data): { error?: any, data?: any } {
         }
     }
 
-    return { data }
+    return { value: data }
 }
 
-let ArrayResolve = function (this: any, data): { error?: any, data?: any } {
+let ArrayResolve: FieldResolve = function (this: any, data) {
 
     if (!Array.isArray(data)) {
         data = [data]
@@ -395,7 +405,7 @@ let ArrayResolve = function (this: any, data): { error?: any, data?: any } {
                     struct: this.struct
                 }
 
-                let { data, error } = type.resolve(e);
+                let { value: data, error } = type.resolve(e);
                 if (!error) return data;
             }
         }
@@ -403,6 +413,6 @@ let ArrayResolve = function (this: any, data): { error?: any, data?: any } {
 
     data = data.filter(e => e !== undefined);
 
-    return { data };
+    return { value: data };
 
 }

@@ -1,6 +1,6 @@
 export enum TableName {
     Brand = 'ecommerce_brand',
-    Store = 'ecommerce_store',
+    Seller = 'ecommerce_seller',
     Product = 'ecommerce_product',
     Cart = 'ecommerce_cart',
     Category = 'ecommerce_category',

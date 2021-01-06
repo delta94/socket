@@ -736,10 +736,10 @@ function generateRouter(model, app) {
 
     app.post(prefix + '/' + model.name, authenticateToken, async (req, res) => {
 
-        let { data, error } = await Model.insertOne(req.body);
+        let { data, error, insertCount } = await Model.insertOne(req.body);
         if (error) {
 
-            return res.status(type.STATUS_BAD_REQUEST).json({ error });
+            return res.status(type.STATUS_BAD_REQUEST).json({ error, insertCount });
         }
         res.json(data);
 

@@ -15,7 +15,10 @@ export default function validate(data: any, rules: any, message = {}, exclude = 
             let rule = rules[i],
                 value = data[i];
 
-            value = value.trim()
+            if(typeof value === 'string'){
+                value = value.trim()
+            }
+            
 
             if (rule.required) {
                 let msg = message?.[i]?.required || requiredMsg

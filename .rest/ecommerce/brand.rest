@@ -5,6 +5,10 @@
 
 
 #####
+GET {{HOST}}/rest/ecommerce_brand
+Authorization: {{FOREVER_TOKEN}}
+
+#####
 POST {{HOST}}/rest/ecommerce_brand
 Authorization: {{FOREVER_TOKEN}}
 Content-Type: application/json
