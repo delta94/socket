@@ -15,7 +15,10 @@ class Product extends ModelClass {
                 unique: true,
                 required: true
             },
-            badges: [],
+            // badges: [],
+            brand_name: {
+                type: String,
+            },
             brand: {
                 relation: TableName.Brand
             },
@@ -28,7 +31,7 @@ class Product extends ModelClass {
             description: String,
             discount: Number,
             discount_rate: Number,
-            images: [],
+            // images: [],
             inventory_status: String,
             name: {
                 type: String,
@@ -45,10 +48,10 @@ class Product extends ModelClass {
             rating_average: Number,
             review_count: Number,
             short_description: String,
-            specifications: [],
+            // specifications: [],
             stock_item: {},
             thumbnail_url: String,
-            top_features: [],
+            // top_features: [],
             type: String,
             slug: {
                 type: String,

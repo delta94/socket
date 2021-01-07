@@ -173,7 +173,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
                         let [key, value]: any[] = objectIndex(error.keyValue, 0);
 
                         error = {
-                            [key]: this._fields[key].validate.unique || 'This field has exists, please use another value!'
+                            [key]: this._fields[key]?.validate?.unique || 'This field has exists, please use another value!'
                         }
                         return resolve({ error, insertCount: 0 })
                     } else {

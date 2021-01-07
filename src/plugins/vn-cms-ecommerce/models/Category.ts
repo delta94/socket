@@ -5,12 +5,18 @@ import { TableName } from "..";
 class Category extends ModelClass{
     constructor(){
         super(TableName.Category, {
+            id: {
+                type: Number,
+                required: true,
+                unique: true
+            },
             name: {
                 type: String,
                 required: true,
                 // unique: true
             },
             slug: {
+                type: String,
                 required: true,
                 unique: true
             },

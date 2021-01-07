@@ -245,8 +245,8 @@ export default abstract class ModelAbstract {
 
         let { error: error2, data: data2 } = validate(data, rules, message);
 
-        errors = Object.assign(error2, errors)
-        data = Object.assign(data, data2)
+        errors = Object.assign(error2 || {}, errors)
+        data = Object.assign(data, data2 || {})
 
         if (Object.keys(errors).length > 0) {
             return { error: errors }
@@ -350,7 +350,6 @@ enum EnumField {
 }
 
 let FunctionResolve: FieldResolve = function (this: any, data) {
-    console.log(this, data)
 
     let value = undefined;
     try {
