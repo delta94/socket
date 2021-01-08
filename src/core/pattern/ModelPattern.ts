@@ -11,6 +11,7 @@ export interface findOptions {
     page?: number,
     select?: [],
     match?: any,
+    sort?: any
 }
 
 export interface findResponse {
@@ -113,6 +114,13 @@ export interface ModelInterface {
     deleteMany(query: []): Promise<deleteManyResponse>
 
     count(options: { match?: {} }): Promise<number>
+
+
+
+    // public function
+
+
+    getQueryFilter(query: any): any
 }
 
 export interface FieldsInput { [key: string]: any[] | Field | Function }
@@ -193,8 +201,8 @@ export default abstract class ModelAbstract {
         return { next: true }
     }
 
-    protected async _findMany(options?: findOptions | any): Promise<{ page?: number, limit?: number, match?: any, data?: any, next?: boolean }> {
-        let { page, limit, match } = options;
+    protected async _findMany(options?: findOptions | any): Promise<{ page?: number, limit?: number, match?: any, data?: any, next?: boolean, sort?: any }> {
+        let { page, limit, match, sort } = options;
 
         !page && (page = 1)
         !limit && (limit = 15)
@@ -208,7 +216,7 @@ export default abstract class ModelAbstract {
             return { data }
         }
 
-        return { next: true, page, limit, match }
+        return { next: true, page, limit, match, sort }
     }
 
 
@@ -269,6 +277,23 @@ export default abstract class ModelAbstract {
     abstract deleteMany(query: []): Promise<deleteManyResponse>
 
     abstract count(options: { match?: {} }): Promise<number>
+
+
+    public getQueryFilter(query: any) : any {
+        let obj = {};
+        for(let i in query){
+            if(i in this._fields){
+                if(['number','Number'].includes(this._fields[i]?.function?.name || '')){
+                    obj[i] = parseInt(query[i])
+
+                }else{
+                    obj[i] = query[i]
+                }
+            }
+        }
+
+        return obj;
+    }
 
     private _prepareData() {
         // this._fields = prepareField({

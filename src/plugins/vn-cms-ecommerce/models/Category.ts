@@ -10,7 +10,7 @@ class Category extends ModelClass{
                 required: true,
                 unique: true
             },
-            name: {
+            title: {
                 type: String,
                 required: true,
                 // unique: true

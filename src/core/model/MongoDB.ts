@@ -92,9 +92,9 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
     }
 
 
-    async findMany(options: findOptions = { limit: 15, page: 10 }): Promise<findResponse> {
+    async findMany(options: findOptions = { limit: 15, page: 10, sort : { _id: -1 } }): Promise<findResponse> {
 
-        let { page = 1, limit = 15, match, data } = await super._findMany(options)
+        let { page = 1, limit = 15, match, data, sort } = await super._findMany(options)
         if (data) return { data }
 
         const startIndex = (page - 1) * limit;
@@ -104,7 +104,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
             new Promise((resolve, reject) => {
                 match = this._generateFind(match);
 
-                this.collection.find(match).skip(startIndex).limit(limit).sort({ created_at: -1 }).toArray(function (error: any, data: any) {
+                this.collection.find(match).skip(startIndex).limit(limit).sort(sort).toArray(function (error: any, data: any) {
                     if (error) resolve({ error });
                     else resolve({ data });
                 });

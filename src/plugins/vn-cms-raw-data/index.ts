@@ -9,147 +9,6 @@ import rp from "request-promise";
 import phantom from 'phantom'
 import { TableName } from 'plugins/vn-cms-ecommerce';
 
-// let mysql = new MySQL
-
-// async function getAuthor() {
-//     let { data } = await mysql.find('author', 2000);
-
-//     for (let i in data) {
-//         data[i].avatar = 'https://picsum.photos/300/300'
-//     }
-
-//     let { data } = await getModel('blog_author').insertMany(data)
-
-//     return data;
-// }
-
-
-// async function getCategory() {
-//     let { data } = await mysql.find('category', 2000);
-//     let category = await getModel('blog_category').insertMany(data)
-
-//     return category;
-// }
-
-// async function getTag() {
-//     let { data } = await mysql.find('tag', 2000);
-//     let tag = await getModel('blog_tag').insertMany(data)
-
-//     return tag;
-// }
-
-// async function getUser() {
-//     let { data } = await mysql.find('user', 2000);
-
-//     for (let i in data) {
-//         data[i].avatar = 'https://picsum.photos/300/300'
-//     }
-
-//     data = await getModel('blog_user').insertMany(data)
-
-//     return data;
-// }
-
-// async function getPost() {
-
-//     // let { data } = await mysql.find('posts', 10000);
-//     // let category = await getModel('blog_categiry').find();
-//     // return category;
-//     // for(let i in data){
-//     //     mysql.find('category_posts',1)
-//     //     .then(({data, error}) => {
-//     //         if(data){
-//     //             data = data?.[0]
-//     //             if(data){
-
-//     //             }
-//     //         }
-//     //     })
-//     // }
-//     let { data: category } = await getModel('blog_category').findMany();
-//     let { data: tags } = await getModel('blog_tag').findMany();
-//     let { data: authors } = await getModel('blog_author').findMany();
-
-//     let { data } = await mysql.find('posts', 10000);
-//     let j = 0;
-
-//     for (let i in data) {
-//         let cat = category[Math.round(Math.random() * (category.length - 1))]._id
-//         let tag1 = tags[Math.round(Math.random() * (tags.length - 1))]._id
-//         let tag2 = tags[Math.round(Math.random() * (tags.length - 1))]._id
-//         let author = authors[Math.round(Math.random() * (authors.length - 1))]._id
-
-
-//         let tag: any[] = [];
-//         tag.push(tag1)
-//         if (tag1 !== tag2) {
-//             tag.push(tag2)
-//         }
-
-//         data[i].author = author;
-//         data[i].tags = tag
-//         data[i].categories = [cat]
-//         data[i].cover = 'https://picsum.photos/1400/700'
-
-//         // getModel('blog_post').updateOne({ _id: data[i]._id }, {
-//         //     category: [cat],
-//         //     tags: tag,
-//         //     author: author
-//         // })
-//         //     .then(res => {
-//         //         console.log(++j)
-//         //     })
-//     }
-
-//     let m = await getModel('blog_post').insertMany(data)
-
-//     return m;
-
-//     return { data };
-
-
-//     // return m;
-// }
-
-// async function getComment() {
-//     let { data } = await mysql.find('comment', 10000);
-
-//     let { data: posts } = await getModel('blog_post').findMany();
-//     let { data: users } = await getModel('blog_user').findMany();
-
-//     for (let i in data) {
-//         let p = posts[Math.round(Math.random() * (posts.length - 1))]._id;
-//         let u = users[Math.round(Math.random() * (users.length - 1))]._id;
-
-//         data[i].post = p;
-//         data[i].user = u;
-
-//     }
-
-
-//     let m = await getModel('blog_comment').insertMany(data)
-
-//     return m;
-// }
-
-
-// function init(app, server) {
-//     app.get('/mysql', async (req, res) => {
-//         // let author = await getAuthor();
-//         // let user = await getUser();
-//         // let result = await getCategory();
-//         // let result = await getTag();
-//         // let post = await getPost();
-//         // let comment = await getComment();
-//         // res.json(comment);
-//     })
-
-// }
-
-
-
-// Hook.add_action('before-router', init)
-
 
 let loadJsSite = async (url) => {
     const instance = await phantom.create();
@@ -272,7 +131,7 @@ let getCateogry = async () => {
                 position: parseInt(item.position),
                 status: parseInt(item.status),
                 title: item.title,
-                slug: ChangeToSlug(item.title + `-id${item.id}`)
+                slug: ChangeToSlug(item.title + `-id${item.url.replace(/[^0-9]/g, '')}`)
             })
 
             if (error) {
@@ -344,7 +203,7 @@ let sleep = async (time) => {
     })
 }
 
-let insertProduct = async (id) => {
+let insertProduct = async (id, catID) => {
 
     let item = await rp({
         uri: `https://tiki.vn/api/v2/products/${id}?include=tag,images,gallery,promotions,badges,stock_item,variants,product_links,discount_tag,ranks,breadcrumbs,top_features,cta_desktop`,
@@ -354,7 +213,7 @@ let insertProduct = async (id) => {
                 return JSON.parse(body)
             } catch (err) {
                 console.log('insertProduct error', id)
-                insertProduct(id);
+                insertProduct(id, catID);
                 return false;
             }
         },
@@ -367,7 +226,7 @@ let insertProduct = async (id) => {
             badges_new: item.badges_new || undefined,
             brand: null,
             brand_name: item.brand_name,
-            categories: item.categories.id,
+            categories: catID,
             option_color: item.option_color || undefined,
             configurable_options: item.configurable_options,
             configurable_products: item?.configurable_products?.map(e => ({
@@ -439,7 +298,7 @@ let getProductFromCategory = async (catID, page = 1, skip = 0) => {
 
             for (let i in data) {
                 let e = data[i]
-                insertProduct(e.id)
+                insertProduct(e.id, catID)
                 await sleep(200);
             }
             sleep(200);
@@ -462,7 +321,7 @@ add_router_group('raw', () => {
 
 
     add_router('product', async (req, res) => {
-        // getProductFromCategory(1789);
+        getProductFromCategory(1789);
         // getProductFromCategory(4221);
         // getProductFromCategory(1815, 25);
         // getProductFromCategory(1846);
@@ -472,10 +331,10 @@ add_router_group('raw', () => {
         // getProductFromCategory(8322, 3);
 
         // for(let i of ['1882', '1883', '4384', '2549', '1520', '1975', '8594', '17166', '8322', '11312']){
-        for (let i of [ '11312']) {
-            console.log('cat: ', i)
-            await getProductFromCategory(i)
-        }
+        // for (let i of [ '11312']) {
+        //     console.log('cat: ', i)
+        //     await getProductFromCategory(i)
+        // }
 
         res.json({ success: true })
     })
