@@ -410,10 +410,13 @@ let insertProduct = async (id) => {
 let getProductFromCategory = async (catID, page = 1, skip = 0) => {
     if (skip) {
         page = Math.round(skip / 300)
+        
     }
 
+    if(page > 33) return;
+
     if (catID) {
-        console.log('getProductFromCategory page,',page)
+        console.log('getProductFromCategory page,', page)
 
         let jsonObject = await rp({
             uri: `https://tiki.vn/api/v2/products?limit=300&category=${catID}&page=${page}`,
@@ -441,7 +444,7 @@ let getProductFromCategory = async (catID, page = 1, skip = 0) => {
             }
             sleep(200);
             if (paging.current_page < paging.last_page) {
-                getProductFromCategory(catID, paging.current_page + 1)
+                await getProductFromCategory(catID, paging.current_page + 1)
             }
         }
 
@@ -461,8 +464,19 @@ add_router_group('raw', () => {
     add_router('product', async (req, res) => {
         // getProductFromCategory(1789);
         // getProductFromCategory(4221);
-        getProductFromCategory(1815);
-        
+        // getProductFromCategory(1815, 25);
+        // getProductFromCategory(1846);
+        // getProductFromCategory(1801);
+        // getProductFromCategory(1975, 3);
+        // getProductFromCategory(17166, 3);
+        // getProductFromCategory(8322, 3);
+
+        // for(let i of ['1882', '1883', '4384', '2549', '1520', '1975', '8594', '17166', '8322', '11312']){
+        for (let i of [ '11312']) {
+            console.log('cat: ', i)
+            await getProductFromCategory(i)
+        }
+
         res.json({ success: true })
     })
     add_router('demo', async (req, res) => {

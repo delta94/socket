@@ -22,9 +22,10 @@ class Product extends ModelClass {
             brand: {
                 relation: TableName.Brand
             },
-            categories: {
-                relation: TableName.Category
-            },
+            // categories: {
+            //     relation: TableName.Category
+            // },
+            categories: Number,
             current_seller: {
                 relation: TableName.Seller
             },

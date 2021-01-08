@@ -208,7 +208,7 @@ export default abstract class ModelAbstract {
             return { data }
         }
 
-        return { next: true }
+        return { next: true, page, limit, match }
     }
 
 
