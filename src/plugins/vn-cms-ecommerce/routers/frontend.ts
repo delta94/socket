@@ -25,9 +25,6 @@ add_router('/product', async (req, res) => {
         query.match = queryField
     }
 
-
-
-
     console.log(query)
 
     let products = await getModel(TableName.Product).findMany(query);
