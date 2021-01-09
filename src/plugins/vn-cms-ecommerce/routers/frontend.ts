@@ -32,6 +32,13 @@ add_router('/product', async (req, res) => {
 })
 
 
+add_router('/product/:id', async (req, res) => {
+    let { id } = req.params;
+    let { data } = await getModel(TableName.Product).findOne({ match: { id: parseInt(id) } })
+    res.json(data);
+})
+
+
 add_router('/categories', async (req, res) => {
     let { data } = await getModel(TableName.Category).findMany({ limit: 100 });
     res.json(data)

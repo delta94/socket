@@ -330,8 +330,9 @@ add_router_group('raw', () => {
         // getProductFromCategory(17166, 3);
         // getProductFromCategory(8322, 3);
 
-        let { data: categories } = await getModel(TableName.Category).findMany();
-        for (let i in categories) {
+        let { data: categories }: any = await getModel(TableName.Category).findMany();
+        for (let i = 0; i < 7; i++) {
+            console.log('cat: ', categories[i].id)
             await getProductFromCategory(categories[i].id)
         }
 
