@@ -98,7 +98,7 @@ export interface ModelInterface {
 
     insertMany(options: []): Promise<insertManyResponse>
 
-    insertOrUpdate(options: {} | []): Promise<intertOrUpdateResponse>
+    insertOrUpdate(options: {} | [], match: any): Promise<intertOrUpdateResponse>
 
 
     // update(): {error?: {}, updateCount: number, result: []}
@@ -216,6 +216,8 @@ export default abstract class ModelAbstract {
             return { data }
         }
 
+        // if (!match) match = {}
+
         return { next: true, page, limit, match, sort }
     }
 
@@ -263,7 +265,7 @@ export default abstract class ModelAbstract {
         return { data }
     }
 
-    abstract insertOrUpdate(options: {} | []): Promise<intertOrUpdateResponse>
+    abstract insertOrUpdate(options: {} | [], match: any): Promise<intertOrUpdateResponse>
 
 
 
@@ -279,14 +281,14 @@ export default abstract class ModelAbstract {
     abstract count(options: { match?: {} }): Promise<number>
 
 
-    public getQueryFilter(query: any) : any {
+    public getQueryFilter(query: any): any {
         let obj = {};
-        for(let i in query){
-            if(i in this._fields){
-                if(['number','Number'].includes(this._fields[i]?.function?.name || '')){
+        for (let i in query) {
+            if (i in this._fields) {
+                if (['number', 'Number'].includes(this._fields[i]?.function?.name || '')) {
                     obj[i] = parseInt(query[i])
 
-                }else{
+                } else {
                     obj[i] = query[i]
                 }
             }

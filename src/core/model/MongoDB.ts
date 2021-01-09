@@ -92,7 +92,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
     }
 
 
-    async findMany(options: findOptions = { limit: 15, page: 10, sort : { _id: -1 } }): Promise<findResponse> {
+    async findMany(options: findOptions = { limit: 15, page: 1, sort: { _id: -1 } }): Promise<findResponse> {
 
         let { page = 1, limit = 15, match, data, sort } = await super._findMany(options)
         if (data) return { data }
@@ -102,7 +102,8 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
 
         let [res1, countDocument] = await Promise.all<any>([
             new Promise((resolve, reject) => {
-                match = this._generateFind(match);
+                // match = this._generateFind(match);
+                console.log(match)
 
                 this.collection.find(match).skip(startIndex).limit(limit).sort(sort).toArray(function (error: any, data: any) {
                     if (error) resolve({ error });
@@ -203,66 +204,99 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         })
     }
 
-    async insertOrUpdate(data: any): Promise<intertOrUpdateResponse> {
+    async insertOrUpdate(insertData: any, match: any): Promise<intertOrUpdateResponse> {
+        if (insertData._id) delete insertData._id;
+
+        // let [data, error] = await _prepareDataField(insertData, this._fields);
+
+        // if (error) {
+        //     return { error, insertCount: 0 };
+        // }
+        let { error, data } = await this._checkValidateOne(insertData);
+        if (error) {
+            return { error, insertCount: 0 };
+        }
+
+        if (match._id) match._id = new ObjectID(match._id)
+
+
         return new Promise(async (resolve, reject) => {
 
 
-            let f: { _id?: any } = this._generateFind(data);
-            let update = Object.keys(f).length > 0;
+            // let f: { _id?: any } = this._generateFind(data);
+            // let update = Object.keys(f).length > 0;
 
-            let [res, error] = await _prepareDataField(data, this._fields, update);
+            // let [res, error] = await _prepareDataField(data, this._fields, update);
 
             if (error) {
                 resolve({ error, insertCount: 0 });
             } else {
 
 
-                if (f._id) {
-                    delete res._id;
-                    delete res.created_at;
+                this.collection.findOneAndUpdate(match, [{ $set: data }], { new: true, returnOriginal: false }, (error: any, res: any) => {
+                    if (error) {
 
-                    this.collection.findOneAndUpdate(f, [{ $set: res }], { new: true, returnOriginal: false }, (error: any, res: any) => {
-                        if (error) {
-
-                            if (typeof error.keyValue === 'object') {
-                                let [key, value] = objectIndex(error.keyValue, 0);
-                                resolve({
-                                    error: {
-                                        [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                                    },
-                                    insertCount: 0
-                                });
-                            } else {
-                                resolve({ error, insertCount: 0 });
-                            }
-
+                        if (typeof error.keyValue === 'object') {
+                            let [key, value] = objectIndex(error.keyValue, 0);
+                            resolve({
+                                error: {
+                                    [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
+                                },
+                                insertCount: 0
+                            });
+                        } else {
+                            resolve({ error, insertCount: 0 });
                         }
-                        else resolve({ data: res.value, insertCount: 1 });
-                    });
+
+                    }
+                    else resolve({ data: res.value, insertCount: 1 });
+                });
 
 
-                } else {
-                    this.collection.insertOne(res, (error: any, res: any) => {
-                        // console.log(error, res)
-                        if (error) {
-                            if (typeof error.keyValue === 'object') {
+                // if (match._id) {
 
-                                let [key, value] = objectIndex(error.keyValue, 0);
-                                resolve({
-                                    error: {
-                                        [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
-                                    },
-                                    insertCount: 0
-                                });
-                            } else {
-                                resolve({ error, insertCount: 0 });
-                            }
+                //     this.collection.findOneAndUpdate(match, [{ $set: data }], { new: true, returnOriginal: false }, (error: any, res: any) => {
+                //         if (error) {
+
+                //             if (typeof error.keyValue === 'object') {
+                //                 let [key, value] = objectIndex(error.keyValue, 0);
+                //                 resolve({
+                //                     error: {
+                //                         [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
+                //                     },
+                //                     insertCount: 0
+                //                 });
+                //             } else {
+                //                 resolve({ error, insertCount: 0 });
+                //             }
+
+                //         }
+                //         else resolve({ data: res.value, insertCount: 1 });
+                //     });
 
 
-                        }
-                        else resolve({ data: res.ops[0], insertCount: 1 });
-                    });
-                }
+                // } else {
+                //     this.collection.insertOne(res, (error: any, res: any) => {
+                //         // console.log(error, res)
+                //         if (error) {
+                //             if (typeof error.keyValue === 'object') {
+
+                //                 let [key, value] = objectIndex(error.keyValue, 0);
+                //                 resolve({
+                //                     error: {
+                //                         [key]: this._fields[key].validate.unique || `This field "${key}" has exists, please use another value!`
+                //                     },
+                //                     insertCount: 0
+                //                 });
+                //             } else {
+                //                 resolve({ error, insertCount: 0 });
+                //             }
+
+
+                //         }
+                //         else resolve({ data: res.ops[0], insertCount: 1 });
+                //     });
+                // }
 
             }
 

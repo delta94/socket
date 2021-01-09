@@ -3,5 +3,6 @@
 /temp/
 /build/
 /dist/
+/storage/
 package-lock.json
 yarn.lock.log

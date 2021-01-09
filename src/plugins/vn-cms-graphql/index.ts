@@ -147,11 +147,11 @@ function generateMutation() {
                     description: `Add 1 ${capFirstChild(i)}`,
                     args,
                     resolve: async (parent, args) => {
-                        let { data, error } = await getModel(i).insertOrUpdate(args);
-                        if (error) {
-                            throw new GraphQLError(JSON.stringify(error));
-                        }
-                        return data;
+                        // let { data, error } = await getModel(i).insertOrUpdate(args);
+                        // if (error) {
+                        //     throw new GraphQLError(JSON.stringify(error));
+                        // }
+                        // return data;
                     }
                 }
 

@@ -219,12 +219,12 @@ let insertProduct = async (id, catID) => {
         },
     })
     if (item) {
-        let { error, data } = await getModel(TableName.Product).insertOne({
+        let { error, data } = await getModel(TableName.Product).insertOrUpdate({
             id: item.id,
             sku: item.sku,
             badges: item.badges,
             badges_new: item.badges_new || undefined,
-            brand: null,
+            brand: item.brand?.id || null,
             brand_name: item.brand_name,
             categories: catID,
             option_color: item.option_color || undefined,
@@ -252,7 +252,7 @@ let insertProduct = async (id, catID) => {
             top_features: item.top_features,
             type: item.type,
             slug: item.url_key
-        });
+        }, { id: item.id });
 
         if (error) {
             console.log('insertProductCount error', error, item.id)
@@ -269,10 +269,10 @@ let insertProduct = async (id, catID) => {
 let getProductFromCategory = async (catID, page = 1, skip = 0) => {
     if (skip) {
         page = Math.round(skip / 300)
-        
+
     }
 
-    if(page > 33) return;
+    if (page > 33) return;
 
     if (catID) {
         console.log('getProductFromCategory page,', page)
@@ -321,7 +321,7 @@ add_router_group('raw', () => {
 
 
     add_router('product', async (req, res) => {
-        getProductFromCategory(1789);
+        // getProductFromCategory(1789);
         // getProductFromCategory(4221);
         // getProductFromCategory(1815, 25);
         // getProductFromCategory(1846);
@@ -330,8 +330,12 @@ add_router_group('raw', () => {
         // getProductFromCategory(17166, 3);
         // getProductFromCategory(8322, 3);
 
-        // for(let i of ['1882', '1883', '4384', '2549', '1520', '1975', '8594', '17166', '8322', '11312']){
-        // for (let i of [ '11312']) {
+        let { data: categories } = await getModel(TableName.Category).findMany();
+        for (let i in categories) {
+            await getProductFromCategory(categories[i].id)
+        }
+
+        // for (let i of ['1882', '1883', '4384', '2549', '1520', '1975', '8594', '17166', '8322', '11312']) {
         //     console.log('cat: ', i)
         //     await getProductFromCategory(i)
         // }
