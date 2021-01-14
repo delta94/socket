@@ -58,6 +58,7 @@ class Hook {
 
 let hook = new Hook;
 
+
 export default hook;
 
 // export function add_router(name: string, callback: Function) {

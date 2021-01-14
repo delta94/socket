@@ -8,6 +8,7 @@ import { getAllModel, getModel } from "../../core/Model";
 import { authenticateToken } from "../../core/Authentication";
 import fetch from 'node-fetch'
 import App from "app";
+import { ROUTER } from "hooks/type";
 
 const type = {
     STATUS_SUCCESS: 200,
@@ -776,3 +777,7 @@ function generateRouter(model, app) {
 
 
 init(App)
+
+// Hook.add_action(ROUTER.ADD, (name) => {
+//     console.log('add_router', name)
+// })

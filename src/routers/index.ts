@@ -17,9 +17,36 @@ add_router('/login', async (req, res) => {
 
     let { username, password } = req.body
 
-    let { data } = await getModel('user').findOne({ match: { username, password } });
+    let { data } = await getModel('user').findOne({ match: { email: username, password } });
 
-    if (!data) {
+    if (data) {
+        return res.json(data)
+    }
+
+    return res.json({ error: 'Username hoặc passowrd không đúng' });
+})
+
+
+add_router('/register', async (req, res) => {
+
+    let { body } = req;
+    let { error, data } = await getModel('user').insertOne(body)
+
+    if (data) {
+        return res.json(data)
+    }
+
+    return res.json(error)
+})
+
+
+add_router('/update-profile', async (req, res) => {
+
+    let { username } = req.body
+
+    let { data } = await getModel('user').findOne({ match: req.body });
+
+    if (data) {
         return res.json(data)
     }
 

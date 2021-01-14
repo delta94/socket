@@ -5,9 +5,9 @@ export default {
     "refresh_token_secret": "8f4b750864818222520c4ba2842bf178d6383d434565cef5191f515bb67143f3f60fd333aaff7913946926777722cf2892750dbcbad25b563c299700eb8c2ea5",
     "token_expired": "1m",
     "plugin": [
+        "vn-cms-rest-api",
         "vn-cms-admin",
         "vn-cms-graphql",
-        "vn-cms-rest-api",
         "vn-cms-elearning",
         "vn-cms-ecommerce",
         "vn-cms-blog",

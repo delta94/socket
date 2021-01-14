@@ -8,5 +8,6 @@ export enum TableName {
     Taxonomy = 'ecommerce_taxonomy',
     Attribute = 'ecommerce_attribute',
     SearchLabel = 'ecommerce_search_label',
-    Customer = 'ecommerce_customer'
+    Customer = 'ecommerce_customer',
+    Promotion = 'ecommerce_promotion'
 }

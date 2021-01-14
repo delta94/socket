@@ -41,7 +41,17 @@ class User extends Model {
             password: String,
             type: {
                 enum: ['github', 'gmail', 'facebook', 'normal']
-            }
+            },
+            gender: {
+                enum: ['male', 'female']
+            },
+            birthday: {
+                type: Date
+            },
+            confirm: {
+                type: Boolean,
+                default: false
+            },
             // password: {
             //     Type: TYPE.Hash
             // },

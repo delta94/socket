@@ -1,6 +1,8 @@
 import App from "app";
+import Hook from "core/Hook";
 // import { HookApp } from "core/Hook";
 import { RequestHandler } from "express";
+import { ROUTER } from "./type";
 
 let group_url = '/';
 let group_handle: any = []
@@ -14,10 +16,20 @@ export async function add_router_group(group: string, ...handle: RequestHandler[
     group_handle = []
 }
 
-
-export function add_router(name: string, ...handle: RequestHandler[]) {
+export function add_router(name: string, ...handle: (RequestHandler | any)[]) {
 
     name = name.replace(/\//, '');
+
+    let last = handle[handle.length - 1];
+
+
+    if (typeof last === 'object') {
+        handle.pop();
+    }
+
+
     App.all(group_url + name, ...group_handle, ...handle)
+
+    Hook.do_action(ROUTER.ADD, [name])
     // HookApp(app)
 }
