@@ -52,3 +52,4 @@ add_router('/update-profile', async (req, res) => {
 
     return res.json({ error: 'Username hoặc passowrd không đúng' });
 })
+

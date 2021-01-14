@@ -58,3 +58,24 @@ add_router('order', async (req, res) => {
 
     res.json(result)
 })
+
+
+add_router('/order', async (req, res) => {
+
+})
+
+add_router('/profile/notification', async (req, res) => {
+
+})
+
+add_router('/profile/order', async (req, res) => {
+
+})
+
+add_router('/profile/wishlist', async (req, res) => {
+
+})
+
+// Phân trang, 
+// Chuẩn bị tài liệu cho react-router-dom
+// Chuẩn bị tài liệu cho nodejs lớp online
