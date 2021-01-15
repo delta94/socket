@@ -5,7 +5,7 @@ import swaggerUi from 'swagger-ui-express'
 import restConfig from './config';
 import { capitalizeFirstLetter } from "../../core/helper/helper";
 import { getAllModel, getModel } from "../../core/Model";
-import { authenticateToken } from "../../core/Authentication";
+import { JWTMiddleware } from "../../core/Authentication";
 import fetch from 'node-fetch'
 import App from "app";
 import { ROUTER } from "hooks/type";
@@ -695,7 +695,7 @@ function generateApiDocs(model) {
 
 function generateRouter(model, app) {
     let Model = getModel(model.name);
-    app.get(prefix + '/' + model.name + '/:id?', authenticateToken, async (req, res) => {
+    app.get(prefix + '/' + model.name + '/:id?', JWTMiddleware, async (req, res) => {
         let { id } = req.params;
 
         if (id) {
@@ -735,7 +735,7 @@ function generateRouter(model, app) {
 
     })
 
-    app.post(prefix + '/' + model.name, authenticateToken, async (req, res) => {
+    app.post(prefix + '/' + model.name, JWTMiddleware, async (req, res) => {
 
         let { data, error, insertCount } = await Model.insertOne(req.body);
         if (error) {
@@ -746,7 +746,7 @@ function generateRouter(model, app) {
 
     })
 
-    app.put(prefix + '/' + model.name + '/:id', authenticateToken, async (req, res) => {
+    app.put(prefix + '/' + model.name + '/:id', JWTMiddleware, async (req, res) => {
 
         let { data, error } = await Model.updateOne({ id: req.params.id }, req.body);
         if (error) {
@@ -757,7 +757,7 @@ function generateRouter(model, app) {
 
     })
 
-    app.delete(prefix + '/' + model.name + '/:id', authenticateToken, async (req, res) => {
+    app.delete(prefix + '/' + model.name + '/:id', JWTMiddleware, async (req, res) => {
         let { data, error, deleteCount } = await Model.deleteOne({ id: req.params.id });
         if (error) {
             return res.status(type.STATUS_BAD_REQUEST).json({ error });

@@ -5,7 +5,7 @@ import path from 'path';
 import dotenv from 'dotenv';
 import cors from 'cors'
 
-import Authentication, { authenticateToken } from 'core/Authentication';
+import Authentication, { JWTMiddleware } from 'core/Authentication';
 import Hook from 'core/Hook';
 import autoload from 'core/autoload';
 
@@ -57,7 +57,7 @@ app.use(express.static(__dirname + '/public'));
 
 Authentication(app);
 
-app.get('/posts', authenticateToken, (req: any, res) => {
+app.get('/posts', JWTMiddleware, (req: any, res) => {
     res.json({ post: req.user.name })
 })
 

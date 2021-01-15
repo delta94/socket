@@ -29,7 +29,7 @@ function cacheError(err: any, res: Response) {
 
 }
 
-export function authenticateToken(req: any, res: any, next: NextFunction) {
+export function JWTMiddleware(req: any, res: any, next: NextFunction) {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
 
@@ -63,7 +63,7 @@ export default (app: any) => {
         return res.json({ accessToken: accessToken })
     })
 
-    app.get('/api/get-user-info', authenticateToken, async (req: any, res: Response) => {
+    app.get('/api/get-user-info', JWTMiddleware, async (req: any, res: Response) => {
         let { user } = req;
 
         if (user) {

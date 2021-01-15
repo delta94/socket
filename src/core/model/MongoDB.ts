@@ -13,13 +13,13 @@ import { DoBeforeFind, DoBeforeFindOneModel } from 'hooks/modelhook';
 
 let MongoClient = mongodb.MongoClient;
 
-let _database: any,
+let _database: mongodb.Db,
     _collection = {};
 
 let _ = {
     await: [] as any,
     times: 0,
-    database: async function () {
+    database: async function (): Promise<mongodb.Db> {
         if (_database) return _database;
 
         this.times++;
@@ -60,7 +60,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         type: ObjectID
     }
 
-    private collection: any = null
+    private collection: mongodb.Collection | null = null
 
     constructor(name: string, fields: FieldsInput) {
         super(name, fields)
@@ -103,17 +103,40 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         let [res1, countDocument] = await Promise.all<any>([
             new Promise((resolve, reject) => {
                 // match = this._generateFind(match);
-                console.log(match)
 
-                this.collection.find(match).skip(startIndex).limit(limit).sort(sort).toArray(function (error: any, data: any) {
-                    if (error) resolve({ error });
+                let options: any = [
+                    {
+                        $sort: sort
+                    },
+                    {
+                        $skip: startIndex
+                    },
+                    {
+                        $limit: limit
+                    }
+                ]
+
+
+                if (match) options.unshift({
+                    $match: match
+                })
+                this.collection?.aggregate(options, { allowDiskUse: true }).toArray(function (error: any, data: any) {
+
+                    if (error) {
+                        console.log(error)
+                        resolve({ error })
+                    }
                     else resolve({ data });
                 });
+
+                // this.collection.find(match).skip(startIndex).limit(limit).sort(sort).toArray(function (error: any, data: any) {
+                //     if (error) resolve({ error });
+                //     else resolve({ data });
+                // });
             }),
-            this.collection.countDocuments(match)])
+            this.collection?.countDocuments(match)])
 
         let paginate = renderPaginate({ page, limit, countDocument });
-
 
         return { data: res1.data, paginate };
 
@@ -132,7 +155,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         if (data) return { data };
 
         return new Promise((resolve, reject) => {
-            this.collection.findOne(match, (error: any, data: any) => {
+            this.collection?.findOne(match, (error: any, data: any) => {
                 if (error) resolve({ error });
                 else {
                     Hook.do_action('findOne-after', [data]);
@@ -166,7 +189,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
             return { error, insertCount: 0 };
         }
         return new Promise((resolve, reject) => {
-            this.collection.insertOne(data, (error: any, res: any) => {
+            this.collection?.insertOne(data, (error: any, res: any) => {
 
                 if (error) {
                     if (typeof error.keyValue === 'object') {
@@ -193,7 +216,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
 
     async insertMany(data: []): Promise<insertManyResponse> {
         return new Promise((resolve, reject) => {
-            this.collection.insertMany(data, (error: any, data: any) => {
+            this.collection?.insertMany(data, (error: any, data: any) => {
                 if (error) {
                     resolve({ error, insertCount: 0 })
                 }
@@ -233,7 +256,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
             } else {
 
 
-                this.collection.findOneAndUpdate(match, [{ $set: data }], { new: true, returnOriginal: false }, (error: any, res: any) => {
+                this.collection?.findOneAndUpdate(match, [{ $set: data }], { upsert: true, returnOriginal: false }, (error: any, res: any) => {
                     if (error) {
 
                         if (typeof error.keyValue === 'object') {
@@ -317,7 +340,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
 
                 delete res._id;
                 delete res.created_at;
-                this.collection.findOneAndUpdate(find, { $set: res }, { returnOriginal: false }, (error: any, res: any) => {
+                this.collection?.findOneAndUpdate(find, { $set: res }, { returnOriginal: false }, (error: any, res: any) => {
 
 
                     if (error) {
@@ -365,7 +388,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
                 find._id = new ObjectId(find._id)
             }
 
-            this.collection.deleteOne(find, (error: any, obj: any) => {
+            this.collection?.deleteOne(find, (error: any, obj: any) => {
                 if (error) {
                     resolve({ error, deleteCount: 0 });
                 } else {
@@ -392,12 +415,17 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
 
     async _createIndex() {
 
-
         for (let i in this._fields) {
             if (i === '_id') continue;
             let indexObject: any = {}
             if (this._fields[i].index) {
-                indexObject[i] = 1;
+
+                if (typeof this._fields[i].index === 'string') {
+                    indexObject[`${i}.${this._fields[i].index}`] = 1;
+                } else {
+                    indexObject[i] = 1;
+                }
+
             }
 
             let unique;
@@ -407,10 +435,11 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
             }
 
             if (Object.keys(indexObject).length > 0 || unique) {
-                this.collection.createIndex(indexObject, unique);
+                this.collection?.createIndex(indexObject, unique);
             } else {
                 try {
-                    let a = await this.collection.dropIndex({ [i]: 1 });
+                    // let a = await this.collection?.dropIndex({ [i]: 1 });
+                    let a = await this.collection?.dropIndex(i);
                 } catch (err) {
 
                 }
@@ -478,7 +507,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
 
 
 // ANCHOR: export
-export async function getDatabase(name?: string) {
+export async function getDatabase(name?: string): Promise<mongodb.Db> {
     if (_database) return _database;
 
 

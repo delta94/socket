@@ -39,7 +39,7 @@ add_router('/product/:id', async (req, res) => {
 
 
 add_router('/categories', async (req, res) => {
-    let { data } = await getModel(TableName.Category).findMany({ limit: 100 });
+    let { data, error } = await getModel(TableName.Category).findMany({ limit: 100 });
     res.json(data)
 })
 

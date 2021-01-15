@@ -30,8 +30,13 @@ class Product extends ModelClass {
                 relation: TableName.Seller
             },
             description: String,
-            discount: Number,
-            discount_rate: Number,
+            discount: {
+                type: Number,
+            },
+            discount_rate: {
+                type: Number,
+                index: true
+            },
             // images: [],
             inventory_status: String,
             name: {
@@ -44,13 +49,18 @@ class Product extends ModelClass {
                 multi: true
             },
             price: Number,
-            real_price: Number,
+            real_price: {
+                type: Number,
+                index: true
+            },
             price_usd: Number,
             rating_average: Number,
             review_count: Number,
             short_description: String,
             // specifications: [],
-            stock_item: {},
+            stock_item: {
+                index: 'qty'
+            },
             thumbnail_url: String,
             // top_features: [],
             type: String,
@@ -65,7 +75,7 @@ class Product extends ModelClass {
             // stock: Boolean,
             // fresh: Number,
             // delivery_day: Number,
-            
+
             // image: [],
             // star: Number,
             // // price: {
@@ -76,12 +86,12 @@ class Product extends ModelClass {
             //     enum: ["usd", "vnđ"],
             //     default: "vnđ"
             // },
-            
+
             // reviews: [],
             // faq: [],
-            
-            
-            
+
+
+
             // taxonomies: {
             //     relation: TableName.Taxonomy,
             //     multi: true

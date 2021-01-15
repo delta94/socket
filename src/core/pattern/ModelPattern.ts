@@ -62,7 +62,7 @@ export interface Field {
     pattern?: any,
     enum?: any[],
     unique?: true,
-    index?: true
+    index?: (true | string)
 }
 
 interface PrivateField {
@@ -76,7 +76,7 @@ interface PrivateField {
     pattern?: any,
     enum?: any[],
     unique?: true,
-    index?: true,
+    index?: (true | string),
 
     resolve: FieldResolve,
     function?: Function
@@ -204,8 +204,12 @@ export default abstract class ModelAbstract {
     protected async _findMany(options?: findOptions | any): Promise<{ page?: number, limit?: number, match?: any, data?: any, next?: boolean, sort?: any }> {
         let { page, limit, match, sort } = options;
 
+        !sort && (sort = { [this.primaryKey.name]: -1 })
+
         !page && (page = 1)
         !limit && (limit = 15)
+
+        if (typeof page === 'string') page = parseInt(page)
 
         page <= 0 && (page = 1);
         const startIndex = (page - 1) * limit;
@@ -356,7 +360,19 @@ export default abstract class ModelAbstract {
                     resolve: EnumResolve
                 }
             } else {
+                let addObj: any = {}
+                if (field.index) {
+                    addObj.index = field.index;
+                    delete field.index;
+                }
+
+                if (field.unique) {
+                    addObj.unique = field.unique;
+                    delete field.unique;
+                }
+
                 this._fields[i] = {
+                    ...addObj,
                     type: EnumField.Struct,
                     resolve: StructResolve,
                     struct: field
