@@ -12,7 +12,7 @@ class Customer extends ModelClass {
             },
             avatar_url: String,
             full_name: String,
-            
+
             password: {
                 type: String,
                 default: '123456789'

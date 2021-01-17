@@ -16,6 +16,9 @@ con.connect((err) => {
     }
 })
 export default class MySQL extends ModelAbstract implements ModelInterface {
+    deleteById(string: any): Promise<any> {
+        throw new Error('Method not implemented.');
+    }
     findMany(options: findOptions): Promise<findResponse> {
         throw new Error('Method not implemented.');
     }

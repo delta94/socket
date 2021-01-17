@@ -2,7 +2,7 @@
 // import Room from '../../Model/Room.js';
 // import User from '../../Model/User.js';
 
-import { Server } from "app";
+import { Server } from "app/";
 import { add_router, add_router_group } from "hooks/routerhook";
 import path from 'path';
 import fs from 'fs'

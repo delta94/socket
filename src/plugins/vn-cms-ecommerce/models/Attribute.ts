@@ -1,5 +1,5 @@
 import ModelClass from "core/Model";
-import { TableName } from '../index';
+import { TableName } from '..';
 
 class Attribute extends ModelClass {
     constructor() {

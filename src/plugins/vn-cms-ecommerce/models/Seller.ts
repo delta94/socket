@@ -2,8 +2,8 @@ import ModelClass from "core/Model";
 import { TableName } from "..";
 
 
-class Seller extends ModelClass{
-    constructor(){
+class Seller extends ModelClass {
+    constructor() {
         super(TableName.Seller, {
             id: {
                 type: Number,
@@ -31,7 +31,7 @@ class Seller extends ModelClass{
                 type: String,
                 default: '123456789'
             }
-        } )
+        })
     }
 }
 

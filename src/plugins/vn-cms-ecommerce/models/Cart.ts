@@ -2,8 +2,8 @@ import ModelClass from "core/Model";
 import { TableName } from "..";
 
 
-class Cart extends ModelClass{
-    constructor(){
+class Cart extends ModelClass {
+    constructor() {
         super(TableName.Cart, {
             user: {
                 required: true,
@@ -23,7 +23,7 @@ class Cart extends ModelClass{
             subtotal: Number,
             tax: Number,
             shipping: Number
-        } )
+        })
     }
 }
 

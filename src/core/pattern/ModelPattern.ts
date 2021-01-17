@@ -98,7 +98,7 @@ export interface ModelInterface {
 
     insertMany(options: []): Promise<insertManyResponse>
 
-    insertOrUpdate(options: {} | [], match: any): Promise<intertOrUpdateResponse>
+    insertOrUpdate(options: { [key in string]: any }, match?: { [key in string]: any }): Promise<intertOrUpdateResponse>
 
 
     // update(): {error?: {}, updateCount: number, result: []}
@@ -112,6 +112,8 @@ export interface ModelInterface {
     deleteOne(query: {}): Promise<deleteOneResponse>
 
     deleteMany(query: []): Promise<deleteManyResponse>
+
+    deleteById(string): Promise<any>
 
     count(options: { match?: {} }): Promise<number>
 
@@ -226,7 +228,7 @@ export default abstract class ModelAbstract {
     }
 
 
-    protected async _checkValidateOne(data: any): Promise<{ error?: any, data?: any }> {
+    protected async _checkValidateOne(data: any, update = false): Promise<{ error?: any, data?: any }> {
 
         let rules = {}
         let message = {}
@@ -246,6 +248,9 @@ export default abstract class ModelAbstract {
             }
 
             let { error, value } = field.resolve(data[i])
+            if (update && !value) {
+                continue
+            }
             if (error) {
                 errors[i] = error;
             } else {
@@ -394,7 +399,8 @@ enum EnumField {
 
 let FunctionResolve: FieldResolve = function (this: any, data) {
 
-    let value = undefined;
+    let value = null;
+    if (!data) return { value: null }
     try {
         value = this.function(data);
     } catch (err) {
@@ -405,12 +411,14 @@ let FunctionResolve: FieldResolve = function (this: any, data) {
 
 let EnumResolve: FieldResolve = function (this: any, data) {
     if (!data && this.default) data = this.default;
-    if (this.enum.include(data)) return { value: data };
+    if (!data) return { value: null };
+
+    if (this.enum.includes(data)) return { value: data };
     return { error: this?.validate?.default || `field required include [${this.enum.join()}]` }
 }
 
 let StructResolve: FieldResolve = function (this: any, data) {
-    if (typeof data !== 'object') return { error: 'Field required is object' };
+    if (typeof data !== 'object') return { value: null };
     for (let i in this.struct) {
         if (typeof this.struct === 'function') {
             data[i] = this.struct(data[i])
@@ -453,7 +461,7 @@ let ArrayResolve: FieldResolve = function (this: any, data) {
         }
     })
 
-    data = data.filter(e => e !== undefined);
+    data = data.filter(e => e !== null);
 
     return { value: data };
 

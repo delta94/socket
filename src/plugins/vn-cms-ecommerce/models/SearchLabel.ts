@@ -2,8 +2,8 @@ import ModelClass from "core/Model";
 import { TableName } from "..";
 
 
-class SearchLabel extends ModelClass{
-    constructor(){
+class SearchLabel extends ModelClass {
+    constructor() {
         super(TableName.SearchLabel, {
             name: {
                 type: String,
@@ -18,7 +18,7 @@ class SearchLabel extends ModelClass{
                 multi: true
             },
             order: Number
-        } )
+        })
     }
 }
 

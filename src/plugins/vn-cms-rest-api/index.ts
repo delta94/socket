@@ -7,7 +7,7 @@ import { capitalizeFirstLetter } from "../../core/helper/helper";
 import { getAllModel, getModel } from "../../core/Model";
 import { JWTMiddleware } from "../../core/Authentication";
 import fetch from 'node-fetch'
-import App from "app";
+import App from "app/";
 import { ROUTER } from "hooks/type";
 
 const type = {
@@ -695,6 +695,8 @@ function generateApiDocs(model) {
 
 function generateRouter(model, app) {
     let Model = getModel(model.name);
+
+
     app.get(prefix + '/' + model.name + '/:id?', JWTMiddleware, async (req, res) => {
         let { id } = req.params;
 

@@ -117,11 +117,11 @@ export default (app: any) => {
         })
     })
 
-    app.delete('/logout', async (req: Request, res: Response) => {
-        let { data, error } = await Token.findOne({ match: { refreshToken: req.body.refreshToken } });
+    // app.delete('/logout', async (req: Request, res: Response) => {
+    //     let { data, error } = await Token.findOne({ match: { refreshToken: req.body.refreshToken } });
 
-        res.sendStatus(204)
-    })
+    //     res.sendStatus(204)
+    // })
 
     app.post('/api/login', async (req: Request, res: Response) => {
         let { email, password, accessToken: reqAccessToken } = req.body;

@@ -1,4 +1,4 @@
-declare module '*';
+// declare module '*';
 
 declare module "*.json" {
     const value: any;

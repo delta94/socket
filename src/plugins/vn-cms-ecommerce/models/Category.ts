@@ -2,8 +2,8 @@ import ModelClass from "core/Model";
 import { TableName } from "..";
 
 
-class Category extends ModelClass{
-    constructor(){
+class Category extends ModelClass {
+    constructor() {
         super(TableName.Category, {
             id: {
                 type: Number,
@@ -23,7 +23,7 @@ class Category extends ModelClass{
             parent: {
                 relation: TableName.Category
             }
-        } )
+        })
     }
 }
 

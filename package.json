@@ -8,9 +8,9 @@
   },
   "scripts": {
     "test": "jest --coverage",
-    "start": "nodemon --exec ts-node -r tsconfig-paths/register app.ts",
-    "start2": "ts-node --respawn app.ts",
-    "dev": "nodemon --exec ts-node -r tsconfig-paths/register  app.ts",
+    "start": "nodemon --exec ts-node -r tsconfig-paths/register server.ts",
+    "start2": "ts-node --respawn server.ts",
+    "dev": "nodemon --exec ts-node -r tsconfig-paths/register  server.ts",
     "build": "jest --coverage",
     "clean": "del dist",
     "copy-files": "copy ./src/views/ ./dist/"
@@ -39,6 +39,7 @@
     "graphql-type-json": "^0.3.2",
     "jsdom": "^16.4.0",
     "jsonwebtoken": "^8.5.1",
+    "md5": "^2.3.0",
     "mongodb": "^3.6.2",
     "mysql": "^2.18.1",
     "node-fetch": "^2.6.1",

@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import mongodb, { ObjectID, ObjectId } from 'mongodb';
-import { _prepareDataField, renderPaginate } from '../helper/model';
+import { renderPaginate } from '../helper/model';
 import util from 'util'
 import Hook from '../Hook';
 import { objectIndex } from '../helper/helper';
@@ -167,6 +167,8 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         })
     }
 
+
+
     setCache(object: { _id?: ObjectId }) {
         if (object?._id) {
             let name = object._id?.toHexString()
@@ -227,7 +229,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         })
     }
 
-    async insertOrUpdate(insertData: any, match: any): Promise<intertOrUpdateResponse> {
+    async insertOrUpdate(insertData: { [key in string]: any }, match?: any | { [key in string]: any }): Promise<intertOrUpdateResponse> {
         if (insertData._id) delete insertData._id;
 
         // let [data, error] = await _prepareDataField(insertData, this._fields);
@@ -240,7 +242,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
             return { error, insertCount: 0 };
         }
 
-        if (match._id) match._id = new ObjectID(match._id)
+        if (match?._id) match._id = new ObjectID(match._id)
 
 
         return new Promise(async (resolve, reject) => {
@@ -326,13 +328,12 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         })
     }
 
-    async updateOne(find = {}, data: {}): Promise<updateOneResponse> {
+    async updateOne(find: any, dataInsert: any): Promise<updateOneResponse> {
         return new Promise(async (resolve, reject) => {
 
             find = this._generateFind(find)
 
-            let [res, error] = await _prepareDataField(data, this._fields, true);
-
+            let { error, data: res } = await this._checkValidateOne(dataInsert, true);
             if (error) {
                 resolve({ error, updateCount: 0 });
             } else {
@@ -404,6 +405,10 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         return new Promise((resolve, reject) => {
             resolve({ error: {}, deleteCount: 0 })
         })
+    }
+
+    deleteById(id: string): Promise<deleteOneResponse> {
+        return this.deleteOne({ _id: new ObjectID(id) })
     }
 
 
@@ -499,7 +504,6 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         if (ObjectIDValid(find)) {
             find = { _id: new ObjectId(find) }
         }
-        // console.log(find)
         return find;
     }
 }
