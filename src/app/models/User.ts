@@ -68,6 +68,8 @@ class User extends Model {
     public async login(findObject: { email: string, password: string }): Promise<{ data?: any, error?: any }> {
         let { email, password } = findObject;
 
+        email = email.toLowerCase();
+
         password = md5(password)
         let { data, error } = await this.findOne({ match: { email, password } })
 
@@ -86,6 +88,8 @@ class User extends Model {
 
     public async register(dataObj: any): Promise<{ data?: any, error?: any }> {
         let { email, password } = dataObj;
+
+        email = email.toLowerCase();
 
         dataObj.password = md5(password)
 
