@@ -239,6 +239,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
     }
 
     async insertOrUpdate(insertData: { [key in string]: any }, match?: any | { [key in string]: any }): Promise<intertOrUpdateResponse> {
+        !match && (match = {})
         if (insertData._id) delete insertData._id;
 
         // let [data, error] = await _prepareDataField(insertData, this._fields);

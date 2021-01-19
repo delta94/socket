@@ -1,6 +1,7 @@
-import { getModel } from "core/model/MongoDB";
+import MongoDB, { getModel } from "core/model/MongoDB";
 import { add_router } from "hooks/routerhook";
-import { TableName } from "..";
+import { ObjectID } from "mongodb";
+import { Cart, TableName } from "..";
 
 add_router('/product', async (req, res) => {
     let { page, limit, sort }: any = req.query;
@@ -53,16 +54,48 @@ add_router('/home/product', async (req, res) => {
 })
 
 add_router('order', async (req, res) => {
-    return res.json({ success: true })
-    let result = await getModel(TableName.Cart).insertOne(req.body);
+    let { _id } = req.body
+    let match;
+    if (_id) {
+        match = { _id }
+    }
+    let result = await Cart.insertOrUpdate(req.body, match)
 
-    res.json(result)
+    return res.json(result)
+})
+
+add_router('cart', async (req, res) => {
+    let { _id, user } = req.body
+    let match = {};
+    if (_id) {
+        match = { _id }
+    }
+
+    user = new ObjectID(user)
+    let result = await Cart.insertOrUpdate({
+        ...req.body,
+        user,
+        status: 'cart'
+    }, match)
+
+    return res.json(result)
+})
+
+add_router('update-cart', async (req, res) => {
+    let { _id } = req.body
+    let match = {};
+    if (_id) {
+        match = { _id }
+    }
+    let result = await Cart.insertOrUpdate(req.body, match)
+
+    return res.json(result)
 })
 
 
-add_router('/order', async (req, res) => {
+// add_router('/save-order', async (req, res) => {
 
-})
+// })
 
 add_router('/profile/notification', async (req, res) => {
 

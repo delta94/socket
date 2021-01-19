@@ -3,6 +3,7 @@ import { getModel } from "core/model/MongoDB";
 import { add_router } from "hooks/routerhook";
 import { User, Ecommerce, Token } from "app/";
 import { JWTMiddleware } from "app/models/Token";
+import { Cart } from "plugins/vn-cms-ecommerce";
 
 // console.log(Ecommerce.Attribute)
 
@@ -22,11 +23,27 @@ add_router('/login', async (req, res) => {
 
     let { username, password } = req.body
 
+
     let { data, error } = await User.login({
         email: username, password
     })
 
-    return res.json({ data, error })
+    let result: any = { data, error }
+
+
+
+    if (data) {
+        let cart = await Cart.getCartFromUser(data);
+
+        if (cart.data) {
+            result.cart = cart.data
+        }
+    }
+
+
+
+
+    return res.json(result)
 
 
     // let { data } = await getModel('user').findOne({ match: { email: username, password } });
@@ -110,12 +127,5 @@ add_router('/update-profile', JWTMiddleware, async (req, res) => {
     });
 
     return res.json(result)
-    if (result.error) {
-        return res.json(result)
-    }
-
-
-
-    return res.json({ error: 'Username hoặc passowrd không đúng' });
 })
 

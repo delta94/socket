@@ -1,4 +1,5 @@
 import ModelClass from "core/Model";
+import { ObjectID } from "mongodb";
 import { TableName } from "..";
 
 
@@ -18,24 +19,26 @@ class Cart extends ModelClass {
 
             vat: Number,
             paymentMethod: {
-                enum:  ['money', 'creditCard', 'paypal', 'bitcoin'],
+                enum: ['money', 'creditCard', 'paypal', 'bitcoin'],
                 default: 'money'
             },
             // list: [],
-            first_name: String,
-            last_name: String,
-            email: String,
+            name: String,
             phone: String,
+            email: String,
             address: String,
-            products: {
-                relation: TableName.Product,
-                multi: true
-            },
-            product_number: {},
-            subtotal: Number,
-            tax: Number,
-            shipping: Number
+            note: String,
+            status: {
+                enum: ['cart', 'order', 'confirm', 'finish'],
+                default: 'cart'
+            }
         })
+    }
+
+
+    public getCartFromUser(user: any) {
+        // if(ObjectID.isValid(user)) user = new ObjectID(user)
+        return this.findOne({ match: { user: user._id } });
     }
 }
 
