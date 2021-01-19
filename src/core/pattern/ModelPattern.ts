@@ -96,7 +96,7 @@ export interface ModelInterface {
 
     insertOne(options: {}): Promise<intertOneResponse>
 
-    insertMany(options: []): Promise<insertManyResponse>
+    insertMany(data: []): Promise<insertManyResponse>
 
     insertOrUpdate(options: { [key in string]: any }, match?: { [key in string]: any }): Promise<intertOrUpdateResponse>
 
@@ -194,11 +194,11 @@ export default abstract class ModelAbstract {
 
 
     protected async _findOne(options: findOneOptions | string): Promise<{ next: boolean, data?: any }> {
-        let { match } = options;
-        if ('_id' in match) {
-            let data = await this.getCache(match['_id']);
-            if (data) return { data, next: false };
-        }
+        // let { match } = options;
+        // if ('_id' in match) {
+        //     let data = await this.getCache(match['_id']);
+        //     if (data) return { data, next: false };
+        // }
 
         return { next: true }
     }
@@ -228,7 +228,7 @@ export default abstract class ModelAbstract {
     }
 
 
-    protected async _checkValidateOne(data: any, update = false): Promise<{ error?: any, data?: any }> {
+    protected _checkValidateOne(data: any, update = false): { error?: any, data?: any } {
 
         let rules = {}
         let message = {}
@@ -273,10 +273,18 @@ export default abstract class ModelAbstract {
 
         return { data }
     }
-
+    abstract insertOne(options: {}): Promise<intertOneResponse>
     abstract insertOrUpdate(options: {} | [], match: any): Promise<intertOrUpdateResponse>
 
+    async insertMany(data: []): Promise<insertManyResponse> {
+        let count = 0;
+        for (let i in data) {
+            let { insertCount } = await this.insertOne(data[i]);
+            if (insertCount === 1) count++;
+        }
 
+        return { insertCount: count }
+    }
 
     abstract updateOne(query: {}, data: {}): Promise<updateOneResponse>
 

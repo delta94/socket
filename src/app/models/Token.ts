@@ -97,11 +97,9 @@ export function JWTMiddleware(req: any, res: any, next: NextFunction) {
     if (token == null) return res.sendStatus(401)
 
     jwt.verify(token, tokenKey, async (err: any, user: any) => {
-
+        if (err) return cacheError(err, res)
         user = await User.findOne({ match: { _id: user._id } });
 
-
-        if (err) return cacheError(err, res)
         if (user.data) {
             req.user = user.data;
 

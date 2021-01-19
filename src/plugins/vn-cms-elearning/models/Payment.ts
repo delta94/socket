@@ -1,10 +1,13 @@
+import { TableName } from "..";
 import ModelClass from "../../../core/Model";
 
 
 class Payment extends ModelClass {
     constructor() {
-        super('elearning_payment', {
+        super(TableName.Payment, {
             id: {
+                type: Number,
+
                 unique: true,
             },
             // name: {

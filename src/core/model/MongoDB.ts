@@ -186,7 +186,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         // if (error) {
         //     return { error, insertCount: 0 };
         // }
-        let { error, data } = await this._checkValidateOne(insertData);
+        let { error, data } = this._checkValidateOne(insertData);
         if (error) {
             return { error, insertCount: 0 };
         }
@@ -216,16 +216,25 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
 
     }
 
-    async insertMany(data: []): Promise<insertManyResponse> {
-        return new Promise((resolve, reject) => {
-            this.collection?.insertMany(data, (error: any, data: any) => {
-                if (error) {
-                    resolve({ error, insertCount: 0 })
-                }
-                else {
-                    resolve({ insertCount: data.insertedCount })
-                }
-            });
+    insertMany(data: any): Promise<insertManyResponse> {
+
+        data = data.map(e => {
+            let result = this._checkValidateOne(e)
+            if (result.data) {
+                return result.data
+            }
+
+            return null
+        })
+
+        data.filter(e => e !== null)
+
+        return new Promise((resolve, rejct) => {
+            this.collection?.insertMany(data, (error: any, data) => {
+                if (error) resolve({ error, insertCount: 0 })
+
+                return resolve({ insertCount: data?.insertedCount || 0 })
+            })
         })
     }
 

@@ -1,6 +1,7 @@
+import { TableName } from "..";
 import ModelClass from "../../../core/Model";
 
-class ElearingUser extends ModelClass {
+class Student extends ModelClass {
     // fields = {
     //     name: {
     //         type: String,
@@ -18,36 +19,40 @@ class ElearingUser extends ModelClass {
     // }
     // name = 'user'
     constructor() {
-        super('elearning_student', {
+        super(TableName.Student, {
+            id: {
+                type: Number,
 
-            total_coin_current: {
-                type: Number
-            },
-            student_type: {
-                type: String
-            },
-            review: {
-                type: String
-            },
-            skype: {
-                type: String
-            },
-            email: {
-                type: String
-            },
-            phone: {
-                type: String
-            },
-            title: {
-                type: String
-            },
-            password: {
-                type: String
-            },
-            user: {
-                relation: 'user',
-                required: true
+                unique: true
             }
+            // total_coin_current: {
+            //     type: Number
+            // },
+            // student_type: {
+            //     type: String
+            // },
+            // review: {
+            //     type: String
+            // },
+            // skype: {
+            //     type: String
+            // },
+            // email: {
+            //     type: String
+            // },
+            // phone: {
+            //     type: String
+            // },
+            // title: {
+            //     type: String
+            // },
+            // password: {
+            //     type: String
+            // },
+            // user: {
+            //     relation: 'user',
+            //     required: true
+            // }
             // name: {
             //     type: String,
             //     required: true,
@@ -81,4 +86,4 @@ class ElearingUser extends ModelClass {
 
 }
 
-// export default new ElearingUser;
+export default new Student;

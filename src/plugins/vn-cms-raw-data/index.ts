@@ -450,3 +450,32 @@ add_router_group('raw', () => {
     })
 
 })
+
+
+
+
+
+export async function rawHTML(url) {
+    return await rp({
+        uri: url,
+        transform: function (body) {
+            //Khi lấy dữ liệu từ trang thành công nó sẽ tự động parse DOM
+            return new JSDOM(body);
+        },
+    })
+}
+
+export async function rawAPI(url) {
+    return await rp({
+        uri: url,
+        transform: function (body) {
+            //Khi lấy dữ liệu từ trang thành công nó sẽ tự động parse DOM
+            try {
+                return JSON.parse(body)
+            } catch (err) {
+
+                return false;
+            }
+        },
+    })
+}

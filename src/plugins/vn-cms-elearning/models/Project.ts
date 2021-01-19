@@ -1,10 +1,13 @@
+import { TableName } from "..";
 import ModelClass from "../../../core/Model";
 
 
 class Project extends ModelClass {
     constructor() {
-        super('elearning_project', {
+        super(TableName.Project, {
             id: {
+                type: Number,
+
                 unique: true,
             },
             // name: {

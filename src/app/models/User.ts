@@ -128,7 +128,7 @@ class User extends Model {
             udpateData.password = password;
 
             let result = await this.findOne({ match: { _id: user._id, password: md5(oldPassword) } })
-            console.log(result.data)
+            console.log(result.data, password)
             if (!result.data) {
                 return { error: 'Mật khẩu cũ không đúng.' }
             }

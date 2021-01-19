@@ -10,6 +10,18 @@ class Cart extends ModelClass {
                 relation: 'user'
             },
             amount: Number,
+            total: Number,
+            shippingFee: Number,
+            shippingSelected: {
+                enum: ['giao_nhanh', 'giao_thuong']
+            },
+
+            vat: Number,
+            paymentMethod: {
+                enum:  ['money', 'creditCard', 'paypal', 'bitcoin'],
+                default: 'money'
+            },
+            // list: [],
             first_name: String,
             last_name: String,
             email: String,

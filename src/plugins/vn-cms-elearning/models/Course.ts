@@ -1,46 +1,48 @@
 
+import { TableName } from "..";
 import ModelClass from "../../../core/Model";
 class Course extends ModelClass {
     constructor() {
-        super('elearning_course', {
-            // id: {
-            //     unique: true,
+        super(TableName.Course, {
+            id: {
+                type: Number,
+                unique: true,
+            },
+            // benefits: [],
+            // cfd_teacher: {
+            //     relation: TableName.Teacher
             // },
-            benefits: [],
-            cfd_teacher: {
-                relation: 'elearning_teacher'
-            },
-            close_time: String,
-            content: [],
-            count_video: Number,
-            course_status: {
-                enum: ['sap-khai-giang'],
-                default: 'sap-khai-giang'
-            },
-            khoa: Number,
-            money: Number,
-            course_type: {
-                enum: ['offline', 'online'],
-                default: 'offline'
-            },
-            opening_time: String,
-            schedule: String,
-            required: [],
-            short_description: String,
-            slug: {
-                type: String,
-                unique: true
-            },
-            title: String,
-            visibility: {
-                enum: ['publish', 'trash'],
-                default: 'offline'
-            },
-            mentor: {
-                relation: 'elearning_teacher',
-                multi: true
-            },
-            thumbnail: {}
+            // close_time: String,
+            // content: [],
+            // count_video: Number,
+            // course_status: {
+            //     enum: ['sap-khai-giang'],
+            //     default: 'sap-khai-giang'
+            // },
+            // khoa: Number,
+            // money: Number,
+            // course_type: {
+            //     enum: ['offline', 'online'],
+            //     default: 'offline'
+            // },
+            // opening_time: String,
+            // schedule: String,
+            // required: [],
+            // short_description: String,
+            // slug: {
+            //     type: String,
+            //     unique: true
+            // },
+            // title: String,
+            // visibility: {
+            //     enum: ['publish', 'trash'],
+            //     default: 'offline'
+            // },
+            // mentor: {
+            //     relation: TableName.Teacher,
+            //     multi: true
+            // },
+            // thumbnail: {}
             // title: {
             //     type: String,
             //     required: true,
