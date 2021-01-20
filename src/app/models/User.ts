@@ -28,7 +28,6 @@ class User extends Model {
             email: {
                 type: String,
                 required: true,
-                index: true,
                 unique: true,
                 pattern: 'email'
                 // validate: {
@@ -43,7 +42,10 @@ class User extends Model {
                 // unique: true
 
             },
-            password: String,
+            password: {
+                type: String,
+                required: true
+            },
             type: {
                 enum: ['github', 'gmail', 'facebook']
 
@@ -68,11 +70,11 @@ class User extends Model {
     public async login(findObject: { email: string, password: string }): Promise<{ data?: any, error?: any }> {
         let { email, password } = findObject;
 
-        email = email.toLowerCase();
+        email = email?.toLowerCase();
 
         password = md5(password)
         let { data, error } = await this.findOne({ match: { email, password } })
-
+        console.log({ email, password })
         if (data) {
 
             delete data.password;
@@ -89,16 +91,17 @@ class User extends Model {
     public async register(dataObj: any): Promise<{ data?: any, error?: any }> {
         let { email, password } = dataObj;
 
-        email = email.toLowerCase();
+        email = email?.toLowerCase();
 
-        dataObj.password = md5(password)
+        dataObj.password = password && md5(password)
+
 
         let check = await this.findOne({ match: { email } })
         if (check.data) {
             return { error: 'Email đã tồn tại, vui lòng chọn email khác' }
         }
 
-        let register = await this.insertOne(dataObj);
+        let register = await this.insertOne({ ...dataObj, email, });
         if (register.data) {
 
             let token = await Token.create(register.data)

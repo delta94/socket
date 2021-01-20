@@ -60,7 +60,7 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         type: ObjectID
     }
 
-    private collection: mongodb.Collection | null = null
+    public collection: mongodb.Collection | null = null
 
     constructor(name: string, fields: FieldsInput) {
         super(name, fields)
@@ -90,11 +90,14 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
             console.log(util.inspect(this._fields, false, null, true /* enable colors */))
         }
     }
+    getCollection() {
+        throw new Error('Method not implemented.');
+    }
 
 
     async findMany(options: findOptions = { limit: 15, page: 1, sort: { _id: -1 } }): Promise<findResponse> {
 
-        let { page = 1, limit = 15, match, data, sort } = await super._findMany(options)
+        let { page = 1, limit = 15, match, data, sort, join, select } = await super._findMany(options)
         if (data) return { data }
 
         const startIndex = (page - 1) * limit;
@@ -113,7 +116,46 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
                     },
                     {
                         $limit: limit
-                    }
+                    },
+
+                    // JOIN
+                    ...(() => {
+                        let list: any = []
+
+
+                        if (join) {
+                            if (!Array.isArray(join)) join = [join]
+
+                            join.forEach((e: any) => {
+
+
+                                let { multi } = e
+                                delete e.multi
+
+                                list.push({ $lookup: { ...e, as: e.as || e.localField } })
+                                if (!multi) {
+                                    list.push({ $unwind: `$${e.as || e.localField}` })
+                                }
+
+                            })
+                        }
+                        return list
+                    })(),
+
+                    // Select
+                    ...(() => {
+                        let list = {}
+                        if (select) {
+                            select.forEach(e => {
+                                list[e] = 1
+                            });
+
+                            return [{ $project: list }]
+
+                        }
+                        return [];
+                    })()
+
                 ]
 
 
@@ -150,7 +192,6 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         let { match } = options;
 
         match = this._generateFind(match);
-
         let { data, next } = await this._findOne(options)
         if (data) return { data };
 

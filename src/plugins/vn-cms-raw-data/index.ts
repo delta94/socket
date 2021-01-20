@@ -455,7 +455,7 @@ add_router_group('raw', () => {
 
 
 
-export async function rawHTML(url) {
+export async function rawHTML(url): Promise<JSDOM> {
     return await rp({
         uri: url,
         transform: function (body) {

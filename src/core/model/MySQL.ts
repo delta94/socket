@@ -16,6 +16,9 @@ con.connect((err) => {
     }
 })
 export default class MySQL extends ModelAbstract implements ModelInterface {
+    getCollection() {
+        throw new Error('Method not implemented.');
+    }
     deleteById(string: any): Promise<any> {
         throw new Error('Method not implemented.');
     }

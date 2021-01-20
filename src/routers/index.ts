@@ -21,11 +21,13 @@ add_router('test', (req, res) => {
 
 add_router('/login', async (req, res) => {
 
-    let { username, password } = req.body
+    if (req.method === "GET") return res.json({ error: 'method required is POST' })
+
+    let { username, password, email } = req.body
 
 
     let { data, error } = await User.login({
-        email: username, password
+        email: email || username, password
     })
 
     let result: any = { data, error }
@@ -110,6 +112,8 @@ add_router('/logout', async (req, res) => {
 
 
 add_router('/register', async (req, res) => {
+    if (req.method === "GET") return res.json({ error: 'method required is POST' })
+
 
     let { body } = req;
     let result = await User.register(body)
@@ -120,6 +124,7 @@ add_router('/register', async (req, res) => {
 
 
 add_router('/update-profile', JWTMiddleware, async (req, res) => {
+    if (req.method === "GET") return res.json({ error: 'method required is POST' })
 
     let result = await User.updateInfo({
         ...req.user,

@@ -7,9 +7,11 @@ import { ROUTER } from "./type";
 let group_url = '/';
 let group_handle: any = []
 export async function add_router_group(group: string, ...handle: RequestHandler[]) {
-    group_url = '/' + group.replace(/\//g, '') + '/'
+    group_url += '/' + group.replace(/\//g, '') + '/'
+    group_url = group_url.replace(/[\/]{2,}/g, '/')
     group_handle = handle;
     let callback = group_handle.pop()
+
     if (typeof callback !== 'function') throw new Error('Last params is function is required')
     callback();
     group_url = '/';
@@ -18,8 +20,7 @@ export async function add_router_group(group: string, ...handle: RequestHandler[
 
 export function add_router(name: string, ...handle: (RequestHandler | any)[]) {
 
-    name = name.replace(/\//, '');
-
+    name = name.replace(/^\/|\/$/g, '');
     let last = handle[handle.length - 1];
 
 

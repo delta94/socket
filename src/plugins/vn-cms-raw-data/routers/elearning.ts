@@ -1,51 +1,55 @@
 import { add_router, add_router_group } from "hooks/routerhook"
 
 import rp from "request-promise";
-import { rawAPI } from "..";
+import { rawAPI, rawHTML } from "..";
 import { CoinHistory, Course, Register, Student, Teacher } from "plugins/vn-cms-elearning";
+import { Page } from "app";
 
 add_router_group('elearning', () => {
     add_router('raw', async (req, res) => {
-        let teacher = await rawTeacher();
+        // let teacher = await rawTeacher();
 
-        let teacherResult = await Teacher.insertMany(teacher)
-        console.log('teacherResult', teacherResult)
+        // let teacherResult = await Teacher.insertMany(teacher)
+        // console.log('teacherResult', teacherResult)
 
-        let courses = await rawCourse();
+        // let courses = await rawCourse();
 
-        let courseResult = await Course.insertMany(courses)
-        console.log('courseResult', courseResult)
-
-
-        let student = await rawStudent()
-
-        let studentResult = await Student.insertMany(student)
-        console.log('studentResult', studentResult)
+        // let courseResult = await Course.insertMany(courses)
+        // console.log('courseResult', courseResult)
 
 
+        // let student = await rawStudent()
 
-        let register = await rawRegister()
-        let registerResult = await Register.insertMany(register)
-        console.log('registerResult', registerResult)
-
-
-        let coin = await rawCoinHistory();
-        let coinResult = await CoinHistory.insertMany(coin)
-        console.log('coinResult', coinResult)
+        // let studentResult = await Student.insertMany(student)
+        // console.log('studentResult', studentResult)
 
 
+
+        // let register = await rawRegister()
+        // let registerResult = await Register.insertMany(register)
+        // console.log('registerResult', registerResult)
+
+
+        // let coin = await rawCoinHistory();
+        // let coinResult = await CoinHistory.insertMany(coin)
+        // console.log('coinResult', coinResult)
+
+
+        let home = await rawHome();
+        let result = await Page.insertOrUpdate({ ...home, slug: 'elearning-home' }, { slug: 'elearning-home' });
 
         res.json({
-            coin,
-            teacher,
-            courses,
-            student,
-            register,
-            teacherResult,
-            courseResult,
-            studentResult,
-            registerResult,
-            coinResult
+            home: result
+            // coin,
+            // teacher,
+            // courses,
+            // student,
+            // register,
+            // teacherResult,
+            // courseResult,
+            // studentResult,
+            // registerResult,
+            // coinResult
         })
 
     })
@@ -54,6 +58,35 @@ add_router_group('elearning', () => {
 })
 
 
+
+async function rawHome() {
+    let html = await rawHTML('https://www.cfdtraining.vn/')
+    let review: any = []
+
+    let item = html.window.document.querySelectorAll('.testimonial .text .ct')
+    item.forEach(e => {
+        review.push({
+            name: e.querySelector('.info .name h4').textContent,
+            content: e.querySelector('.content').textContent,
+            date: e.querySelector('.bottom span').textContent,
+            fb: e.querySelector('.bottom a').href
+        })
+    })
+
+    html.window.document.querySelectorAll('.testimonial .images picture img').forEach((e: any, i: number) => {
+        review[i].cover = e.getAttribute('data-flickity-lazyload')
+    })
+
+    let gallery: any = []
+    html.window.document.querySelectorAll('.section-gallery .list img').forEach((e: any) => {
+        gallery.push(e.getAttribute('data-flickity-lazyload'))
+    })
+
+    return {
+        review,
+        gallery
+    };
+}
 
 
 
@@ -115,7 +148,8 @@ async function rawCourse() {
         delete e.meta
         e.required = JSON.parse(e.required || null)
 
-        e.thumbnail = fixErrorImg(e.thumbnail)
+        e.thumbnail = fixErrorImg(e.thubnail)
+        delete e.thubnail
 
         return e;
     })

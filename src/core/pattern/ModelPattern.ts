@@ -9,9 +9,10 @@ import CacheAbstract from './CachePattern';
 export interface findOptions {
     limit?: number,
     page?: number,
-    select?: [],
+    select?: string[],
     match?: any,
-    sort?: any
+    sort?: any,
+    join?: any
 }
 
 export interface findResponse {
@@ -30,7 +31,9 @@ export interface findResponse {
 
 export interface findOneOptions {
     match: {},
-    select?: []
+    select?: any[],
+    join?: any
+
 }
 
 export interface findOneResponse { error?: {}, data?: any }
@@ -123,6 +126,8 @@ export interface ModelInterface {
 
 
     getQueryFilter(query: any): any
+
+    getCollection(): any
 }
 
 export interface FieldsInput { [key: string]: any[] | Field | Function }
@@ -203,8 +208,8 @@ export default abstract class ModelAbstract {
         return { next: true }
     }
 
-    protected async _findMany(options?: findOptions | any): Promise<{ page?: number, limit?: number, match?: any, data?: any, next?: boolean, sort?: any }> {
-        let { page, limit, match, sort } = options;
+    protected async _findMany(options?: findOptions | any): Promise<{ page?: number, limit?: number, match?: any, data?: any, next?: boolean, sort?: any, join?: any, select?: any }> {
+        let { page, limit, match, sort, join } = options;
 
         !sort && (sort = { [this.primaryKey.name]: -1 })
 
@@ -224,7 +229,7 @@ export default abstract class ModelAbstract {
 
         // if (!match) match = {}
 
-        return { next: true, page, limit, match, sort }
+        return { ...options, next: true, page, limit, match, sort, join }
     }
 
 
