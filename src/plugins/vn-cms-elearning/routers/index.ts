@@ -87,6 +87,19 @@ add_router_group('elearning', () => {
         })
 
 
+        add_router('/register', async (req, res) => {
+            if (req.method === "GET") return res.json({ error: 'method required is POST' })
+            let { username, email } = req.body
+
+            let { body } = req;
+            let result = await User.register({ ...body, email: email || username })
+
+
+            return res.json(result)
+        })
+
+
+
 
         add_router('profile/course', JWTMiddleware, async (req, res) => {
             if (req.method === "GET") return res.json({ error: 'method requred is POST' })
