@@ -67,15 +67,16 @@ class User extends Model {
     }
 
 
-    public async login(findObject: { email: string, password: string }): Promise<{ data?: any, error?: any }> {
-        let { email, password } = findObject;
+    public async login(findObject: any): Promise<{ data?: any, error?: any }> {
+        let { username, password, email } = findObject
 
         email = email?.toLowerCase();
+        username = username?.toLowerCase();
 
         password = md5(password)
-        let { data, error } = await this.findOne({ match: { email, password } })
-        console.log({ email, password })
+        let { data, error } = await this.findOne({ match: { email: email || username } })
         if (data) {
+            if (password !== data.password) return { error: 'Mật khẩu không chính xác' }
 
             delete data.password;
             data.token = await Token.create(data)
@@ -84,7 +85,7 @@ class User extends Model {
         } else if (error) {
             return { error }
         } else {
-            return { error: 'Username hoặc passowrd không đúng' }
+            return { error: 'Tài khoản không tồn tại' }
         }
     }
 

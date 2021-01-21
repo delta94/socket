@@ -1,114 +1,31 @@
-import MongoDB, { getModel } from "core/model/MongoDB";
-import { add_router } from "hooks/routerhook";
-import { ObjectID } from "mongodb";
-import { Cart, TableName } from "..";
+import { add_router, add_router_group } from "hooks/routerhook";
+import CartController from "../controllers/CartController";
+import CategoryController from "../controllers/CategoryController";
+import ProductController from "../controllers/ProductController";
+import ProfileController from "../controllers/ProfileController";
+import UserController from "../controllers/UserController";
 
-add_router('/product', async (req, res) => {
-    let { page, limit, sort }: any = req.query;
-    if (!page) page = 1;
-    if (!limit) limit = 15;
-    if (!sort) sort = '_id.-1'
+add_router('/product', ProductController.product)
 
-    sort = sort.split('.')
-    let sortVal = parseInt(sort.pop());
+add_router('/product/:id', ProductController.product_id)
 
-    sort = {
-        [sort.join('.')]: sortVal
-    }
+add_router('/categories', CategoryController.index)
 
-    let query: any = {
-        page, limit, sort
-    }
+add_router('/home/product', ProductController.home_product)
 
 
-    let queryField = getModel(TableName.Product).getQueryFilter(req.query);
+add_router_group('ecommerce/v1', () => {
+    add_router('login', 'post', UserController.login)
 
-    if (Object.keys(queryField).length > 0) {
-        query.match = queryField
-    }
+    add_router('order', 'post', CartController.order)
 
-    let products = await getModel(TableName.Product).findMany(query);
-    res.json(products)
+    add_router('cart', 'post', CartController.cart)
+
+    add_router('update-cart/:_id', 'post', CartController.update)
+
+    add_router('profile/notification', ProfileController.notification)
+
+    add_router('profile/order', ProfileController.order)
+
+    add_router('profile/wishlist', ProfileController.wishlist)
 })
-
-
-add_router('/product/:id', async (req, res) => {
-    let { id } = req.params;
-    let { data } = await getModel(TableName.Product).findOne({ match: { id: parseInt(id) } })
-    res.json(data);
-})
-
-
-add_router('/categories', async (req, res) => {
-    let { data, error } = await getModel(TableName.Category).findMany({ limit: 100, sort: { _id: 1 } });
-    res.json(data)
-})
-
-add_router('/home/product', async (req, res) => {
-    let { data: discount } = await getModel(TableName.Product).findMany({ sort: { discount_rate: -1 }, limit: 9 })
-    let { data: hot } = await getModel(TableName.Product).findMany({ sort: { 'stock_item.qty': -1 }, limit: 9 })
-    res.json({
-        discount,
-        hot
-    })
-})
-
-add_router('order', async (req, res) => {
-    let { _id } = req.body
-    let match;
-    if (_id) {
-        match = { _id }
-    }
-    let result = await Cart.insertOrUpdate(req.body, match)
-
-    return res.json(result)
-})
-
-add_router('cart', async (req, res) => {
-    let { _id, user } = req.body
-    let match = {};
-    if (_id) {
-        match = { _id }
-    }
-
-    user = new ObjectID(user)
-    let result = await Cart.insertOrUpdate({
-        ...req.body,
-        user,
-        status: 'cart'
-    }, match)
-
-    return res.json(result)
-})
-
-add_router('update-cart', async (req, res) => {
-    let { _id } = req.body
-    let match = {};
-    if (_id) {
-        match = { _id }
-    }
-    let result = await Cart.insertOrUpdate(req.body, match)
-
-    return res.json(result)
-})
-
-
-// add_router('/save-order', async (req, res) => {
-
-// })
-
-add_router('/profile/notification', async (req, res) => {
-
-})
-
-add_router('/profile/order', async (req, res) => {
-
-})
-
-add_router('/profile/wishlist', async (req, res) => {
-
-})
-
-// Phân trang, 
-// Chuẩn bị tài liệu cho react-router-dom
-// Chuẩn bị tài liệu cho nodejs lớp online
