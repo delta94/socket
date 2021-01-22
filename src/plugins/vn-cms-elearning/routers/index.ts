@@ -7,181 +7,36 @@ import { CoinHistory, Course, Student, TableName } from "..";
 import { Page, Token, User } from "app";
 import { JWTMiddleware } from "app/models/Token";
 import Register from "../models/Register";
+import PageController from "../controllers/PageController";
+import UserController from '../controllers/UserController'
+import CourseController from "../controllers/CourseController";
 
-
-add_router('elearning-home', async (req, res) => {
-
-
-    let course = await Course.findMany();
-    res.json(course)
-})
 
 
 
 add_router_group('elearning', () => {
     add_router_group('v4', () => {
-        add_router('home', async (req, res) => {
-            let offline = await Course.findMany({
-                match: { course_type: "offline" },
-                sort: { id: -1 },
-                select: ['thumbnail', 'short_description', 'title', 'course_status', 'id', 'slug', 'course_type', 'teacher.avatar', 'teacher.title'],
-                join: [
-                    {
-                        from: TableName.Teacher,
-                        localField: 'teacher',
-                        foreignField: 'id',
-                        multi: false
-                    }
-                ]
-            })
+        add_router('home', PageController.home)
 
-            let online = await Course.findMany({
-                match: { course_type: "online" },
-                limit: 3,
-                sort: { id: -1 },
-                select: ['thumbnail', 'short_description', 'title', 'course_status', 'id', 'slug', 'course_type', 'teacher.avatar', 'teacher.title'],
-                join: [
-                    {
-                        from: TableName.Teacher,
-                        localField: 'teacher',
-                        foreignField: 'id',
-                        multi: false
-                    }
-                ]
-            })
+        add_router('courses', PageController.course)
 
-            let review = await Student.findMany({
-                limit: 8,
-                select: ['review', 'title', 'avatar', 'created_time', 'facebook'],
-                match: {
-                    review: {
-                        $exists: true
-                    }
-                }
-            })
+        add_router('contact', 'post', PageController.contact)
 
-            let home = await Page.findOne({ match: { slug: 'elearning-home' } });
-            res.json({
-                offline: offline?.data,
-                online: online?.data,
-                ...home?.data
-            })
-        })
+        add_router('login', 'post', UserController.login)
 
-        add_router('login', async (req, res) => {
-            if (req.method === "GET") return res.json({ error: 'method required is POST' })
+        add_router('/register', 'post', UserController.register)
 
-            let { username, password, email } = req.body
+        add_router('profile/update', 'post', JWTMiddleware, UserController.update)
 
-            let { data, error } = await User.login({
-                email: email || username, password
-            })
+        add_router('profile/course', JWTMiddleware, UserController.profile_course)
 
+        add_router('profile/payment', JWTMiddleware, UserController.profile_payment)
 
-            let result: any = { data, error }
+        add_router('profile/coint', JWTMiddleware, UserController.profile_coin)
 
+        add_router('course/:slug', PageController.course_detail)
 
-
-
-            return res.json(result)
-        })
-
-
-        add_router('/register', async (req, res) => {
-            if (req.method === "GET") return res.json({ error: 'method required is POST' })
-            let { username, email } = req.body
-
-            let { body } = req;
-            let result = await User.register({ ...body, email: email || username })
-
-
-            return res.json(result)
-        })
-
-
-
-
-        add_router('profile/course', JWTMiddleware, async (req, res) => {
-            if (req.method === "GET") return res.json({ error: 'method requred is POST' })
-
-            // let { accessToken } = req.body;
-
-            let courses = await Register.findMany({
-                match: {
-                    student: req.user.id
-                },
-                join: [
-                    {
-                        from: TableName.Course,
-                        localField: 'course',
-                        foreignField: 'id',
-                        multi: false
-                    }
-                ],
-                select: ['trang_thai', 'course.title', 'course.thumbnail', 'course.opening_time', 'course.opening_time', 'course.course_status', 'course.course_type', 'course.count_video', 'course.slug']
-            })
-
-            res.json(courses)
-        })
-
-        add_router('profile/payment', JWTMiddleware, async (req, res) => {
-            if (req.method === "GET") return res.json({ error: 'method requred is POST' })
-
-            // let { accessToken } = req.body;
-
-            let courses = await Register.findMany({
-                match: {
-                    student: req.user.id
-                },
-                limit: 1000,
-                join: [
-                    {
-                        from: TableName.Course,
-                        localField: 'course',
-                        foreignField: 'id',
-                        multi: false
-                    }
-                ],
-                select: ['trang_thai', 'payment', 'course.title']
-            })
-
-            res.json(courses)
-        })
-
-        add_router('profile/coint', JWTMiddleware, async (req, res) => {
-            if (req.method === "GET") return res.json({ error: 'method requred is POST' })
-
-            // let { accessToken } = req.body;
-            let courses = await CoinHistory.findMany({
-                match: {
-                    student: req.user.id
-                },
-                limit: 1000,
-                join: [
-                    // {
-                    //     from: TableName.Course,
-                    //     localField: 'course',
-                    //     foreignField: 'id',
-                    //     multi: false
-                    // },
-                    // {
-                    //     from: TableName.Register,
-                    //     localField: 'course_register',
-                    //     foreignField: 'id',
-                    //     multi: false
-                    // },
-                    // {
-                    //     from: TableName.Course,
-                    //     localField: 'course_register.course',
-                    //     foreignField: 'id',
-                    //     multi: false
-                    // },
-                ],
-                select: ['coint', 'created_time', 'title', 'trang_thai']
-            })
-
-            res.json(courses)
-        })
+        add_router('course-register/:slug', 'post', JWTMiddleware, CourseController.register)
     })
 
     add_router('/', (req, res) => {

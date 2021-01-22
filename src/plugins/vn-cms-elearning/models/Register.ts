@@ -9,6 +9,10 @@ class Register extends ModelClass {
                 type: Number,
                 unique: true
             },
+            // payment_method: {
+            //     enum: ['chuyen-khoang', 'tien-mat'],
+            //     default: 'chuyen-khoang'
+            // }
             // coin_use: Number,
             // payment_method: {
             //     enum: ['Chuyển khoản', 'Tiền mặt'],
