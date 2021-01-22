@@ -36,6 +36,9 @@ export default {
         }
         return res.json({ error: 'User not exists!' })
     },
+    profile: async (req, res) => {
+        return res.json(req.user)
+    },
     profile_course: async (req, res) => {
         if (req.method === "GET") return res.json({ error: 'method requred is POST' })
 

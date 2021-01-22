@@ -26,6 +26,8 @@ add_router_group('elearning', () => {
 
         add_router('/register', 'post', UserController.register)
 
+        add_router('profile', 'post', JWTMiddleware, UserController.profile)
+
         add_router('profile/update', 'post', JWTMiddleware, UserController.update)
 
         add_router('profile/course', JWTMiddleware, UserController.profile_course)
