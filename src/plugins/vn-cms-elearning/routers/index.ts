@@ -38,7 +38,11 @@ add_router_group('elearning', () => {
 
         add_router('course/:slug', PageController.course_detail)
 
+        add_router('course-related/:slug', PageController.course_related)
+
         add_router('course-register/:slug', 'post', JWTMiddleware, CourseController.register)
+
+
     })
 
     add_router('/', (req, res) => {

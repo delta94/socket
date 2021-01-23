@@ -9,7 +9,6 @@ import { Cart } from "plugins/vn-cms-ecommerce";
 
 add_router('test', (req, res) => {
     let models = getAllModel();
-    console.log(models)
     let result = {};
     for (let i in models) {
         result[i] = {

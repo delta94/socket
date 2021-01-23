@@ -92,6 +92,8 @@ class Course extends ModelClass {
 
         })
     }
+
+
 }
 
 export default new Course;

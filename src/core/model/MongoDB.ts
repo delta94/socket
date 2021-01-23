@@ -189,7 +189,15 @@ export default class MongoDB extends ModelAbstract implements ModelInterface {
         if (typeof options === 'string') {
             options = { match: { _id: options } }
         }
-        let { match } = options;
+        let { match, join } = options;
+
+        if (join) {
+            let result = await this.findMany(options);
+            if (result?.data?.[0]) return { data: result?.data?.[0] }
+
+            return { data: null }
+
+        }
 
         match = this._generateFind(match);
         let { data, next } = await this._findOne(options)

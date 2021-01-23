@@ -1,13 +1,16 @@
 import { Page } from "app";
+import { match } from "assert";
 import { Student, TableName } from "..";
 import Course from "../models/Course";
+
+let homeCourseSelect = ['thumbnail', 'close_time', 'short_description', 'title', 'course_status', 'id', 'slug', 'course_type', 'teacher.avatar', 'teacher.title'];
 
 export default {
     home: async (req, res) => {
         let offline = await Course.findMany({
             match: { course_type: "offline" },
             sort: { id: -1 },
-            select: ['thumbnail', 'short_description', 'title', 'course_status', 'id', 'slug', 'course_type', 'teacher.avatar', 'teacher.title'],
+            select: homeCourseSelect,
             join: [
                 {
                     from: TableName.Teacher,
@@ -22,7 +25,7 @@ export default {
             match: { course_type: "online" },
             limit: 3,
             sort: { id: -1 },
-            select: ['thumbnail', 'short_description', 'title', 'course_status', 'id', 'slug', 'course_type', 'teacher.avatar', 'teacher.title'],
+            select: homeCourseSelect,
             join: [
                 {
                     from: TableName.Teacher,
@@ -44,7 +47,7 @@ export default {
         let offline = await Course.findMany({
             match: { course_type: "offline" },
             sort: { id: -1 },
-            select: ['thumbnail', 'short_description', 'title', 'course_status', 'id', 'slug', 'course_type', 'teacher.avatar', 'teacher.title'],
+            select: homeCourseSelect,
             join: [
                 {
                     from: TableName.Teacher,
@@ -59,7 +62,7 @@ export default {
             match: { course_type: "online" },
             limit: 3,
             sort: { id: -1 },
-            select: ['thumbnail', 'short_description', 'title', 'course_status', 'id', 'slug', 'course_type', 'teacher.avatar', 'teacher.title'],
+            select: homeCourseSelect,
             join: [
                 {
                     from: TableName.Teacher,
@@ -75,10 +78,43 @@ export default {
             online: online?.data,
         })
     },
+    course_related: async (req, res) => {
+
+        let { slug } = req.params
+
+        let result = await Course.findMany({
+            limit: 3, select: homeCourseSelect, match: { course_status: 'sap-khai-gian', slug: { $ne: slug } },
+            join: [
+                {
+                    from: TableName.Teacher,
+                    localField: 'teacher',
+                    foreignField: 'id',
+                    multi: false
+                }
+            ]
+        })
+        res.json(result)
+    },
     course_detail: async (req, res) => {
         let { slug } = req.params;
 
-        let result = await Course.findOne({ match: { slug } })
+        let result = await Course.findOne({
+            match: { slug },
+            join: [
+                {
+                    from: TableName.Teacher,
+                    localField: 'teacher',
+                    foreignField: 'id',
+                    multi: false
+                },
+                {
+                    from: TableName.Teacher,
+                    localField: 'mentor',
+                    foreignField: 'id',
+                    multi: true
+                }
+            ]
+        })
         res.json(result)
     },
     contact: async (req, res) => {
