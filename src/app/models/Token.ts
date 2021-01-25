@@ -5,7 +5,7 @@ import jwt, { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken';
 
 const tokenKey = process.env.ACCESS_TOKEN_SECRET || 'AccessToken'
 const refreshKey = process.env.REFRESH_TOKEN_SECRET || 'AccessToken'
-const expiresIn = process.env.EXPIRE_TOKEN || '3600000'
+const expiresIn = process.env.EXPIRE_TOKEN || '31536000000'
 
 class Token extends Model {
 
