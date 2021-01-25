@@ -19,6 +19,30 @@ export default {
         let { _id } = req.params
         let { add, remove, decrement, increment, shipping, payment } = req.body
 
+        if (add) {
+
+        }
+
+        if (remove) {
+
+        }
+
+        if (decrement) {
+
+        }
+
+        if (increment) {
+
+        }
+
+        if (shipping) {
+
+        }
+
+        if (payment) {
+
+        }
+
         let match = {};
         if (_id) {
             match = { _id }

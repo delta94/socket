@@ -104,6 +104,7 @@ export interface ModelInterface {
     insertOrUpdate(options: { [key in string]: any }, match?: { [key in string]: any }): Promise<intertOrUpdateResponse>
 
 
+
     // update(): {error?: {}, updateCount: number, result: []}
 
     updateOne(query: {}, data: {}): Promise<updateOneResponse>

@@ -36,6 +36,17 @@ export default {
         }
         return res.json({ error: 'User not exists!' })
     },
+    update_avatar: async (req, res) => {
+        let { avatar } = req.files;
+        let { user } = req
+        if (avatar) {
+            avatar.mv(`./public/uploads/${user._id}/avatar/${avatar.name}`)
+            let path = `${process.env.HOST}/uploads/${user._id}/avatar/${avatar.name}`;
+            let userUpdate = await User.updateOne({ _id: new ObjectID(user._id) }, { avatar: { link: path, thumbnail: path } })
+            return res.json(userUpdate)
+        }
+        return res.json({ error: 'File not exists' })
+    },
     profile: async (req, res) => {
         return res.json(req.user)
     },

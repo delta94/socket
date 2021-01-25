@@ -30,6 +30,8 @@ add_router_group('elearning', () => {
 
         add_router('profile/update', 'post', JWTMiddleware, UserController.update)
 
+        add_router('profile/update-avatar', 'post', JWTMiddleware, UserController.update_avatar)
+
         add_router('profile/course', JWTMiddleware, UserController.profile_course)
 
         add_router('profile/payment', JWTMiddleware, UserController.profile_payment)
@@ -41,6 +43,7 @@ add_router_group('elearning', () => {
         add_router('course-related/:slug', PageController.course_related)
 
         add_router('course-register/:slug', 'post', JWTMiddleware, CourseController.register)
+
 
 
     })
