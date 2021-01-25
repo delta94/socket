@@ -8,7 +8,7 @@ import cors from 'cors'
 import Authentication, { JWTMiddleware } from 'core/Authentication';
 import Hook from 'core/Hook';
 import autoload from 'core/autoload';
-import fileUpload from 'express-fileUpload'
+// import fileUpload from 'express-fileUpload'
 import { cache } from 'plugins/vn-cms-redis';
 
 // var log = console.log;
@@ -32,11 +32,11 @@ var app = express(),
 
 
 
-app.use(fileUpload({
-    useTempFiles: true,
-    tempFileDir: '/tmp/',
-    createParentPath: true,
-}));
+// app.use(fileUpload({
+//     useTempFiles: true,
+//     tempFileDir: '/tmp/',
+//     createParentPath: true,
+// }));
 
 // socket(server);
 
